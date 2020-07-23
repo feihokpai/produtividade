@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:registro_produtividade/view/tarefas_edicao.dart';
+import 'package:registro_produtividade/view/tarefas_widgets.dart';
 
 class ComunsWidgets {
+
+  static BuildContext context;
+
   static Widget criarBarraSuperior() {
     AppBar barraSuperior = new AppBar(
         title: new Text("Registro de Produtividade"),
         centerTitle: true,
         backgroundColor: Colors.blue);
     return barraSuperior;
+  }
+
+  static Widget gerarItemMenuDrawer(
+      String titulo, IconData tipoIcone, Function funcao) {
+    return new ListTile(
+      title: new Text(titulo),
+      leading: new Icon(tipoIcone),
+      onTap: funcao,
+    );
   }
 
   static Widget criarMenuDrawer() {
@@ -30,27 +44,33 @@ class ComunsWidgets {
                       textAlign: TextAlign.left,
                     ),
                   ])),
-          new ListTile(
-              title: new Text("Tarefas abertas"),
-              leading: new Icon(Icons.message)),
-          new ListTile(
-              title: new Text("Registro de tempo dedicado"),
-              leading: new Icon(Icons.alarm)),
-          new ListTile(
-              title: new Text("Configurações"),
-              leading: new Icon(Icons.settings)),
-          new ListTile(
-              title: new Text("Sair"),
-              leading: new Icon(Icons.add_to_home_screen),
-            onTap: (){ ComunsWidgets.sairDoAplicativo(); },
-          ),
+          ComunsWidgets.gerarItemMenuDrawer("Tarefas abertas", Icons.message, ComunsWidgets.mudarParaPaginaInicial),
+          ComunsWidgets.gerarItemMenuDrawer("Criação de Tarefas", Icons.add, ComunsWidgets.mudarParaPaginaEdicaoDeTarefas),
+          ComunsWidgets.gerarItemMenuDrawer("Registro de tempo dedicado", Icons.alarm, null),
+          ComunsWidgets.gerarItemMenuDrawer("Configurações", Icons.settings, null),
+          ComunsWidgets.gerarItemMenuDrawer("Sair", Icons.add_to_home_screen, ComunsWidgets.sairDoAplicativo),
         ],
       ),
     );
   }
 
-  static void sairDoAplicativo(){
+  static void sairDoAplicativo() {
     print("clicou em sair");
-    SystemNavigator.pop( );
+    SystemNavigator.pop();
+  }
+
+  static void mudarParaTela( Widget widgetTela ){
+    BuildContext contexto = ComunsWidgets.context;
+    Navigator.push( contexto , new MaterialPageRoute(builder: (contexto) {
+      return widgetTela;
+    }));
+  }
+
+  static void mudarParaPaginaInicial() {
+    ComunsWidgets.mudarParaTela( new ListaDeTarefasTela() );
+  }
+
+  static void mudarParaPaginaEdicaoDeTarefas() {
+    ComunsWidgets.mudarParaTela( new TarefasEdicaoTela() );
   }
 }

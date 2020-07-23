@@ -5,6 +5,7 @@ import 'package:registro_produtividade/view/comuns_widgets.dart';
 import 'package:registro_produtividade/view/estilos.dart';
 
 class ListaDeTarefasTela extends StatefulWidget {
+
   @override
   _ListaDeTarefasTelaState createState() => _ListaDeTarefasTelaState();
 }
@@ -15,6 +16,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   @override
   Widget build(BuildContext context) {
+    ComunsWidgets.context = context;
     return this.criarHome();
   }
 
