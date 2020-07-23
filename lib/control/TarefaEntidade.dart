@@ -12,6 +12,8 @@ class Tarefa{
   static const int CONCLUIDA = 2;
   List<int> statusValidos = <int> [ ABERTA, CONCLUIDA ];
 
+  static const int LIMITE_TAMANHO_NOME = 20;
+
   Tarefa( this.nome, this.descricao ){
     this.dataHoraCadastro = DateTime.now();
   }
