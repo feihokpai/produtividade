@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/view/tarefas_edicao.dart';
@@ -20,7 +21,14 @@ void main() {
 //  print( amanha.difference( agora ).inDays );
 //  print( amanhaInicioDia );
   MaterialApp app1 = new MaterialApp( title: "Produtividade", home: new ListaDeTarefasTela() );
-  MaterialApp app2 = new MaterialApp( title: "Edição de tarefas", home: new TarefasEdicaoTela() );
+  MaterialApp app2 = new MaterialApp(
+      title: "Edição de tarefas",
+      home: new TarefasEdicaoTela(),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [const Locale('pt', 'BR')],);
 //
   runApp( app2 );
 }
