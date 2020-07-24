@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/tarefas_edicao.dart';
 import 'package:registro_produtividade/view/tarefas_widgets.dart';
 
@@ -70,7 +71,11 @@ class ComunsWidgets {
     ComunsWidgets.mudarParaTela( new ListaDeTarefasTela() );
   }
 
-  static void mudarParaPaginaEdicaoDeTarefas() {
-    ComunsWidgets.mudarParaTela( new TarefasEdicaoTela() );
+  static void mudarParaPaginaEdicaoDeTarefas( {Tarefa tarefa}) {
+    if( tarefa == null ) {
+      ComunsWidgets.mudarParaTela(new TarefasEdicaoTela());
+    }else{
+      ComunsWidgets.mudarParaTela( new TarefasEdicaoTela.modoEdicao( tarefa ) );
+    }
   }
 }

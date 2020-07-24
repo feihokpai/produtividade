@@ -12,7 +12,7 @@ class Tarefa{
   static const int CONCLUIDA = 2;
   List<int> statusValidos = <int> [ ABERTA, CONCLUIDA ];
 
-  static const int LIMITE_TAMANHO_NOME = 20;
+  static const int LIMITE_TAMANHO_NOME = 35;
 
   Tarefa( this.nome, this.descricao ){
     this.dataHoraCadastro = DateTime.now();
@@ -34,6 +34,11 @@ class Tarefa{
       throw new Exception("Não pode setar um valor abaixo de zero (${valor}) para o id de uma tarefa ");
     }
     this._id = valor;
+  }
+
+  @override
+  String toString(){
+    return "id(${this.id}): nome(${this.nome}) - descrição: ${this.descricao}";
   }
 
   /*
@@ -65,9 +70,6 @@ class Tarefa{
     return (outro is Tarefa && outro.id == this.id);
   }
 
-  @override
-  String toString(){
-    return "${this.id}: status(${this.status}): ${this.descricao}";
-  }
+
   */
 }
