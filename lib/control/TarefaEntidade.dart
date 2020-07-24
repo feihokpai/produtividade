@@ -43,13 +43,23 @@ class Tarefa{
   String get nome => _nome;
 
   void set nome( String valor ){
-    if( valor == null || valor.length == 0 ){
-      throw new Exception( "O nome de uma tarefa não pode ser vazio" );
-    }
-    if( valor.length > Tarefa.LIMITE_TAMANHO_NOME ){
-      throw new Exception( "O nome de uma tarefa não pode ter mais de ${Tarefa.LIMITE_TAMANHO_NOME} caracteres" );
+    String msg = Tarefa.validarNome( valor );
+    if( msg.length > 0 ){
+      throw new Exception( msg );
     }
     this._nome = valor;
+  }
+
+  ///     Valida o valor passado como sendo um nome de uma tarefa. Se estiver tudo ok, retorna "", senão retorna uma
+  /// string explicando os detalhes do erro.
+  static String validarNome(String valor){
+    if( valor == null || valor.length == 0 ){
+      return "O nome de uma tarefa não pode ser vazio" ;
+    }
+    if( valor.length > Tarefa.LIMITE_TAMANHO_NOME ){
+      return "Nome inválido. Tamanho ${valor.length}. Máximo permitido ${Tarefa.LIMITE_TAMANHO_NOME} caracteres.";
+    }
+    return "";
   }
 
   DateTime get dataHoraConclusao => this._dataHoraConclusao;

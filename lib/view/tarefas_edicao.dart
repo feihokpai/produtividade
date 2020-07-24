@@ -136,12 +136,8 @@ class _CampoNomeTarefaDefinicao{
   }
 
   String validar(String valor){
-    if( valor.isEmpty ){
-      return "Não pode salvar uma tarefa sem nome";
-    }
-    if( valor.length > Tarefa.LIMITE_TAMANHO_NOME){
-      return "Tamanho ${valor.length}. Máximo permitido ${Tarefa.LIMITE_TAMANHO_NOME} caracteres.";
-    }
+    String msg = Tarefa.validarNome( valor );
+    return ( msg.length > 0 ? msg : null );
   }
 }
 
