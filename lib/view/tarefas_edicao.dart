@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comuns_widgets.dart';
 import 'package:registro_produtividade/view/estilos.dart';
 import 'package:registro_produtividade/view/tarefas_widgets.dart';
@@ -23,17 +24,28 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   Controlador controlador = new Controlador();
 
   GlobalKey<FormState> globalKey = new GlobalKey<FormState>();
-  _CampoNomeTarefaDefinicao campoNome = new _CampoNomeTarefaDefinicao();
-  _CampoDescricaoTarefaDefinicao campoDescricao = new _CampoDescricaoTarefaDefinicao();
+  CampoDeTextoWidget campoNome;
+  CampoDeTextoWidget campoDescricao;
 
   @override
   Widget build(BuildContext context) {
     ComunsWidgets.context = context;
-    this.preencherVariaveisParaEdicao();
+    this.InicializarVariaveis();
     return this.criarHome();
   }
 
-  void preencherVariaveisParaEdicao(){
+  String validarCampoNome(String valor) {
+    String msg = Tarefa.validarNome( valor );
+    return ( msg.length > 0 ? msg : null );
+  }
+
+  void InicializarVariaveis(){
+    this.campoNome = new CampoDeTextoWidget("Nome da Tarefa", 1, this.validarCampoNome );
+    this.campoDescricao = new CampoDeTextoWidget("Descrição da tarefa", 6, null );
+    this._inicializarTarefa();
+  }
+
+  void _inicializarTarefa(){
     Tarefa tarefa = this.widget.tarefaAtual;
     if( tarefa != null ){
       this.campoNome.setText( tarefa.nome );
@@ -110,70 +122,3 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
 
 }
 
-class _CampoNomeTarefaDefinicao{
-
-  TextEditingController campoController = new TextEditingController();
-
-  String getText(){
-    return this.campoController.text;
-  }
-
-  void setText(String valor){
-    this.campoController.text = valor;
-  }
-
-  Widget getWidget(){
-    return new TextFormField( keyboardType: TextInputType.text
-        , decoration: new InputDecoration(
-            labelText: "Nome da Tarefa:",
-            labelStyle: Estilos.textStyleLabelTextFormField,
-            border: new OutlineInputBorder()
-        ),
-        style: Estilos.textStyleListaPaginaInicial,
-        controller: this.campoController,
-        validator: this.validar
-    );
-  }
-
-  String validar(String valor){
-    String msg = Tarefa.validarNome( valor );
-    return ( msg.length > 0 ? msg : null );
-  }
-}
-
-
-class _CampoDescricaoTarefaDefinicao{
-
-  TextEditingController campoController = new TextEditingController();
-
-  String getText(){
-    return this.campoController.text;
-  }
-
-  void setText(String valor){
-    this.campoController.text = valor;
-  }
-
-  Widget getWidget(){
-    return new TextFormField(
-        maxLines: 6,
-        keyboardType: TextInputType.text,
-        decoration: new InputDecoration(
-            labelText: "Descrição da Tarefa:",
-            labelStyle: Estilos.textStyleLabelTextFormField,
-            border: new OutlineInputBorder()
-        ),
-        style: Estilos.textStyleListaPaginaInicial,
-        controller: this.campoController,
-        validator: this.validar
-    );
-  }
-
-  String validar(String valor){
-//    if( valor.length > Tarefa.LIMITE_TAMANHO_NOME){
-//      return "O nome da tarefa não pode ter mais de 20 caracteres.";
-//    }
-    // TODO Impleemntar alguma validação
-    return null;
-  }
-}
