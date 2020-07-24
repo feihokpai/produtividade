@@ -97,7 +97,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     //##########################################################################
     try{
       if( this.globalKey.currentState.validate() ) {
-        Tarefa tarefa = this.widget.tarefaAtual ?? new Tarefa("", "");
+        Tarefa tarefa = this.widget.tarefaAtual ?? new Tarefa("sem nome", "");
         tarefa.nome = this.campoNome.getText();
         tarefa.descricao = this.campoDescricao.getText();
         this.controlador.salvarTarefa(tarefa);

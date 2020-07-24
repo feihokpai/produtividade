@@ -27,7 +27,7 @@ class Controlador{
   }
 
   void salvarTarefa( Tarefa tarefa ){
-    if( tarefa.id == null ) {
+    if( tarefa.id == 0 ) {
       tarefa.id = this._getProximoIdTarefaDisponivel();
       this.tarefas.add(tarefa);
     }else{

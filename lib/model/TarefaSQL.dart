@@ -20,7 +20,7 @@ class TarefaSQL{
       TarefaSQL.DESCRICAO_COLUNA: tarefa.descricao,
       TarefaSQL.STATUS_COLUNA: tarefa.status,
       TarefaSQL.ARQUIVADA_COLUNA: (tarefa.arquivada? 1 : 0 ),
-      TarefaSQL.TAREFA_PAI_COLUNA: ( tarefa.tarefaPai != null? tarefa.tarefaPai.id : null ),
+      TarefaSQL.TAREFA_PAI_COLUNA: ( tarefa.tarefaPai != null? tarefa.tarefaPai.id : 0 ),
       TarefaSQL.DATA_CADASTRO_COLUNA: ( dataCadastro ),
       TarefaSQL.DATA_CONCLUSAO_COLUNA: ( dataConclusao ),
     };
