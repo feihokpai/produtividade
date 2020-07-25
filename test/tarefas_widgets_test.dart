@@ -68,9 +68,9 @@ void main() {
     tarefas.addAll(gerarNTarefas(3));
     await tester.pumpWidget(makeTestable(new ListaDeTarefasTela()));
     //__________________________________________________________________________
-    //Teste de encontrar todos os IconButton da tela.
+    //Teste de encontrar todos os IconButton da tela. São 2(add e menu lateral) + 2 ícones para cada tarefa.
     Finder botoesFinder = find.byType(IconButton);
-    expect(botoesFinder, findsNWidgets(1 + (2 * tarefas.length)));
+    expect(botoesFinder, findsNWidgets(2 + (2 * tarefas.length)));
     //__________________________________________________________________________
     //Teste de encontrar um ícone de lápis para cada tarefa.
     botoesFinder = find.byIcon( Icons.edit );

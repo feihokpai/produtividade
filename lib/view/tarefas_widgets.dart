@@ -8,6 +8,7 @@ class ListaDeTarefasTela extends StatefulWidget {
 
   static String KEY_STRING_ICONE_LAPIS = "lapis";
   static String KEY_STRING_ICONE_RELOGIO = "relogio";
+  static String KEY_STRING_ICONE_ADD_TAREFA = "add_tarefa";
 
   @override
   _ListaDeTarefasTelaState createState() => _ListaDeTarefasTelaState();
@@ -31,7 +32,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     return scaffold1;
   }
 
-  Widget gerarConteudoCentral() {
+  Widget gerarListaViewDasTarefas(){
     List<Tarefa> tarefas = this.controlador.getListaDeTarefas();
     return new ListView.builder(
       scrollDirection: Axis.vertical,
@@ -43,7 +44,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
         String strKeyLapis = "${ListaDeTarefasTela.KEY_STRING_ICONE_LAPIS}${tarefa.id}";
         String strKeyRelogio = "${ListaDeTarefasTela.KEY_STRING_ICONE_RELOGIO}${tarefa.id}";
         return new SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
+            scrollDirection: Axis.horizontal,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: new Row(
@@ -78,6 +79,27 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     );
   }
 
+  Widget gerarConteudoCentral() {
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: new Text( "Tarefas em andamento",
+              style: Estilos.textStyleListaTituloDaPagina,
+              key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
+        ),
+        this.gerarListaViewDasTarefas(),
+        new IconButton(
+          key: new ValueKey( ListaDeTarefasTela.KEY_STRING_ICONE_ADD_TAREFA ),
+          icon: new Icon(Icons.add, size:50),
+          onPressed: this.clicouNoIconeAddTarefa,
+        ),
+      ],
+    );
+  }
+
   void clicouNoLapis(Tarefa tarefaParaEditar) {
     print("Clicou no lápis");
     ComunsWidgets.mudarParaPaginaEdicaoDeTarefas(tarefa: tarefaParaEditar);
@@ -85,5 +107,9 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   void clicouNoRelogio() {
     print("Clicou no relógio");
+  }
+
+  void clicouNoIconeAddTarefa(){
+    ComunsWidgets.mudarParaPaginaEdicaoDeTarefas( );
   }
 }
