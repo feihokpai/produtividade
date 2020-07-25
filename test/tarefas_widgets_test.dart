@@ -97,7 +97,10 @@ void main() {
     // Teste para verificar se após clicar no lápis está direcionando para a tela de edição de tarefas.
     await tester.tap(botoesFinder).then((value) {
       tester.pump().then((value) {
-        expect(ComunsWidgets.context.widget.runtimeType, TarefasEdicaoTela);
+        Widget widget = ComunsWidgets.context.widget;
+        expect( widget.runtimeType, TarefasEdicaoTela);
+        TarefasEdicaoTela widget2 = widget as TarefasEdicaoTela;
+        expect( widget2.tarefaAtual, isNotNull );
         //      print( "Widget do contexto: ${ComunsWidgets.context.widget}" );
       });
     });
@@ -114,7 +117,10 @@ void main() {
     // Teste para verificar se ao clicar no ícone de ADD direciona para a página de edição
     tester.tap( botaoAddFinder ).then((value) {
       tester.pump().then((value) {
-        expect(ComunsWidgets.context.widget.runtimeType, TarefasEdicaoTela);
+        Widget widget = ComunsWidgets.context.widget;
+        expect( widget.runtimeType, TarefasEdicaoTela);
+        TarefasEdicaoTela widget2 = widget as TarefasEdicaoTela;
+        expect( widget2.tarefaAtual, null );
       });
     });
   });
