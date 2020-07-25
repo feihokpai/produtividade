@@ -5,6 +5,10 @@ import 'package:registro_produtividade/view/comuns_widgets.dart';
 import 'package:registro_produtividade/view/estilos.dart';
 
 class ListaDeTarefasTela extends StatefulWidget {
+
+  static String KEY_STRING_ICONE_LAPIS = "lapis";
+  static String KEY_STRING_ICONE_RELOGIO = "relogio";
+
   @override
   _ListaDeTarefasTelaState createState() => _ListaDeTarefasTelaState();
 }
@@ -36,6 +40,8 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
       itemCount: tarefas.length,
       itemBuilder: (context, indice) {
         Tarefa tarefa = tarefas[indice];
+        String strKeyLapis = "${ListaDeTarefasTela.KEY_STRING_ICONE_LAPIS}${tarefa.id}";
+        String strKeyRelogio = "${ListaDeTarefasTela.KEY_STRING_ICONE_RELOGIO}${tarefa.id}";
         return new SingleChildScrollView(
           scrollDirection: Axis.horizontal,
             child: Padding(
@@ -52,6 +58,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                     child: new IconButton(
+                      key: new ValueKey( strKeyLapis ),
                       icon: new Icon(Icons.edit),
                       onPressed: () {
                         this.clicouNoLapis(tarefa);
@@ -59,6 +66,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
                     ),
                   ),
                   new IconButton(
+                    key: new ValueKey( strKeyRelogio ),
                     icon: new Icon(Icons.alarm),
                     onPressed: this.clicouNoRelogio,
                   ),

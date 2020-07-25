@@ -8,6 +8,8 @@ class ComunsWidgets {
 
   static BuildContext context;
 
+  static String KEY_STRING_TITULO_PAGINA = "titulo_pagina";
+
   static Widget criarBarraSuperior() {
     AppBar barraSuperior = new AppBar(
         title: new Text("Registro de Produtividade"),
