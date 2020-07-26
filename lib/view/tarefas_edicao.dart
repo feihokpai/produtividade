@@ -10,6 +10,12 @@ class TarefasEdicaoTela extends StatefulWidget {
 
   Tarefa tarefaAtual;
 
+  static final String KEY_STRING_BOTAO_SALVAR = "saveButton";
+  static final String KEY_STRING_BOTAO_VOLTAR = "backButton";
+  static final String KEY_STRING_BOTAO_DELETAR = "deleteButton";
+  static final String KEY_STRING_CAMPO_NOME = "nameTextField";
+  static final String KEY_STRING_CAMPO_DESCRICAO = "descriptionTextField";
+
   TarefasEdicaoTela();
 
   TarefasEdicaoTela.modoEdicao( Tarefa tarefa ){
@@ -41,7 +47,9 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
 
   void InicializarVariaveis(){
     this.campoNome = new CampoDeTextoWidget("Nome da Tarefa", 1, this.validarCampoNome );
+    this.campoNome.setKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME );
     this.campoDescricao = new CampoDeTextoWidget("Descrição da tarefa", 6, null );
+    this.campoDescricao.setKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_DESCRICAO );
     this._inicializarTarefa();
   }
 
@@ -63,7 +71,14 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   Widget gerarConteudoCentral() {
+    String tituloInicial = (this.widget.tarefaAtual == null) ? "Cadastro de uma nova Tarefa" : "Edição de uma Tarefa";
     return new Column(children: <Widget>[
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: new Text( tituloInicial,
+            style: Estilos.textStyleListaTituloDaPagina,
+            key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
+      ),
       new Form(
         key: this.globalKey,
         child: new Column(
@@ -82,11 +97,13 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: new RaisedButton(
+                    key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
                     onPressed: this.pressionouSalvar,
                     child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
                     color: Colors.blue,),
                 ),
                 new RaisedButton(
+                  key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
                   onPressed: this.pressionouVoltar,
                   child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
                   color: Colors.blue,),
@@ -99,7 +116,14 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     //Form formulario = new Form( child: coluna, key: this.globalKey );
   }
 
+  void resetarVariaveis() {
+    this.widget.tarefaAtual = null;
+    this.campoNome.setText("");
+    this.campoDescricao.setText("");
+  }
+
   void pressionouVoltar(){
+    this.resetarVariaveis();
     ComunsWidgets.mudarParaPaginaInicial();
   }
 
@@ -119,6 +143,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
       print(ex);
     }
   }
+
+
 
 }
 
