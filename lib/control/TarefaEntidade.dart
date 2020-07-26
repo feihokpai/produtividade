@@ -35,7 +35,7 @@ class Tarefa{
 
   void set id( int valor ){
     if( valor <= 0 ){
-      throw new Exception("Não pode setar um valor abaixo de zero (${valor}) para o id de uma tarefa ");
+      throw new Exception("Não pode setar um valor menor ou igual a zero (${valor}) para o id de uma tarefa ");
     }
     this._id = valor;
   }
@@ -58,6 +58,12 @@ class Tarefa{
     }
     if( valor.length > Tarefa.LIMITE_TAMANHO_NOME ){
       return "Nome inválido. Tamanho ${valor.length}. Máximo permitido ${Tarefa.LIMITE_TAMANHO_NOME} caracteres.";
+    }
+    if( valor.trim().length == 0 ){
+      return "Nome inválido. Não pode iniciar com espaços e precisa começar com uma letra";
+    }
+    if( !valor.startsWith( new RegExp(r'[A-Z]|[a-z]') ) ){
+      return "Nome inválido. Precisa começar com uma letra";
     }
     return "";
   }

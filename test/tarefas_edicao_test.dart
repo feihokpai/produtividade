@@ -81,7 +81,7 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
     });
 
     super.criarTeste("Modo Cadastro: Botão Salvar com nome esquisito, mas válido: passa na validação?", new TarefasEdicaoTela(), () {
-      super.setValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME , "87d2..__%*@");
+      super.setValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME , "a87*2..__%*@");
       super.tapWidgetWithKeyString(TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR, () {
         this.testarValidacao( true );
       });
@@ -202,7 +202,7 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
       });
     });
 
-    super.criarTeste("Modo Edição: Botão Salvar com nome sem letras: NÃO passa na validação?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
+    super.criarTeste("Modo Edição: Botão Salvar com nome sem iniciar em letra: NÃO passa na validação?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
       super.setValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME , "2836__##87" );
       super.tapWidgetWithKeyString(TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR, () {
         this.testarValidacao( false );
@@ -210,7 +210,7 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
     });
     /// TODO Testar o que acontece se o usuário preencher algum caractere que é relevante numa string como '"' ou '%' ou '$'
 
-    super.criarTeste("Modo Edição: Botão Salvar com nome sem letras: NÃO passa pra página inicial?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
+    super.criarTeste("Modo Edição: Botão Salvar com nome sem iniciar em letra: NÃO passa pra página inicial?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
       super.setValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME , "2836__##87" );
       super.tapWidgetWithKeyString(TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR, () {
         expect( ComunsWidgets.context.widget.runtimeType, TarefasEdicaoTela );
@@ -218,14 +218,14 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
     });
 
     super.criarTeste("Modo Edição: Botão Salvar com nome estranho, mas válido: passa na validação?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
-      super.setValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME , "28e36__##87" );
+      super.setValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME , "U28e36__##87" );
       super.tapWidgetWithKeyString(TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR, () {
         this.testarValidacao( true );
       });
     });
 
     super.criarTeste("Modo Edição: Botão Salvar com nome estranho, mas válido: passa pra página inicial?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
-      super.setValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME , "28e36__##87" );
+      super.setValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME , "u28e36__##87" );
       super.tapWidgetWithKeyString(TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR, () {
         expect( ComunsWidgets.context.widget.runtimeType, ListaDeTarefasTela );
       });
