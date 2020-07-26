@@ -36,6 +36,10 @@ class Controlador{
     print( "Quantidade de tarefas depois da inserção: ${tarefas.length}" );
   }
 
+  void deletarTarefa(Tarefa tarefa){
+    this.getListaDeTarefas().removeWhere( (tarefaAtual) => tarefaAtual.id == tarefa.id );
+  }
+
   int _getProximoIdTarefaDisponivel() {
     int maior = 0;
     this.getListaDeTarefas().forEach( (tarefa) {

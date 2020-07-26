@@ -70,49 +70,70 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     return scaffold1;
   }
 
+  Widget gerarBotaoDeletar(){
+    Widget item = new Padding( padding: const EdgeInsets.all(8.0) );
+    if( this.widget.tarefaAtual != null ) {
+      item = new Padding(
+        padding: EdgeInsets.fromLTRB(60, 0, 0, 0),
+        child: new RaisedButton(
+          key: new ValueKey(TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR),
+          onPressed: this.pressionouDeletar,
+          child: new Text("Deletar", style: Estilos.textStyleBotaoFormulario),
+          color: Colors.blue,
+        )
+      );
+    }
+    return item;
+  }
+
   Widget gerarConteudoCentral() {
     String tituloInicial = (this.widget.tarefaAtual == null) ? "Cadastro de uma nova Tarefa" : "Edição de uma Tarefa";
-    return new Column(children: <Widget>[
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: new Text( tituloInicial,
-            style: Estilos.textStyleListaTituloDaPagina,
-            key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
-      ),
-      new Form(
-        key: this.globalKey,
-        child: new Column(
+    return new SingleChildScrollView(
+      child: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: this.campoNome.getWidget(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: this.campoDescricao.getWidget(),
-            ),
-            new Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: new RaisedButton(
-                    key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
-                    onPressed: this.pressionouSalvar,
-                    child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
-                    color: Colors.blue,),
-                ),
-                new RaisedButton(
-                  key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
-                  onPressed: this.pressionouVoltar,
-                  child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
-                  color: Colors.blue,),
-              ],
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: new Text( tituloInicial,
+              style: Estilos.textStyleListaTituloDaPagina,
+              key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
         ),
-      ),
-    ]);
+        new Form(
+          key: this.globalKey,
+          child: new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: this.campoNome.getWidget(),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: this.campoDescricao.getWidget(),
+              ),
+              new Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: new RaisedButton(
+                      key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
+                      onPressed: this.pressionouSalvar,
+                      child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
+                      color: Colors.blue,),
+                  ),
+                  new RaisedButton(
+                    key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
+                    onPressed: this.pressionouVoltar,
+                    child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
+                    color: Colors.blue,),
+                  this.gerarBotaoDeletar(),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ]),
+    );
     //Form formulario = new Form( child: coluna, key: this.globalKey );
   }
 
@@ -120,6 +141,16 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     this.widget.tarefaAtual = null;
     this.campoNome.setText("");
     this.campoDescricao.setText("");
+  }
+
+  void pressionouDeletar() async{
+    ComunsWidgets.exibirDialogConfirmacao( this.context , "Tem certeza que deseja deletar essa tarefa?"
+        , "Essa ação não pode ser desfeita").then( (resposta) {
+      if( resposta == 1  ){
+        this.controlador.deletarTarefa( this.widget.tarefaAtual );
+        ComunsWidgets.mudarParaPaginaInicial();
+      }
+    });
   }
 
   void pressionouVoltar(){

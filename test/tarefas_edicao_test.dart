@@ -231,15 +231,8 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
       });
     });
 
-    super.criarTeste("Modo Edição: Botão Deletar fica visível?", new TarefasEdicaoTela(), () {
-      super.findOneByKeyString( TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR );
-    });
+    this.testesBotaoDeletar();
 
-    super.criarTeste("Modo Edição: Botão Deletar volta pra página inicial?", new TarefasEdicaoTela(), () {
-      super.tapWidgetWithKeyString( TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR , () {
-        expect( ComunsWidgets.context.widget.runtimeType, ListaDeTarefasTela );
-      });
-    });
   }
 
   void testeModoEdicaoPreenchimentoObjetoTarefa() {
@@ -288,6 +281,44 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
         expect( campoNome.controller.text.length, 0);
         expect( campoDescricao.controller.text.length, 0);
         expect( telaVoltarClear.tarefaAtual, null);
+      });
+    });
+  }
+
+  void testesBotaoDeletar() {
+    Finder finderBotaoDeletar;
+    super.criarTeste("Modo Edição: Botão Deletar fica visível?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
+      finderBotaoDeletar = super.findOneByKeyString( TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR );
+    });
+
+    super.criarTeste("Modo Edição: Botão Deletar- abre Popup?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
+      super.tapWidgetWithKeyString( TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR, () {
+        Finder finder = find.byType( AlertDialog );
+        expect( finder , findsOneWidget );
+      });
+    });
+
+    super.criarTeste("Modo Edição: Botão Deletar- Clicar não no popup mantem na tela?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
+      super.tapWidgetWithKeyString( TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR, () {
+        Finder finder = find.byType( AlertDialog );
+        expect( finder , findsOneWidget );
+        super.findOneByKeyString( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG );
+        super.findOneByKeyString( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG );
+        super.tapWidgetWithKeyString( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , () {
+          expect( ComunsWidgets.context.widget.runtimeType, TarefasEdicaoTela );
+        });
+      });
+    });
+
+    super.criarTeste("Modo Edição: Botão Deletar- Clicar sim no popup direciona pra tela inicial?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
+      super.tapWidgetWithKeyString( TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR, () {
+        Finder finder = find.byType( AlertDialog );
+        expect( finder , findsOneWidget );
+        super.findOneByKeyString( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG );
+        super.findOneByKeyString( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG );
+        super.tapWidgetWithKeyString( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG , () {
+          expect( ComunsWidgets.context.widget.runtimeType, ListaDeTarefasTela );
+        });
       });
     });
   }
