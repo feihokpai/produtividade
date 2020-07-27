@@ -23,4 +23,12 @@ class DataHoraUtil{
   static DateTime converterDateTimeStringSqllitearaDateTime( String valor ){
     return formatterSqllite.parse( valor );
   }
+
+  /**     Cria uma DateTime que corresponde ao dia de amanhã às 00:00:10. É útil principalmente
+   * para testes.*/
+  static DateTime criarDataAmanhaInicioDoDia(){
+    DateTime amanha = DateTime.now().add( new Duration( days: 1 ) );
+    DateTime amanhaInicioDia = amanha.subtract( new Duration( hours: amanha.hour, minutes: amanha.minute, seconds: (amanha.second-10) ) );
+    return amanhaInicioDia;
+  }
 }
