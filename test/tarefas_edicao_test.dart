@@ -5,7 +5,7 @@ import 'package:registro_produtividade/view/comuns_widgets.dart';
 import 'package:registro_produtividade/view/tarefas_edicao.dart';
 import 'package:registro_produtividade/view/tarefas_widgets.dart';
 
-import 'TestesDeWidget.dart';
+import 'WidgetTestsUtil.dart';
 
 void main(){
   new TarefasEdicaoTelaTeste("Cadastro/edição de tarefas" ).runAll();
