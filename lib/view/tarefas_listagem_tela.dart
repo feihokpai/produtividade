@@ -3,6 +3,7 @@ import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comuns_widgets.dart';
 import 'package:registro_produtividade/view/estilos.dart';
+import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 
 class ListaDeTarefasTela extends StatefulWidget {
 
@@ -69,7 +70,9 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
                   new IconButton(
                     key: new ValueKey( strKeyRelogio ),
                     icon: new Icon(Icons.alarm),
-                    onPressed: this.clicouNoRelogio,
+                    onPressed: (){
+                      this.clicouNoRelogio(tarefa);
+                    },
                   ),
                 ],
               ),
@@ -105,8 +108,8 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     ComunsWidgets.mudarParaPaginaEdicaoDeTarefas(tarefa: tarefaParaEditar);
   }
 
-  void clicouNoRelogio() {
-    print("Clicou no relógio");
+  void clicouNoRelogio(Tarefa tarefaParaEditar) {
+    ComunsWidgets.mudarParaTela( new ListaDeTempoDedicadoTela( tarefaParaEditar ) );
   }
 
   void clicouNoIconeAddTarefa(){

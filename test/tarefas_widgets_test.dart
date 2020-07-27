@@ -3,8 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comuns_widgets.dart';
-import 'package:registro_produtividade/view/tarefas_edicao.dart';
-import 'package:registro_produtividade/view/tarefas_widgets.dart';
+import 'package:registro_produtividade/view/registros_listagem_tela.dart';
+import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
+import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
 // Função auxiliar para envolver os widgets a serem testados.
 
@@ -81,6 +82,8 @@ void main() {
     expect( botoesFinder, findsNWidgets( tarefas.length ) );
   });
 
+
+
   testWidgets('Tela inicial - Ícone Lápis existe e direciona para tela de edição?',
   (WidgetTester tester) async {
     Controlador controlador = new Controlador();
@@ -105,6 +108,31 @@ void main() {
       });
     });
   });
+
+  testWidgets('Tela inicial - Ícone Relógio existe e direciona para tela de Listagem de Tempo dedicado?',
+          (WidgetTester tester) async {
+        Controlador controlador = new Controlador();
+        List<Tarefa> tarefas = controlador.getListaDeTarefas();
+        tarefas.clear();
+        tarefas.addAll(gerarNTarefas(1));
+        await tester.pumpWidget(makeTestable(new ListaDeTarefasTela()));
+        //__________________________________________________________________________
+        // Teste para verificar se foi criado um ícone de lápis.
+        String stringKey = "${ListaDeTarefasTela.KEY_STRING_ICONE_RELOGIO}${tarefas[0].id}";
+        Finder botoesFinder = find.byKey(ValueKey(stringKey));
+        expect( botoesFinder, findsOneWidget );
+        //__________________________________________________________________________
+        // Teste para verificar se após clicar no lápis está direcionando para a tela de edição de tarefas.
+        await tester.tap(botoesFinder).then((value) {
+          tester.pump().then((value) {
+            Widget widget = ComunsWidgets.context.widget;
+            expect( widget.runtimeType, ListaDeTempoDedicadoTela );
+            ListaDeTempoDedicadoTela widget2 = widget as ListaDeTempoDedicadoTela;
+            expect( widget2.tarefaAtual, isNotNull );
+            //      print( "Widget do contexto: ${ComunsWidgets.context.widget}" );
+          });
+        });
+      });
 
   testWidgets('Tela inicial - Ícone ADD nova tarefa existe e funciona?',
       (WidgetTester tester) async {
