@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/view/comuns_widgets.dart';
-import 'package:registro_produtividade/view/estilos.dart';
+import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
+import 'package:registro_produtividade/view/comum/estilos.dart';
+import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 
 class ListaDeTarefasTela extends StatefulWidget {
 
@@ -69,7 +70,9 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
                   new IconButton(
                     key: new ValueKey( strKeyRelogio ),
                     icon: new Icon(Icons.alarm),
-                    onPressed: this.clicouNoRelogio,
+                    onPressed: (){
+                      this.clicouNoRelogio(tarefa);
+                    },
                   ),
                 ],
               ),
@@ -81,22 +84,25 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   Widget gerarConteudoCentral() {
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: new Text( "Tarefas em andamento",
-              style: Estilos.textStyleListaTituloDaPagina,
-              key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
-        ),
-        this.gerarListaViewDasTarefas(),
-        new IconButton(
-          key: new ValueKey( ListaDeTarefasTela.KEY_STRING_ICONE_ADD_TAREFA ),
-          icon: new Icon(Icons.add, size:50),
-          onPressed: this.clicouNoIconeAddTarefa,
-        ),
-      ],
+    return WillPopScope(
+      onWillPop: pedirConfirmacaoAntesDeFechar,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: new Text( "Tarefas em andamento",
+                style: Estilos.textStyleListaTituloDaPagina,
+                key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
+          ),
+          this.gerarListaViewDasTarefas(),
+          new IconButton(
+            key: new ValueKey( ListaDeTarefasTela.KEY_STRING_ICONE_ADD_TAREFA ),
+            icon: new Icon(Icons.add, size:50),
+            onPressed: this.clicouNoIconeAddTarefa,
+          ),
+        ],
+      ),
     );
   }
 
@@ -105,11 +111,21 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     ComunsWidgets.mudarParaPaginaEdicaoDeTarefas(tarefa: tarefaParaEditar);
   }
 
-  void clicouNoRelogio() {
-    print("Clicou no relógio");
+  void clicouNoRelogio(Tarefa tarefaParaEditar) {
+    ComunsWidgets.mudarParaTela( new ListaDeTempoDedicadoTela( tarefaParaEditar ) );
   }
 
   void clicouNoIconeAddTarefa(){
     ComunsWidgets.mudarParaPaginaEdicaoDeTarefas( );
+  }
+
+  Future<bool> pedirConfirmacaoAntesDeFechar(){
+    ComunsWidgets.exibirDialogConfirmacao(this.context,
+        "Você deseja sair do aplicativo?", "").then((resposta) {
+       if( resposta == 1 ){
+         Navigator.of(this.context).pop(true);
+         return true;
+       }
+    });
   }
 }
