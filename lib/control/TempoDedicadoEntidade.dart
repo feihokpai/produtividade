@@ -14,6 +14,14 @@ class TempoDedicado{
     this.inicio = inicio;
     this.id = id;
   }
+  ///     Retorna a duração deste registro em minutos. Caso não tenha sido registrado um horário de fim
+  /// retorna -1.
+  int getDuracaoEmMinutos(){
+    if( this.fim != null ){
+      return this.fim.difference( this.inicio ).inMinutes;
+    }
+    return -1;
+  }
 
   int get id => this._id;
 
@@ -54,7 +62,7 @@ class TempoDedicado{
     if( valor.id == 0 ){
       throw new Exception("Não pode criar um registro de tempo dedicado sem associar a ele uma Tarefa com id=0.");
     }
-    this._tarefa = tarefa;
+    this._tarefa = valor;
   }
 
 }

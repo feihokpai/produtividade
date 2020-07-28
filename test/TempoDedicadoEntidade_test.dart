@@ -106,5 +106,18 @@ class TempoDedicadoEntidadeTest extends ProdutividadeTestsUtil{
       DateTime umSegundoAntes = agora.subtract( new Duration(seconds: 1) );
       expect( () => td.fim = umSegundoAntes, throwsException );
     });
+
+    test("Tempo dedicado: (duracaoEmMinutos) Calcula corretamente?", (){
+      DateTime agora = new DateTime.now();
+      TempoDedicado td = new TempoDedicado( this.criarTarefaValida(), inicio: agora );
+      td.fim = agora.add( new Duration(minutes: 20) );
+      expect( td.getDuracaoEmMinutos(), 20 );
+      td.fim = agora.add( new Duration(minutes: 20,seconds: 59) );
+      expect( td.getDuracaoEmMinutos(), 20 );
+      td.fim = agora.add( new Duration(minutes: 19,seconds: 59) );
+      expect( td.getDuracaoEmMinutos(), 19 );
+      td.fim = agora.add( new Duration(hours: 1,minutes: 25, seconds: 59) );
+      expect( td.getDuracaoEmMinutos(), 85 );
+    });
   }
 }
