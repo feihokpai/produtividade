@@ -79,9 +79,7 @@ class ComunsWidgets {
                   ])),
           ComunsWidgets.gerarItemMenuDrawer("Tarefas abertas", Icons.message, ComunsWidgets.mudarParaPaginaInicial),
           ComunsWidgets.gerarItemMenuDrawer("Criação de Tarefas", Icons.add, ComunsWidgets.mudarParaPaginaEdicaoDeTarefas),
-          ComunsWidgets.gerarItemMenuDrawer("Registro de tempo dedicado", Icons.alarm, null),
           ComunsWidgets.gerarItemMenuDrawer("Configurações", Icons.settings, null),
-          ComunsWidgets.gerarItemMenuDrawer("Sair", Icons.add_to_home_screen, ComunsWidgets.sairDoAplicativo),
         ],
       ),
     );
