@@ -5,7 +5,7 @@ import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
-import 'package:registro_produtividade/view/comuns_widgets.dart';
+import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/registros_cadastro_tela.dart';
 import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 

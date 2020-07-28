@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import 'package:registro_produtividade/view/estilos.dart';
+import 'package:registro_produtividade/view/comum/estilos.dart';
 
 class CampoDeTextoWidget{
 

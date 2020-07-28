@@ -2,8 +2,8 @@ import "package:flutter/material.dart";
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
-import 'package:registro_produtividade/view/comuns_widgets.dart';
-import 'package:registro_produtividade/view/estilos.dart';
+import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
+import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
 class TarefasEdicaoTela extends StatefulWidget {
