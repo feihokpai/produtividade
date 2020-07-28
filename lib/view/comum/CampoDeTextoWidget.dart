@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import 'package:registro_produtividade/view/estilos.dart';
+import 'package:registro_produtividade/view/comum/estilos.dart';
 
 class CampoDeTextoWidget{
 
@@ -9,11 +9,15 @@ class CampoDeTextoWidget{
   TextStyle _textStyleTexto = Estilos.textStyleListaPaginaInicial;
   TextFormField _widget;
   Key _key;
+  /// Quantidade de linhas do campo de texto.
   int _linhas;
+  /// Máximo de linhas que a mensagem de erro pode ocupar.
+  int _linhasErro = 2;
+  bool editavel = true;
 
   String Function(String) funcaoValidacao;
 
-  CampoDeTextoWidget( String label, int qtdLinhas, String Function(String) validacao, {Key chave} ){
+  CampoDeTextoWidget( String label, int qtdLinhas, String Function(String) validacao, {Key chave, bool editavel=true} ){
     this.linhas = qtdLinhas;
     this.labelCampo = label;
     this.funcaoValidacao = validacao;
@@ -22,6 +26,7 @@ class CampoDeTextoWidget{
     }else{
       this._key = UniqueKey();
     }
+    this.editavel = editavel;
   }
 
   void setKeyString(String valor){
@@ -55,6 +60,15 @@ class CampoDeTextoWidget{
   int get linhas => this._linhas;
   void set linhas(int qtd) => this._linhas = qtd;
 
+  int get linhasErro => this._linhasErro;
+
+  void set linhasErro(int valor){
+    if( this._widget != null ){
+      throw new Exception("O componente já foi criado. Não pode mais alterar o campo errorMaxLines.");
+    }
+    this._linhasErro = linhasErro;
+  }
+
   // Retorna ele próprio ou "" se o valor for null
   String get labelCampo => ( _labelCampo ?? "" );
   void set labelCampo(String valor) => this._labelCampo = valor;
@@ -63,10 +77,13 @@ class CampoDeTextoWidget{
     if( this._widget == null ){
       this._widget = new TextFormField(
         key: this._key,
+        enabled: this.editavel,
         keyboardType: TextInputType.text,
         decoration: new InputDecoration(
+            contentPadding: EdgeInsets.all(10.0),
             labelText: labelCampo,
             labelStyle: this.textStyleLabel,
+            errorMaxLines: this.linhasErro,
             border: new OutlineInputBorder()
         ),
         style: this.textStyleTexto,

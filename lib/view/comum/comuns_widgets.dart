@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/view/tarefas_edicao.dart';
-import 'package:registro_produtividade/view/tarefas_widgets.dart';
+import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
+import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
 class ComunsWidgets {
 
@@ -79,9 +79,7 @@ class ComunsWidgets {
                   ])),
           ComunsWidgets.gerarItemMenuDrawer("Tarefas abertas", Icons.message, ComunsWidgets.mudarParaPaginaInicial),
           ComunsWidgets.gerarItemMenuDrawer("Criação de Tarefas", Icons.add, ComunsWidgets.mudarParaPaginaEdicaoDeTarefas),
-          ComunsWidgets.gerarItemMenuDrawer("Registro de tempo dedicado", Icons.alarm, null),
           ComunsWidgets.gerarItemMenuDrawer("Configurações", Icons.settings, null),
-          ComunsWidgets.gerarItemMenuDrawer("Sair", Icons.add_to_home_screen, ComunsWidgets.sairDoAplicativo),
         ],
       ),
     );
@@ -92,7 +90,7 @@ class ComunsWidgets {
     SystemNavigator.pop();
   }
 
-  static void mudarParaTela( Widget widgetTela ){
+  static Future<void> mudarParaTela( Widget widgetTela ){
     BuildContext contexto = ComunsWidgets.context;
     Navigator.push( contexto , new MaterialPageRoute(builder: (contexto) {
       return widgetTela;
