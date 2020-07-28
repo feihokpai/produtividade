@@ -9,7 +9,10 @@ class CampoDeTextoWidget{
   TextStyle _textStyleTexto = Estilos.textStyleListaPaginaInicial;
   TextFormField _widget;
   Key _key;
+  /// Quantidade de linhas do campo de texto.
   int _linhas;
+  /// Máximo de linhas que a mensagem de erro pode ocupar.
+  int _linhasErro = 2;
   bool editavel = true;
 
   String Function(String) funcaoValidacao;
@@ -57,6 +60,15 @@ class CampoDeTextoWidget{
   int get linhas => this._linhas;
   void set linhas(int qtd) => this._linhas = qtd;
 
+  int get linhasErro => this._linhasErro;
+
+  void set linhasErro(int valor){
+    if( this._widget != null ){
+      throw new Exception("O componente já foi criado. Não pode mais alterar o campo errorMaxLines.");
+    }
+    this._linhasErro = linhasErro;
+  }
+
   // Retorna ele próprio ou "" se o valor for null
   String get labelCampo => ( _labelCampo ?? "" );
   void set labelCampo(String valor) => this._labelCampo = valor;
@@ -71,6 +83,7 @@ class CampoDeTextoWidget{
             contentPadding: EdgeInsets.all(10.0),
             labelText: labelCampo,
             labelStyle: this.textStyleLabel,
+            errorMaxLines: this.linhasErro,
             border: new OutlineInputBorder()
         ),
         style: this.textStyleTexto,
