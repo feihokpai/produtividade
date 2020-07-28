@@ -10,10 +10,11 @@ class CampoDeTextoWidget{
   TextFormField _widget;
   Key _key;
   int _linhas;
+  bool editavel = true;
 
   String Function(String) funcaoValidacao;
 
-  CampoDeTextoWidget( String label, int qtdLinhas, String Function(String) validacao, {Key chave} ){
+  CampoDeTextoWidget( String label, int qtdLinhas, String Function(String) validacao, {Key chave, bool editavel=true} ){
     this.linhas = qtdLinhas;
     this.labelCampo = label;
     this.funcaoValidacao = validacao;
@@ -22,6 +23,7 @@ class CampoDeTextoWidget{
     }else{
       this._key = UniqueKey();
     }
+    this.editavel = editavel;
   }
 
   void setKeyString(String valor){
@@ -63,8 +65,10 @@ class CampoDeTextoWidget{
     if( this._widget == null ){
       this._widget = new TextFormField(
         key: this._key,
+        enabled: this.editavel,
         keyboardType: TextInputType.text,
         decoration: new InputDecoration(
+            contentPadding: EdgeInsets.all(10.0),
             labelText: labelCampo,
             labelStyle: this.textStyleLabel,
             border: new OutlineInputBorder()

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comuns_widgets.dart';
-import 'package:registro_produtividade/view/tarefas_edicao.dart';
-import 'package:registro_produtividade/view/tarefas_widgets.dart';
+import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
+import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
 import 'WidgetTestsUtil.dart';
 

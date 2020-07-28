@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
-import 'package:registro_produtividade/view/tarefas_edicao.dart';
-import 'package:registro_produtividade/view/tarefas_widgets.dart';
+import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
+import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
 void main() {
   print("________________________________");
