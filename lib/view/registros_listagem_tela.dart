@@ -7,6 +7,7 @@ import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/registros_cadastro_tela.dart';
+import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
 class ListaDeTempoDedicadoTela extends StatefulWidget {
 
@@ -78,42 +79,45 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
   }
 
   Widget gerarConteudoCentral() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: new Text( "Registros de Tempo Dedicado",
-                style: Estilos.textStyleListaTituloDaPagina,
-                key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: this.gerarCampoDaTarefa(),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: this.gerarCampoDaDuracaoTotal(),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-                height: 150,
-                decoration: new BoxDecoration(
-                  border: new Border.all(width: 0.5, color: Colors.black, ),
-                  borderRadius: BorderRadius.circular( 4.0 ),
-                ),
-                child: this.gerarListView(),
+    return new WillPopScope(
+      onWillPop: this.voltarParaPaginaAnterior,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new Text( "Registros de Tempo Dedicado",
+                  style: Estilos.textStyleListaTituloDaPagina,
+                  key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
             ),
-          ),
-          new IconButton(
-            key: new ValueKey( ListaDeTempoDedicadoTela.KEY_STRING_BOTAO_NOVO ),
-            icon: new Icon(Icons.add, size:50),
-            onPressed: this.clicouNoBotaoNovoRegistro,
-          ),
-          new Text("Novo Registro", style: Estilos.textStyleListaPaginaInicial,),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: this.gerarCampoDaTarefa(),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: this.gerarCampoDaDuracaoTotal(),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                  height: 150,
+                  decoration: new BoxDecoration(
+                    border: new Border.all(width: 0.5, color: Colors.black, ),
+                    borderRadius: BorderRadius.circular( 4.0 ),
+                  ),
+                  child: this.gerarListView(),
+              ),
+            ),
+            new IconButton(
+              key: new ValueKey( ListaDeTempoDedicadoTela.KEY_STRING_BOTAO_NOVO ),
+              icon: new Icon(Icons.add, size:50),
+              onPressed: this.clicouNoBotaoNovoRegistro,
+            ),
+            new Text("Novo Registro", style: Estilos.textStyleListaPaginaInicial,),
+          ],
+        ),
       ),
     );
   }
@@ -177,7 +181,12 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
         );
   }
 
+  void reiniciarVariaveis(){
+    this.widget.tarefaAtual = null;
+  }
+
   void clicouNoBotaoNovoRegistro() {
+    this.reiniciarVariaveis();
     ComunsWidgets.mudarParaTela( new CadastroTempoDedicadoTela( this.widget.tarefaAtual ) );
   }
 
@@ -193,7 +202,11 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
     });
   }
 
-
-
+  Future<bool> voltarParaPaginaAnterior() {
+    this.reiniciarVariaveis();
+    ComunsWidgets.mudarParaTela( new ListaDeTarefasTela() ).then((value) {
+      return true;
+    });
+  }
 
 }

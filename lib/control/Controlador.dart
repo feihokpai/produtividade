@@ -19,7 +19,10 @@ class Controlador{
 
   List<Tarefa> getListaDeTarefas(){
     if( this.tarefas == null ){
-      Tarefa t1 = new Tarefa("Passear com a Luna", "Todos os dias pela manhã eu preciso passear com a Luna pelas redondezas");
+      Tarefa t1 = new Tarefa("Passear com a Luna", "Todos os dias pela manhã eu preciso passear com a Luna "
+          "pelas redondezas. Aqui estou adicionando muito mais texto, para ver como vai se comportar os text area "
+          "onde esse texto será exibido. Será que dá Bug? O texto ainda tá curto. Precisa crescer mais, mais e "
+          "mais. Ficando gigante, estoura. Será?");
       Tarefa t2 = new Tarefa("Estudar React", "Diariamente estudar React Js para me tornar um mestre");
       t1.id = 1;
       t2.id = 2;

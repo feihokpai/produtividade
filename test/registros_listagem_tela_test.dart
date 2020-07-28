@@ -69,6 +69,13 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtil{
         expect( ComunsWidgets.context.widget.runtimeType, CadastroTempoDedicadoTela );
       });
     });
+
+    ListaDeTempoDedicadoTela telaNovoRegistro = new ListaDeTempoDedicadoTela( this.criarTarefaValida() );
+    super.criarTeste("Botão de Novo Registro, se clicar reseta as variáveis?", telaNovoRegistro, () {
+      super.tapWidgetWithKeyString( ListaDeTempoDedicadoTela.KEY_STRING_BOTAO_NOVO, () {
+        expect( telaNovoRegistro.tarefaAtual, null );
+      });
+    });
   }
 
   void testarListView(){

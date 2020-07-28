@@ -88,51 +88,54 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
 
   Widget gerarConteudoCentral() {
     String tituloInicial = (this.widget.tarefaAtual == null) ? "Cadastro de uma nova Tarefa" : "Edição de uma Tarefa";
-    return new SingleChildScrollView(
-      child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: new Text( tituloInicial,
-              style: Estilos.textStyleListaTituloDaPagina,
-              key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
-        ),
-        new Form(
-          key: this.globalKey,
-          child: new Column(
+    return new WillPopScope(
+      onWillPop: this.voltarParaPaginaAnterior,
+      child: new SingleChildScrollView(
+        child: new Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: this.campoNome.getWidget(),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: this.campoDescricao.getWidget(),
-              ),
-              new Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: new RaisedButton(
-                      key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
-                      onPressed: this.pressionouSalvar,
-                      child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
-                      color: Colors.blue,),
-                  ),
-                  new RaisedButton(
-                    key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
-                    onPressed: this.pressionouVoltar,
-                    child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
-                    color: Colors.blue,),
-                  this.gerarBotaoDeletar(),
-                ],
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: new Text( tituloInicial,
+                style: Estilos.textStyleListaTituloDaPagina,
+                key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
           ),
-        ),
-      ]),
+          new Form(
+            key: this.globalKey,
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: this.campoNome.getWidget(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: this.campoDescricao.getWidget(),
+                ),
+                new Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: new RaisedButton(
+                        key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
+                        onPressed: this.pressionouSalvar,
+                        child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
+                        color: Colors.blue,),
+                    ),
+                    new RaisedButton(
+                      key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
+                      onPressed: this.pressionouVoltar,
+                      child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
+                      color: Colors.blue,),
+                    this.gerarBotaoDeletar(),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ]),
+      ),
     );
     //Form formulario = new Form( child: coluna, key: this.globalKey );
   }
@@ -173,6 +176,13 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     }catch(ex){
       print(ex);
     }
+  }
+
+  Future<bool> voltarParaPaginaAnterior() {
+    this.resetarVariaveis();
+    ComunsWidgets.mudarParaTela( new ListaDeTarefasTela() ).then((value) {
+      return true;
+    });
   }
 
 
