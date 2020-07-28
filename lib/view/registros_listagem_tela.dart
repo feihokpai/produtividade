@@ -78,41 +78,43 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
   }
 
   Widget gerarConteudoCentral() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: new Text( "Registros de Tempo Dedicado",
-              style: Estilos.textStyleListaTituloDaPagina,
-              key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: this.gerarCampoDaTarefa(),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: this.gerarCampoDaDuracaoTotal(),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-              height: 150,
-              decoration: new BoxDecoration(
-                border: new Border.all(width: 0.5, color: Colors.black, ),
-                borderRadius: BorderRadius.circular( 4.0 ),
-              ),
-              child: this.gerarListView(),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: new Text( "Registros de Tempo Dedicado",
+                style: Estilos.textStyleListaTituloDaPagina,
+                key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
           ),
-        ),
-        new IconButton(
-          key: new ValueKey( ListaDeTempoDedicadoTela.KEY_STRING_BOTAO_NOVO ),
-          icon: new Icon(Icons.add, size:50),
-          onPressed: this.clicouNoBotaoNovoRegistro,
-        ),
-        new Text("Novo Registro", style: Estilos.textStyleListaPaginaInicial,),
-      ],
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: this.gerarCampoDaTarefa(),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: this.gerarCampoDaDuracaoTotal(),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+                height: 150,
+                decoration: new BoxDecoration(
+                  border: new Border.all(width: 0.5, color: Colors.black, ),
+                  borderRadius: BorderRadius.circular( 4.0 ),
+                ),
+                child: this.gerarListView(),
+            ),
+          ),
+          new IconButton(
+            key: new ValueKey( ListaDeTempoDedicadoTela.KEY_STRING_BOTAO_NOVO ),
+            icon: new Icon(Icons.add, size:50),
+            onPressed: this.clicouNoBotaoNovoRegistro,
+          ),
+          new Text("Novo Registro", style: Estilos.textStyleListaPaginaInicial,),
+        ],
+      ),
     );
   }
 
