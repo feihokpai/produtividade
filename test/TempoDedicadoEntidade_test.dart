@@ -3,13 +3,11 @@ import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
 
-import 'ProdutividadeTestsUtil.dart';
-
 void main(){
   new TempoDedicadoEntidadeTest().runAll();
 }
 
-class TempoDedicadoEntidadeTest extends ProdutividadeTestsUtil{
+class TempoDedicadoEntidadeTest{
 
   Tarefa criarTarefaValida(){
     Tarefa tarefa = new Tarefa("aaa", "bbb");
