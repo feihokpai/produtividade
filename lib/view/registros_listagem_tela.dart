@@ -50,6 +50,9 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
   }
 
   void inicializarCampoDeTexto(){
+    if( this.widget.tarefaAtual == null ) {
+      return;
+    }
     String nome = this.widget.tarefaAtual.nome;
     String descricao = this.widget.tarefaAtual.descricao;
     Key keyString = new ValueKey( ListaDeTempoDedicadoTela.KEY_STRING_PAINEL_TAREFA );
@@ -185,9 +188,10 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
     this.widget.tarefaAtual = null;
   }
 
-  void clicouNoBotaoNovoRegistro() {
-    this.reiniciarVariaveis();
-    ComunsWidgets.mudarParaTela( new CadastroTempoDedicadoTela( this.widget.tarefaAtual ) );
+  void clicouNoBotaoNovoRegistro() async{
+    ComunsWidgets.mudarParaTela( new CadastroTempoDedicadoTela( this.widget.tarefaAtual ) ).then((value) {
+      this.reiniciarVariaveis();
+    });
   }
 
   void clicouNoIconeDelecao(TempoDedicado registro) {
