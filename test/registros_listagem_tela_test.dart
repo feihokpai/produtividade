@@ -76,6 +76,15 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtil{
         expect( telaNovoRegistro.tarefaAtual, null );
       });
     });
+
+    Tarefa tarefaN2 = this.criarTarefaValida();
+    ListaDeTempoDedicadoTela telaNovoRegistro2 = new ListaDeTempoDedicadoTela( tarefaN2 );
+    super.criarTeste("Botão de Novo Registro. Após redirecionar, repassa a Tarefa pra tela seguinte?", telaNovoRegistro2, () {
+      super.tapWidgetWithKeyString( ListaDeTempoDedicadoTela.KEY_STRING_BOTAO_NOVO, () {
+        CadastroTempoDedicadoTela telaSeguinte = ComunsWidgets.context.widget as CadastroTempoDedicadoTela;
+        expect( telaSeguinte.tarefaAtual , tarefaN2);
+      });
+    });
   }
 
   void testarListView(){
