@@ -61,4 +61,15 @@ class DataHoraUtil{
     int minutos = duracao.inMinutes - (60*horas);
     return "${horas} horas e ${minutos} minutos";
   }
+
+  ///     Recebe um Duration e retorna uma string no formato "00:00:00".
+  static String converterDuracaoFormatoCronometro( Duration duracao ){
+    int horas = duracao.inHours;
+    String horaString = (horas >= 10) ? "$horas" : "0$horas";
+    int minutos = duracao.inMinutes - (60*horas);
+    String minutoString = (minutos >= 10) ? "$minutos" : "0$minutos";
+    int segundos = duracao.inSeconds - (60*minutos) - (3600*horas);
+    String segundoString = (segundos >= 10) ? "$segundos" : "0$segundos";
+    return "${horaString}:${minutoString}:${segundoString}";
+  }
 }

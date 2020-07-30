@@ -80,6 +80,9 @@ class Controlador{
   }
 
   List<TempoDedicado> getTempoDedicado(Tarefa tarefa){
+    if( tarefa == null ){
+      return new List();
+    }
     this._criarRegistrosTempoDedicado();
     List<TempoDedicado> lista = new List();
     this.registrosTempoDedicado.forEach((tempo) {
@@ -112,6 +115,10 @@ class Controlador{
       somatorio += tempo.getDuracaoEmMinutos();
     });
     return somatorio;
+  }
+
+  void salvarTempoDedicado(TempoDedicado tempo) {
+    this.registrosTempoDedicado.add( tempo );
   }
 
 }

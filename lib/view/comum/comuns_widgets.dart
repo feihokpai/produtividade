@@ -90,7 +90,7 @@ class ComunsWidgets {
     SystemNavigator.pop();
   }
 
-  static Future<void> mudarParaTela( Widget widgetTela ){
+  static Future<void> mudarParaTela( Widget widgetTela ) async{
     BuildContext contexto = ComunsWidgets.context;
     Navigator.push( contexto , new MaterialPageRoute(builder: (contexto) {
       return widgetTela;
