@@ -4,6 +4,7 @@ class DataHoraUtil{
 
   static DateFormat formatterDataBrasileira = new DateFormat("dd/MM/yyyy");
   static DateFormat formatterHoraBrasileira = new DateFormat("HH:mm:ss");
+  static DateFormat formatterDataHoraResumidaBrasileira = new DateFormat("dd/MM/yyyy HH:mm");
   static DateFormat formatterHoraResumidaBrasileira = new DateFormat("HH:mm");
   static DateFormat formatterDataHoraBrasileira = new DateFormat("dd/MM/yyyy HH:mm:ss");
   static DateFormat formatterSqllite = new DateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -35,10 +36,23 @@ class DataHoraUtil{
   }
 
   ///     Converte um DateTime para uma string no formato "01/01/2001 09:07:45".
+  @deprecated
   static String converterDateTimeParaDataHoraBr(DateTime dateTime){
     return formatterDataHoraBrasileira.format( dateTime );
   }
 
+  ///     Converte um DateTime para uma string no formato "01/01/2001 09:07:45".
+  static String converterDateTimeParaString(DateTime dateTime, DateFormat formatter){
+    return formatter.format( dateTime );
+  }
+
+  /// [formatter], escolher um dentre os campos estáticos da classe DataHoraUtil
+  static DateTime converterStringDateTime(String dataFormatada, DateFormat formatter){
+    return formatter.parse( dataFormatada );
+  }
+  
+  ///     Converte um DateTime para uma string no formato "01/01/2001 09:07:45".
+  ///
   static String converterDateTimeParaDateStringSqllite( DateTime valor ){
     return formatterSqllite.format( valor );
   }
@@ -53,6 +67,55 @@ class DataHoraUtil{
     DateTime amanha = DateTime.now().add( new Duration( days: 1 ) );
     DateTime amanhaInicioDia = amanha.subtract( new Duration( hours: amanha.hour, minutes: amanha.minute, seconds: (amanha.second-10) ) );
     return amanhaInicioDia;
+  }
+
+  /**     Cria uma DateTime que corresponde ao dia de hoje às 00:00:10. É útil principalmente
+   * para testes.*/
+  static DateTime criarDataHojeInicioDoDia(){
+    DateTime agora = DateTime.now();
+    DateTime hojeInicioDoDia = agora.subtract( new Duration( hours: agora.hour, minutes: agora.minute, seconds: (agora.second-10) ) );
+    return hojeInicioDoDia;
+  }
+
+  /// Cria um DateTime com a data de ontem e com o horário de 23:59.
+  static DateTime criarDataOntemFimDoDia(){
+    DateTime agora = DateTime.now();
+    DateTime ontemMesmoHorarioDeAgora = agora.subtract( new Duration(days: 1) );
+    return DataHoraUtil.criarDataHoraMesmoDiaAs2359( ontemMesmoHorarioDeAgora );
+  }
+
+  static DateTime criarDataHoraMesmoDiaAs2359(DateTime dataHora){
+    return dataHora.add(
+        new Duration(
+            hours: (23-dataHora.hour),
+            minutes: (59-dataHora.minute)
+        )
+    );
+  }
+
+  /// Cria um DateTime com a data de ontem e com o horário de 23:59.
+  static DateTime criarDataHojeFimDoDia(){
+    DateTime agora = DateTime.now();
+    return DataHoraUtil.criarDataHoraMesmoDiaAs2359( agora );
+  }
+
+  ///     Verifica se data1 é uma data de um dia anterior a data2. Ou seja, se data1 for 01/01/2020 23:59
+  /// e data2 for 02/01/2020 00:00, retorna true, porque significa que é uma data de um dia anterior,
+  /// mesmo que a diferença entre elas seja de 1 minuto. Por outro lado, se data1 for 01/01/2020 00:00
+  /// e data2 for 01/01/2020 23:59 retornará false, porque apesar de estarem com 23h59m de diferença,
+  /// ambas as datas estão no mesmo dia.
+  static bool eDataDeDiaAnterior( DateTime data1, DateTime data2 ){
+    assert( data1 != null && data2 != null );
+    if( data1.year < data2.year ){
+      return true;
+    }
+    if( data1.year == data2.year && data1.month < data2.month ){
+      return true;
+    }
+    if( data1.year == data2.year && data1.month == data2.month && data1.day < data2.day ){
+      return true;
+    }
+    return false;
   }
 
   ///     Recebe um Duration e retorna uma string no formato "3 horas e 25 minutos".
