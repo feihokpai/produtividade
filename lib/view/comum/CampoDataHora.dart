@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 
@@ -8,26 +9,27 @@ class CampoDataHora extends CampoDeTextoWidget{
   DateTime _dataMinima;
   DateTime _dataMaxima;
   DateTime _dataSelecionada;
+  DateFormat formatter;
+  static DateFormat formatterPadrao = DataHoraUtil.formatterDataHoraResumidaBrasileira;
 
-  static final String KEY_STRING_CAMPO_HORA_INICIAL = "beginHour";
-  static final String KEY_STRING_DATE_PICKER_INICIAL = "beginHourDatePicker";
-  static final String KEY_STRING_TIME_PICKER_INICIAL = "beginHourTimePicker";
-  static final String KEY_STRING_CAMPO_HORA_FINAL = "endHour";
-  static final String KEY_STRING_DATE_PICKER_FINAL = "endHourDatePicker";
-  static final String KEY_STRING_TIME_PICKER_FINAL = "endHourTimePicker";
-  static final String KEY_STRING_CAMPO_CRONOMETRO = "timerField";
-  static final String KEY_STRING_BOTAO_ENCERRAR = "endButton";
-  static final String KEY_STRING_BOTAO_SALVAR = "saveButton";
-  static final String KEY_STRING_BOTAO_VOLTAR = "returnButton";
+  static String PREFIXO_KEY_STRING_ICONE_DATE_PICKER = "datePicker_";
+  static String PREFIXO_KEY_STRING_ICONE_TIME_PICKER = "timePicker_";
 
   ///Função executada quando mudar o valor preenchido no campo de texto.
   void Function() _onChange;
 
-  CampoDataHora(String label, BuildContext context, {Key chave, DateTime dataMaxima, DateTime dataMinima, void Function() onChange}):super(label, 1, null, chave: chave, editavel: false ){
+  CampoDataHora(String label, BuildContext context, {ValueKey<String> chave, DateTime dataMaxima, DateTime dataMinima,
+      DateFormat dateTimeFormatter, void Function() onChange})
+      : assert( context != null ),
+        assert( dataMaxima == null || dataMinima == null
+            || !(DataHoraUtil.eDataDeDiaAnterior( dataMaxima , dataMinima) )
+        ),
+      super(label, 1, null, chave: chave, editavel: false ){
     this.context = context;
     this.dataMaxima = dataMaxima ?? new DateTime(2030);
     this.dataMinima = dataMinima ?? new DateTime( 1980 );
     this.onChange = onChange;
+    this.formatter = dateTimeFormatter ?? CampoDataHora.formatterPadrao;
   }
 
   void set onChange(void Function() onChange){
@@ -39,7 +41,7 @@ class CampoDataHora extends CampoDeTextoWidget{
   void set dataSelecionada(DateTime dataSelecionada){
     this._dataSelecionada = dataSelecionada;
     if( this.dataSelecionada != null ) {
-      String textoCampo = DataHoraUtil.converterDateTimeParaDataHoraBr( this.dataSelecionada);
+      String textoCampo = this.formatter.format( this.dataSelecionada);
       this.setText(textoCampo);
     }
   }
@@ -64,6 +66,7 @@ class CampoDataHora extends CampoDeTextoWidget{
           if( selecionada == null ) {
             return;
           }
+          this.dataSelecionada ??= new DateTime.now();
           this.dataSelecionada = new DateTime(selecionada.year,
               selecionada.month, selecionada.day, this.dataSelecionada.hour,
               this.dataSelecionada.minute, this.dataSelecionada.second
@@ -80,6 +83,7 @@ class CampoDataHora extends CampoDeTextoWidget{
         return;
       }
       TimeOfDay hora = value;
+      this.dataSelecionada ??= new DateTime.now();
       this.dataSelecionada = new DateTime( this.dataSelecionada.year,
           this.dataSelecionada.month, this.dataSelecionada.day,
           hora.hour,hora.minute, 0
@@ -92,6 +96,9 @@ class CampoDataHora extends CampoDeTextoWidget{
 
   @override
   Widget getWidget(){
+    ValueKey chave = super.key as ValueKey;
+    String keyCalendario = "${CampoDataHora.PREFIXO_KEY_STRING_ICONE_DATE_PICKER}${chave.value}";
+    String keyRelogio = "${CampoDataHora.PREFIXO_KEY_STRING_ICONE_TIME_PICKER}${chave.value}";
     return new Row(
       children: <Widget>[
         Expanded(
@@ -101,6 +108,7 @@ class CampoDataHora extends CampoDeTextoWidget{
         Expanded(
           flex: 1,
           child: new IconButton(
+            key: new ValueKey( keyCalendario ),
             icon: new Icon( Icons.date_range ),
             onPressed: this.exibirCalendario,
           ),
@@ -108,6 +116,7 @@ class CampoDataHora extends CampoDeTextoWidget{
         Expanded(
           flex: 1,
           child: new IconButton(
+            key: new ValueKey( keyRelogio ),
             icon: new Icon( Icons.alarm ),
             onPressed: this.exibirRelogio,
           ),
