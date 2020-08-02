@@ -98,6 +98,11 @@ class TempoDedicadoEntidadeTest{
       expect( new TempoDedicado( this.criarTarefaValida() ).fim , null );
     });
 
+    test("Tempo dedicado: (fim) setter permite data nula?", (){
+      TempoDedicado t = new TempoDedicado( this.criarTarefaValida() );
+      expect( t.fim = null , null );
+    });
+
     test("Tempo dedicado: (fim) setter não permite data anterior a início?", (){
       DateTime agora = new DateTime.now();
       TempoDedicado td = new TempoDedicado( this.criarTarefaValida(), inicio: agora );

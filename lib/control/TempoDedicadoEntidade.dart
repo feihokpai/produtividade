@@ -48,7 +48,7 @@ class TempoDedicado implements Comparable<TempoDedicado>{
   DateTime get fim => this._fim;
 
   set fim(DateTime valor){
-    if( valor.isBefore( this.inicio ) ){
+    if( valor != null && valor.isBefore( this.inicio ) ){
       throw new Exception("Num registro de tempo dedicado o horário de fim deve ser posterior ao de início.");
     }
     this._fim = valor;
