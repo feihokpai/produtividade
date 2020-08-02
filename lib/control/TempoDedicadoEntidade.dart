@@ -1,6 +1,7 @@
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 
-class TempoDedicado{
+class TempoDedicado implements Comparable<TempoDedicado>{
   int _id;
   Tarefa _tarefa;
   DateTime _inicio;
@@ -63,6 +64,23 @@ class TempoDedicado{
       throw new Exception("Não pode criar um registro de tempo dedicado sem associar a ele uma Tarefa com id=0.");
     }
     this._tarefa = valor;
+  }
+
+  @override
+  int compareTo(TempoDedicado other){
+    assert( other != null );
+    if( this == other){
+      return 0;
+    }
+    if( !DataHoraUtil.eDataMesmoDia(this.inicio, other.inicio) ){
+      return this.inicio.isBefore( other.inicio ) ? -1 : 1;
+    }else{
+      if( DataHoraUtil.eMesmoHorarioAteSegundos(this.inicio, other.inicio) ) {
+        return 0;
+      }else{
+        return ( DataHoraUtil.eHorarioAnteriorAteSegundos(this.inicio, other.inicio) ) ? -1 : 1;
+      }
+    }
   }
 
 }

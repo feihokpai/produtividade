@@ -117,5 +117,34 @@ class TempoDedicadoEntidadeTest{
       td.fim = agora.add( new Duration(hours: 1,minutes: 25, seconds: 59) );
       expect( td.getDuracaoEmMinutos(), 85 );
     });
+
+    test("Tempo dedicado: (compare) Retorna -1 com tempo de início menor", (){
+      DateTime agora = DateTime.now();
+      DateTime agoraMais1 = DateTime.now().add( new Duration( seconds: 1 ) );
+      TempoDedicado t1 = new TempoDedicado(this.criarTarefaValida(), inicio: agora);
+      TempoDedicado t2 = new TempoDedicado(this.criarTarefaValida(), inicio: agoraMais1);
+      expect( t1.compareTo(t2) , -1 );
+    });
+
+    test("Tempo dedicado: (compare) Retorna 1 com tempo de início maior", (){
+      DateTime agora = DateTime.now();
+      DateTime agoraMais1 = DateTime.now().add( new Duration( seconds: 1 ) );
+      TempoDedicado t1 = new TempoDedicado(this.criarTarefaValida(), inicio: agora);
+      TempoDedicado t2 = new TempoDedicado(this.criarTarefaValida(), inicio: agoraMais1);
+      expect( t2.compareTo(t1) , 1 );
+    });
+
+    test("Tempo dedicado: (compare) Retorna 0 se objeto tiver mesma hora, minuto e segundo", (){
+      DateTime agora = DateTime.now();
+      DateTime agoraMais1 = DateTime.now().add( new Duration( seconds: 0 ) );
+      TempoDedicado t1 = new TempoDedicado(this.criarTarefaValida(), inicio: agora);
+      TempoDedicado t2 = new TempoDedicado(this.criarTarefaValida(), inicio: agoraMais1);
+      expect( t1.compareTo(t2) , 0 );
+    });
+
+    test("Tempo dedicado: (compare) Retorna 0 se for mesmo objeto", (){
+      TempoDedicado t1 = new TempoDedicado(this.criarTarefaValida(), inicio: DateTime.now());
+      expect( t1.compareTo(t1) , 0 );
+    });
   }
 }

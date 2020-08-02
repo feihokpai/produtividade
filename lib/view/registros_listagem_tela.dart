@@ -144,7 +144,7 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
   }
 
   Widget gerarListView() {
-    List<TempoDedicado> registrosTempo = this.controlador.getTempoDedicado( this.widget.tarefaAtual );
+    List<TempoDedicado> registrosTempo = this.controlador.getTempoDedicadoOrderByInicio( this.widget.tarefaAtual );
     int duracao = this.controlador.getTotalGastoNaTarefaEmMinutos( this.widget.tarefaAtual );
     return new ListView.builder(
           scrollDirection: Axis.vertical,

@@ -104,6 +104,7 @@ class DataHoraUtil{
   /// mesmo que a diferença entre elas seja de 1 minuto. Por outro lado, se data1 for 01/01/2020 00:00
   /// e data2 for 01/01/2020 23:59 retornará false, porque apesar de estarem com 23h59m de diferença,
   /// ambas as datas estão no mesmo dia.
+  /// TODO Criar teste de unidade para eDataDeDiaAnterior();
   static bool eDataDeDiaAnterior( DateTime data1, DateTime data2 ){
     assert( data1 != null && data2 != null );
     if( data1.year < data2.year ){
@@ -116,6 +117,37 @@ class DataHoraUtil{
       return true;
     }
     return false;
+  }
+
+  ///    Retorna true se ambos os dateTime tiverem o mesmo dia, mês e ano, independente do horário.
+  // TODO Criar teste de unidade para eDataMesmoDia();
+  static bool eDataMesmoDia( DateTime data1, DateTime data2 ){
+    return (
+        data1.year == data2.year
+        && data1.month == data2.month
+        && data1.day == data2.day);
+  }
+
+  ///    Retorna true se ambos os dateTime tiverem o mesmo horário, considerando
+  /// apenas horas, minutos e segundos. Não considera a data, nem milisegundos.
+  // TODO Criar teste de unidade para eMesmoHorarioAteSegundos();
+  static bool eMesmoHorarioAteSegundos( DateTime data1, DateTime data2 ){
+    return (
+        data1.hour == data2.hour
+            && data1.minute == data2.minute
+            && data1.second == data2.second);
+  }
+
+  // TODO Criar teste de unidade para eHorarioAnteriorAteSegundos();
+  /// Verifica se horario1 tem horário anterior a horario2, considerando somente
+  /// hora, minuto e segundo. Não considera milisegundos, nem a data.
+  static bool eHorarioAnteriorAteSegundos(DateTime horario1, DateTime horario2) {
+    if( horario1.hour != horario2.hour){
+      return horario1.hour < horario2.hour;
+    }else if( horario1.minute != horario2.minute ){
+      return horario1.minute < horario2.minute;
+    }
+    return horario1.second < horario2.second;
   }
 
   ///     Recebe um Duration e retorna uma string no formato "3 horas e 25 minutos".

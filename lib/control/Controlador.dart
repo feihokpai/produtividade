@@ -44,7 +44,7 @@ class Controlador{
             tarefas[0], inicio: agora.subtract(new Duration(hours: 4)), id: 2);
         td2.fim = agora.subtract(new Duration(hours: 3));
         TempoDedicado td3 = new TempoDedicado(
-            tarefas[0], inicio: agora.subtract(new Duration(hours: 2)), id: 3);
+            tarefas[0], inicio: agora.subtract(new Duration(hours: 3)), id: 3);
         td3.fim = agora.subtract(new Duration(hours: 1));
         this.registrosTempoDedicado.add( td1 );
         this.registrosTempoDedicado.add( td2 );
@@ -79,7 +79,7 @@ class Controlador{
     return this.registrosTempoDedicado;
   }
 
-  List<TempoDedicado> getTempoDedicado(Tarefa tarefa){
+  List<TempoDedicado> getTempoDedicadoOrderByInicio(Tarefa tarefa){
     if( tarefa == null ){
       return new List();
     }
@@ -90,7 +90,9 @@ class Controlador{
         lista.add( tempo );
       }
     });
-    return lista;
+    //return lista.reversed.toList();
+    lista.sort();
+    return lista.reversed.toList();
   }
 
   int _getProximoIdTarefaDisponivel() {
@@ -109,7 +111,7 @@ class Controlador{
 
   /// Retorna o total de tempo gasto numa tarefa em Minutos.
   int getTotalGastoNaTarefaEmMinutos(Tarefa tarefa){
-    List<TempoDedicado> tempos = this.getTempoDedicado( tarefa );
+    List<TempoDedicado> tempos = this.getTempoDedicadoOrderByInicio( tarefa );
     int somatorio = 0;
     tempos.forEach((tempo) { 
       somatorio += tempo.getDuracaoEmMinutos();
