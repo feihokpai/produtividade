@@ -10,13 +10,32 @@ import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 
+import 'package:intl/intl.dart';
+
 class CadastroTempoDedicadoTela extends StatefulWidget {
 
   Tarefa tarefaAtual;
+  TempoDedicado tempoDedicadoAtual;
+  // Em alguns casos é útil por questões de testes de widget manter desligado o cronômetro
+  bool cronometroLigado = true;
   LinguagemLabels labels = LabelsApplication.linguaAtual;
+  static DateFormat formatterDataHora = DataHoraUtil.formatterDataHoraBrasileira;
 
-  CadastroTempoDedicadoTela(Tarefa tarefa){
+  static final String KEY_STRING_CAMPO_HORA_INICIAL = "beginHour";
+  static final String KEY_STRING_CAMPO_HORA_FINAL = "endHour";
+  static final String KEY_STRING_CAMPO_CRONOMETRO = "timerField";
+  static final String KEY_STRING_BOTAO_ENCERRAR = "endButton";
+  static final String KEY_STRING_BOTAO_SALVAR = "saveButton";
+  static final String KEY_STRING_BOTAO_VOLTAR = "returnButton";
+
+  CadastroTempoDedicadoTela(Tarefa tarefa, {bool cronometroLigado}){
     this.tarefaAtual = tarefa;
+    this.cronometroLigado = cronometroLigado ?? true;
+  }
+
+  CadastroTempoDedicadoTela.modoEdicao(Tarefa tarefa, TempoDedicado tempoDedicado){
+    this.tarefaAtual = tarefa;
+    this.tempoDedicadoAtual = tempoDedicado;
   }
 
   @override
@@ -42,8 +61,8 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
 
   void inicializarVariaveis() async{
     ComunsWidgets.context = this.context;
-    this.iniciarCronometro();
     this.inicializarCampos();
+    this.iniciarCronometro();
   }
 
   void resetarVariaveis(){
@@ -53,22 +72,45 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
   }
 
   void inicializarCampos(){
+    this.iniciarCampoDataHoraInicial();
+    this.iniciarCampoCronometro();
+    this.iniciarCampoDataHoraFinal();
+  }
+
+  ValueKey<String> criarKey(String keyString){
+    return new ValueKey<String>( keyString );
+  }
+
+  void iniciarCampoCronometro(){
+    Key chave = this.criarKey(CadastroTempoDedicadoTela.KEY_STRING_CAMPO_CRONOMETRO);
+    this.campoCronometro = new CampoDeTextoWidget("Duração", 1, null, editavel: false, chave: chave );
+    this.campoCronometro.setText( "00:00:00" );
+  }
+
+  void iniciarCampoDataHoraInicial(){
     // Se a data estiver nula, será atribuído a ela a data atual
     this.dataInicialSelecionada ??= new DateTime.now();
     String textoCampoInicial = DataHoraUtil.converterDateTimeParaDataHoraBr( this.dataInicialSelecionada );
+    String StringKey = CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_INICIAL;
     this.campoDataHoraInicial = new CampoDataHora("Início", this.context, dataMinima: new DateTime(2020),
-        dataMaxima: new DateTime.now(), onChange: (){
+        dataMaxima: new DateTime.now(), chave: new ValueKey( StringKey ),
+        dateTimeFormatter: CadastroTempoDedicadoTela.formatterDataHora,
+        onChange: (){
           this.setState(() { this.dataInicialSelecionada = this.campoDataHoraInicial.dataSelecionada; });
         }
     );
     this.campoDataHoraInicial.dataSelecionada = this.dataInicialSelecionada;
+  }
+
+  void iniciarCampoDataHoraFinal(){
     this.campoDataHoraFinal = new CampoDataHora("Fim", this.context, dataMaxima: new DateTime.now(),
-        dataMinima: this.dataInicialSelecionada, onChange: (){
+        dataMinima: this.dataInicialSelecionada,
+        chave: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_FINAL ),
+        dateTimeFormatter: CadastroTempoDedicadoTela.formatterDataHora,
+        onChange: (){
           this.setState( () { this.dataHoraEncerramento = this.campoDataHoraFinal.dataSelecionada; });
-    } );
+        } );
     this.campoDataHoraFinal.dataSelecionada = this.dataHoraEncerramento;
-    this.campoCronometro = new CampoDeTextoWidget("Duração", 1, null, editavel: false);
-    this.campoCronometro.setText( "00:00:00" );
   }
 
   void iniciarCronometro() async{
@@ -79,7 +121,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
     DateTime dataFinal = this.dataHoraEncerramento ?? new DateTime.now();
     int segundos = dataFinal.difference(this.dataInicialSelecionada).inSeconds;
     String formatada = DataHoraUtil.converterDuracaoFormatoCronometro( new Duration(seconds: segundos));
-    if( this.dataHoraEncerramento == null ) {
+    if( !this.cronometroInativo() && !this.cronometroEncerrado() ) {
       Future.delayed(Duration(seconds: 1), () {
         this.campoCronometro.setText(formatada);
       }).then((value) {
@@ -128,21 +170,43 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
                           child: this.campoCronometro.getWidget(),
                         ),
                         Expanded(
-                          child: new RaisedButton(
-                            child: new Text("Encerrar", style: Estilos.textStyleBotaoFormulario),
-                            color: Colors.blue,
-                            onPressed: this.clicouBotaoEncerrar,),
+                          child: new Container(),
                         )
                       ],
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: this.campoDataHoraFinal.getWidget(),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: new RaisedButton(
+                              key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR ),
+                              child: new Text("Encerrar", style: Estilos.textStyleBotaoFormulario),
+                              color: Colors.blue,
+                              onPressed: this.clicouBotaoEncerrar,),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                              child: new RaisedButton(
+                                key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR ),
+                                child: new Text("Voltar", style: Estilos.textStyleBotaoFormulario),
+                                color: Colors.blue,
+                                onPressed: this.clicouBotaoVoltar,),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: new Container(),
+                          ),
+                        ],
+                      ),
                     ),
-                    new RaisedButton(
-                      child: new Text("Salvar", style: Estilos.textStyleBotaoFormulario),
-                      color: Colors.blue,
-                      onPressed: this.salvarTempoDedicado,),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: this.getCampoHoraFinalSeCronometroEncerrado(),
+                    ),
+                    this.getBotaoSalvarSeCronometroEncerrado(),
                   ],
                 ),
               ),
@@ -198,6 +262,47 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
   Future<bool> voltarParaPaginaAnterior(){
     ComunsWidgets.mudarParaTela( new ListaDeTempoDedicadoTela( this.widget.tarefaAtual ) ).then( (value) {
       return true;
+    });
+  }
+
+  bool cronometroInativo(){
+    return !this.widget.cronometroLigado;
+  }
+
+  bool cronometroEncerrado(){
+    return this.dataHoraEncerramento != null;
+  }
+
+  Widget getCampoHoraFinalSeCronometroEncerrado() {
+    if( this.cronometroEncerrado() ){
+      return this.campoDataHoraFinal.getWidget();
+    }else{
+      return new Container();
+    }
+  }
+
+  Widget getBotaoSalvarSeCronometroEncerrado() {
+    if( !this.cronometroEncerrado() ){
+      return new Container();
+    }else{
+      return new  RaisedButton(
+        key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR ),
+        child: new Text("Salvar", style: Estilos.textStyleBotaoFormulario),
+        color: Colors.blue,
+        onPressed: this.salvarTempoDedicado,
+      );
+    }
+  }
+
+  void clicouBotaoVoltar() {
+    ComunsWidgets.exibirDialogConfirmacao(context, "Voltando...",
+        "Voltando para a tela anterior, o tempo continuará contando até que você encerre "
+            "ou delete o registro. Deseja continuar?").then((resposta) {
+              if( resposta == 1 ){
+                ComunsWidgets.mudarParaTela( new ListaDeTempoDedicadoTela( this.widget.tarefaAtual ) ).then((value) {
+                  this.resetarVariaveis();
+                });
+              }
     });
   }
 }
