@@ -42,7 +42,7 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtil{
 
   @override
   void runAll() {
-
+    ComunsWidgets.modoTeste = true;
     super.criarTeste("Tem título na página?", new ListaDeTempoDedicadoTela(this.criarTarefaValida()), () {
       super.findOneByKeyString( ComunsWidgets.KEY_STRING_TITULO_PAGINA );
     });

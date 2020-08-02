@@ -79,8 +79,8 @@ abstract class WidgetTestsUtilProdutividade extends WidgetTestsUtil{
     if( tipoTela == TiposTelaTestesProdutividade.CADASTRO_TEMPO_DEDICADO ){
       return new CadastroTempoDedicadoTela( this.criarTarefaValida() );
     }else if( tipoTela == TiposTelaTestesProdutividade.EDICAO_TEMPO_DEDICADO ){
-      return new CadastroTempoDedicadoTela.modoEdicao( this.criarTarefaValida(),
-          new TempoDedicado(this.criarTarefaValida() ) );
+      return new CadastroTempoDedicadoTela( this.criarTarefaValida(),
+          tempoDedicado: new TempoDedicado(this.criarTarefaValida() ) );
     }
   }
 

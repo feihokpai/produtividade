@@ -7,6 +7,7 @@ import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 class ComunsWidgets {
 
   static BuildContext context;
+  static bool modoTeste = false;
 
   static String KEY_STRING_TITULO_PAGINA = "titulo_pagina";
   static String KEY_STRING_BOTAO_SIM_DIALOG = "yesButtonDialog";

@@ -17,7 +17,7 @@ class CadastroTempoDedicadoTela extends StatefulWidget {
   Tarefa tarefaAtual;
   TempoDedicado tempoDedicadoAtual;
   // Em alguns casos é útil por questões de testes de widget manter desligado o cronômetro
-  bool cronometroLigado = true;
+  bool cronometroLigado;
   LinguagemLabels labels = LabelsApplication.linguaAtual;
   static DateFormat formatterDataHora = DataHoraUtil.formatterDataHoraBrasileira;
 
@@ -28,14 +28,10 @@ class CadastroTempoDedicadoTela extends StatefulWidget {
   static final String KEY_STRING_BOTAO_SALVAR = "saveButton";
   static final String KEY_STRING_BOTAO_VOLTAR = "returnButton";
 
-  CadastroTempoDedicadoTela(Tarefa tarefa, {bool cronometroLigado}){
-    this.tarefaAtual = tarefa;
-    this.cronometroLigado = cronometroLigado ?? true;
-  }
-
-  CadastroTempoDedicadoTela.modoEdicao(Tarefa tarefa, TempoDedicado tempoDedicado){
+  CadastroTempoDedicadoTela(Tarefa tarefa, {TempoDedicado tempoDedicado, bool cronometroLigado}){
     this.tarefaAtual = tarefa;
     this.tempoDedicadoAtual = tempoDedicado;
+    this.cronometroLigado = cronometroLigado ?? (!ComunsWidgets.modoTeste);
   }
 
   @override
