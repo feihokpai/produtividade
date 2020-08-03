@@ -17,46 +17,52 @@ class Controlador{
     return Controlador._instance;
   }
 
+  void criarRegistrarIniciais(){
+    Tarefa t1 = new Tarefa("Passear com a Luna", "Todos os dias pela manhã eu preciso passear com a Luna "
+        "pelas redondezas. Aqui estou adicionando muito mais texto, para ver como vai se comportar os text area "
+        "onde esse texto será exibido. Será que dá Bug? O texto ainda tá curto. Precisa crescer mais, mais e "
+        "mais. Ficando gigante, estoura. Será?");
+    Tarefa t2 = new Tarefa("Estudar React", "Diariamente estudar React Js para me tornar um mestre");
+    t1.id = 1;
+    t2.id = 2;
+    this.tarefas = <Tarefa>[ t1, t2 ];
+
+    List<Tarefa> tarefas = this.getListaDeTarefas();
+    this.registrosTempoDedicado = new List();
+    DateTime agora = new DateTime.now();
+    if( tarefas.length > 0 ) {
+      TempoDedicado td1 = new TempoDedicado(
+          tarefas[0], inicio: agora.subtract(new Duration(hours: 2)), id: 1);
+      td1.fim = agora.subtract(new Duration(minutes: 50));
+      TempoDedicado td2 = new TempoDedicado(
+          tarefas[0], inicio: agora.subtract(new Duration(hours: 4)), id: 2);
+      td2.fim = agora.subtract(new Duration(hours: 3));
+      TempoDedicado td3 = new TempoDedicado(
+          tarefas[0], inicio: agora.subtract(new Duration(hours: 3)), id: 3);
+      td3.fim = agora.subtract(new Duration(hours: 1));
+      this.registrosTempoDedicado.add( td1 );
+      this.registrosTempoDedicado.add( td2 );
+      this.registrosTempoDedicado.add( td3 );
+    }
+    if( tarefas.length > 1) {
+      TempoDedicado td4 = new TempoDedicado(
+          tarefas[1], inicio: agora.subtract(new Duration(minutes: 55)),
+          id: 4);
+      td4.fim = agora.subtract(new Duration(minutes: 30));
+      this.registrosTempoDedicado.add( td4 );
+    }
+  }
+
   List<Tarefa> getListaDeTarefas(){
     if( this.tarefas == null ){
-      Tarefa t1 = new Tarefa("Passear com a Luna", "Todos os dias pela manhã eu preciso passear com a Luna "
-          "pelas redondezas. Aqui estou adicionando muito mais texto, para ver como vai se comportar os text area "
-          "onde esse texto será exibido. Será que dá Bug? O texto ainda tá curto. Precisa crescer mais, mais e "
-          "mais. Ficando gigante, estoura. Será?");
-      Tarefa t2 = new Tarefa("Estudar React", "Diariamente estudar React Js para me tornar um mestre");
-      t1.id = 1;
-      t2.id = 2;
-      this.tarefas = <Tarefa>[ t1, t2 ];
+      this.criarRegistrarIniciais();
     }
     return tarefas;
   }
 
   void _criarRegistrosTempoDedicado(){
     if( this.registrosTempoDedicado == null ){
-      List<Tarefa> tarefas = this.getListaDeTarefas();
-      this.registrosTempoDedicado = new List();
-      DateTime agora = new DateTime.now();
-      if( tarefas.length > 0 ) {
-        TempoDedicado td1 = new TempoDedicado(
-            tarefas[0], inicio: agora.subtract(new Duration(hours: 2)), id: 1);
-        td1.fim = agora.subtract(new Duration(minutes: 50));
-        TempoDedicado td2 = new TempoDedicado(
-            tarefas[0], inicio: agora.subtract(new Duration(hours: 4)), id: 2);
-        td2.fim = agora.subtract(new Duration(hours: 3));
-        TempoDedicado td3 = new TempoDedicado(
-            tarefas[0], inicio: agora.subtract(new Duration(hours: 3)), id: 3);
-        td3.fim = agora.subtract(new Duration(hours: 1));
-        this.registrosTempoDedicado.add( td1 );
-        this.registrosTempoDedicado.add( td2 );
-        this.registrosTempoDedicado.add( td3 );
-      }
-      if( tarefas.length > 1) {
-        TempoDedicado td4 = new TempoDedicado(
-            tarefas[1], inicio: agora.subtract(new Duration(minutes: 55)),
-            id: 4);
-        td4.fim = agora.subtract(new Duration(minutes: 30));
-        this.registrosTempoDedicado.add( td4 );
-      }
+      this.criarRegistrarIniciais();
     }
   }
 
