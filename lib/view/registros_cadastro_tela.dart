@@ -12,7 +12,16 @@ import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 
 import 'package:intl/intl.dart';
 
+enum _Estado{
+  MODO1, // Exibindo para cadastro de tempo. Ainda não encerrado.
+  MODO2, // Exibindo para cadastro de tempo. Encerrado, mas ainda não salvo.
+  MODO3, // Exibindo para edição de tempo. Ainda não encerrado.
+  MODO4, // Exibindo para edição de tempo. Encerrado e já salvo antes.
+}
+
 class CadastroTempoDedicadoTela extends StatefulWidget {
+
+  _Estado estadoAtual = _Estado.MODO1;
 
   Tarefa tarefaAtual;
   TempoDedicado tempoDedicadoAtual;
@@ -175,20 +184,12 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
                       child: Row(
                         children: <Widget>[
                           Expanded(
-                            child: new RaisedButton(
-                              key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR ),
-                              child: new Text("Encerrar", style: Estilos.textStyleBotaoFormulario),
-                              color: Colors.blue,
-                              onPressed: this.clicouBotaoEncerrar,),
+                              child: this.gerarBotaoEncerrar(),
                           ),
                           Expanded(
                             child: Padding(
                               padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                              child: new RaisedButton(
-                                key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR ),
-                                child: new Text("Voltar", style: Estilos.textStyleBotaoFormulario),
-                                color: Colors.blue,
-                                onPressed: this.clicouBotaoVoltar,),
+                              child: this.gerarBotaoVoltar(),
                             ),
                           ),
                           Expanded(
@@ -217,6 +218,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
   void clicouBotaoEncerrar(){
     this.setState(() {
       this.dataHoraEncerramento = new DateTime.now();
+      this.widget.estadoAtual = _Estado.MODO2;
     });
   }
 
@@ -295,10 +297,37 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
         "Voltando para a tela anterior, o tempo continuará contando até que você encerre "
             "ou delete o registro. Deseja continuar?").then((resposta) {
               if( resposta == 1 ){
-                ComunsWidgets.mudarParaTela( new ListaDeTempoDedicadoTela( this.widget.tarefaAtual ) ).then((value) {
-                  this.resetarVariaveis();
-                });
+                this.salvarTempoDedicado();
+//                ComunsWidgets.mudarParaTela( new ListaDeTempoDedicadoTela( this.widget.tarefaAtual ) ).then((value) {
+//                  this.resetarVariaveis();
+//                });
               }
     });
+  }
+
+  Widget gerarBotaoEncerrar() {
+    if( this.widget.estadoAtual == _Estado.MODO1 || this.widget.estadoAtual == _Estado.MODO3 ) {
+      return new RaisedButton(
+        key: this.criarKey(CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR),
+        child: new Text("Encerrar", style: Estilos.textStyleBotaoFormulario),
+        color: Colors.blue,
+        onPressed: this.clicouBotaoEncerrar,
+      );
+    }else{
+      return new Container();
+    }
+  }
+
+  Widget gerarBotaoVoltar() {
+    if( this.widget.estadoAtual == _Estado.MODO1 || this.widget.estadoAtual == _Estado.MODO3 ) {
+      return new RaisedButton(
+        key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR ),
+        child: new Text("Voltar", style: Estilos.textStyleBotaoFormulario),
+        color: Colors.blue,
+        onPressed: this.clicouBotaoVoltar
+      );
+    }else{
+      return new Container();
+    }
   }
 }
