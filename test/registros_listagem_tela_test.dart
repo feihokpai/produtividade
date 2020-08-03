@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
@@ -30,6 +31,12 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtil{
   TempoDedicado criarTempoDedicadoValido(Tarefa tarefa, int id, int duracaoMinutos){
     TempoDedicado td = new TempoDedicado(tarefa , inicio: DateTime.now().subtract(new Duration( minutes: duracaoMinutos )), id: id);
     td.fim = DateTime.now();
+    return td;
+  }
+
+  TempoDedicado criarTempoDedicadoValidoComFimNull(Tarefa tarefa, int id){
+    TempoDedicado td = new TempoDedicado(tarefa , inicio: DateTime.now().subtract(new Duration( minutes: 30 )), id: id);
+    td.fim = null;
     return td;
   }
 
@@ -160,6 +167,34 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtil{
         String correta = ListaDeTempoDedicadoTela.TEXTO_SEM_REGISTROS;
         String textoExibido = super.getValueTextFormFieldByKeyString( ListaDeTempoDedicadoTela.KEY_STRING_TOTAL_TEMPO );
         expect( textoExibido, correta );
+      });
+    });
+
+    this.checaSeExibeInformacoesDeTempoDedicadoSemDataHoraFim();
+  }
+
+  void checaSeExibeInformacoesDeTempoDedicadoSemDataHoraFim(){
+    Tarefa t = this.criarTarefaValida();
+    ListaDeTempoDedicadoTela tela = new ListaDeTempoDedicadoTela( t );
+    super.criarTeste("Se tempo dedicado tem fim null, exibe seus dados sem exceção?", tela, () {
+      List tarefas = controlador.getListaDeTarefas();
+      tarefas.clear();
+      tarefas.add( t );
+      List tempos = controlador.getAllTempoDedicado();
+      tempos.clear();
+      TempoDedicado td9 = this.criarTempoDedicadoValido( t , 9, 80);
+      tempos.add( td9 );
+//      super.tester.pumpWidget( new ListaDeTempoDedicadoTela( t ) );
+      tempos.add( this.criarTempoDedicadoValidoComFimNull( t , 10 ) );
+//      super.tester.pumpWidget( new ListaDeTempoDedicadoTela( t ) );
+      MaterialApp app = new MaterialApp( home: new ListaDeTempoDedicadoTela( t ),
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate
+          ],
+          supportedLocales: [const Locale('en', 'US')]);
+      super.tester.pumpWidget( app ).then((value) {
+        controlador.criarRegistrarIniciais();
       });
     });
   }

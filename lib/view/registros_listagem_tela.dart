@@ -134,12 +134,15 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
   }
 
   String getRegistroTempoDedicadoFormatado(TempoDedicado registro){
+    String formatada = "";
     String dataInicio = DataHoraUtil.converterDateTimeParaDataBr( registro.inicio );
     String horaInicio = DataHoraUtil.converterDateTimeParaHoraResumidaBr( registro.inicio );
-    String dataFim = DataHoraUtil.converterDateTimeParaDataBr( registro.fim );
-    String horaFim = DataHoraUtil.converterDateTimeParaHoraResumidaBr( registro.fim );
-    String formatada = "";
-    formatada += "${dataInicio}: ${horaInicio} a ${horaFim}";
+    formatada += "${dataInicio}: ${horaInicio}";
+    if( registro.fim != null) {
+      String dataFim = DataHoraUtil.converterDateTimeParaDataBr(registro.fim);
+      String horaFim = DataHoraUtil.converterDateTimeParaHoraResumidaBr( registro.fim);
+      formatada += " a ${horaFim}";
+    }
     return formatada;
   }
 
