@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
+import 'package:registro_produtividade/model/mocks/TempoDedicadoPersistenciaMock.dart';
 import 'package:registro_produtividade/view/registros_cadastro_tela.dart';
 
 import 'WidgetTestsUtil.dart';
@@ -14,7 +17,19 @@ enum TiposTelaTestesProdutividade{
 // Classe para auxiliar nos testes do Projeto Produtividade.
 /// A classe WidgetTestsUtil é mantida para ser independente do projeto.
 abstract class WidgetTestsUtilProdutividade extends WidgetTestsUtil{
-  WidgetTestsUtilProdutividade(String screenName) : super(screenName);
+
+  Controlador controlador;
+
+  WidgetTestsUtilProdutividade(String screenName) : super(screenName){
+    this.controlador = new Controlador();
+    this.controlador.tarefaDao = new TarefaPersistenciaMock();
+    this.controlador.tempoDedicadoDao = new TempoDedicadoPersistenciaMock();
+  }
+
+  void resetarMockDoControlador(){
+    this.controlador.tarefaDao = new TarefaPersistenciaMock();
+    this.controlador.tempoDedicadoDao = new TempoDedicadoPersistenciaMock();
+  }
 
   Tarefa criarTarefaValida(){
     Tarefa tarefa = new Tarefa("aaa", "bbb");
@@ -22,11 +37,23 @@ abstract class WidgetTestsUtilProdutividade extends WidgetTestsUtil{
     return tarefa;
   }
 
+  TempoDedicado criarTempoDedicadoValidoComVariosDados(Tarefa tarefa, int id, int duracaoMinutos){
+    TempoDedicado td = new TempoDedicado(tarefa , inicio: DateTime.now().subtract(new Duration( minutes: duracaoMinutos )), id: id);
+    td.fim = DateTime.now();
+    return td;
+  }
+
+  TempoDedicado criarTempoDedicadoValido(Tarefa tarefa, int id, int duracaoMinutos){
+    TempoDedicado td = new TempoDedicado(tarefa , inicio: DateTime.now().subtract(new Duration( minutes: duracaoMinutos )), id: id);
+    td.fim = DateTime.now();
+    return td;
+  }
+
   /// Gera um objeto Tempo dedicado com início prenchido e fim null.
-  TempoDedicado criarTempoDedicadoValido( {Tarefa tarefa} ){
-    tarefa ??= this.criarTarefaValida();
-    TempoDedicado tempo = new TempoDedicado( tarefa );
-    tempo.inicio = new DateTime.now().subtract( new Duration(minutes: 30) );
+  TempoDedicado criarTempoDedicadoValidoComFimNull(Tarefa tarefa, int id){
+    TempoDedicado td = new TempoDedicado(tarefa , inicio: DateTime.now().subtract(new Duration( minutes: 30 )), id: id);
+    td.fim = null;
+    return td;
   }
 
   /// [keysLista] tem como valores as keys em forma de string dos componentes que serão buscados.

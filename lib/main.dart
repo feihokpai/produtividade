@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/intl.dart';
-import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/Controlador.dart';
+import 'package:registro_produtividade/control/LabelsApplication.dart';
+import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
+import 'package:registro_produtividade/model/mocks/TempoDedicadoPersistenciaMock.dart';
+import 'package:registro_produtividade/view/comum/TelaFakeTesteCampoDataHora.dart';
 import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
@@ -37,7 +40,24 @@ void main() {
         GlobalWidgetsLocalizations.delegate
       ],
       supportedLocales: [const Locale('pt', 'BR')],);
-//
+  MaterialApp app3 = new MaterialApp(
+      title: "Tela para testes do Campo Data Hora",
+      home: new TelaFakeTesteCampoDataHora(),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [const Locale('pt', 'BR')],
+  );
+  //__________________________________________
+  // Definições da linguagem
+//  LabelsApplication configuracoesLinguagem = new LabelsApplication( LabelsApplication.pt_br );
+  //__________________________________________
+  // Configuração do banco
+  Controlador controlador = new Controlador();
+  controlador.tarefaDao = new TarefaPersistenciaMock();
+  controlador.tempoDedicadoDao = new TempoDedicadoPersistenciaMock();
+  //__________________________________________
   runApp( app1 );
 }
 

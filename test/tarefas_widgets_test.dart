@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
+import 'package:registro_produtividade/model/mocks/TempoDedicadoPersistenciaMock.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
@@ -16,16 +19,27 @@ Widget makeTestable(Widget widget) {
   return materialApp;
 }
 
+Controlador getControlador(){
+  Controlador controlador = new Controlador();
+  controlador.tarefaDao = new TarefaPersistenciaMock();
+  controlador.tempoDedicadoDao = new TempoDedicadoPersistenciaMock();
+  return controlador;
+}
+
 void main() {
+
+  Controlador controlador = getControlador();
+
   testWidgets('Tela inicial - Geração da List view',
       (WidgetTester tester) async {
+
     await tester.pumpWidget(makeTestable(new ListaDeTarefasTela()));
     // Uma listview foi gerada.
     Finder finderListView = find.byType(ListView);
     expect(finderListView, findsOneWidget);
 
     // Teste: Verificar quantos SingleChildScrollView foram gerados;
-    Controlador controlador = new Controlador();
+
     List<Tarefa> tarefas = controlador.getListaDeTarefas();
     Finder finderScrolls = find.byType(SingleChildScrollView);
     expect(finderScrolls, findsNWidgets(tarefas.length));

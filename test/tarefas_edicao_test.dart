@@ -6,12 +6,13 @@ import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
 import 'WidgetTestsUtil.dart';
+import 'WidgetTestsUtilProdutividade.dart';
 
 void main(){
   new TarefasEdicaoTelaTeste("Cadastro/edição de tarefas" ).runAll();
 }
 
-class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
+class TarefasEdicaoTelaTeste extends WidgetTestsUtilProdutividade{
 
   TarefasEdicaoTelaTeste( String nomeTela ): super(nomeTela);
 
