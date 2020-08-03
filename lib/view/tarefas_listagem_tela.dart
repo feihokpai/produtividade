@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
@@ -22,14 +21,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   @override
   Widget build(BuildContext context) {
     ComunsWidgets.context = context;
-    return new MaterialApp(
-      home: this.criarHome(),
-      // set your initial route
-      initialRoute: "/",
-      navigatorKey: Modular.navigatorKey,
-      // add Modular to manage the routing system
-      onGenerateRoute: Modular.generateRoute,
-    );
+    return this.criarHome();
   }
 
   Widget criarHome() {

@@ -16,8 +16,12 @@ class TarefasEdicaoTela extends StatefulWidget {
   static final String KEY_STRING_CAMPO_NOME = "nameTextField";
   static final String KEY_STRING_CAMPO_DESCRICAO = "descriptionTextField";
 
-  TarefasEdicaoTela();
+  TarefasEdicaoTela( {Tarefa tarefa} ){
+    this.tarefaAtual = tarefa;
+  }
 
+  @deprecated
+  /// Não usar mais. Usar o construtor padrão, em vez dele.
   TarefasEdicaoTela.modoEdicao( Tarefa tarefa ){
     this.tarefaAtual = tarefa;
   }
