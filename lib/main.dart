@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:registro_produtividade/app_module.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/LabelsApplication.dart';
 import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
@@ -31,6 +33,10 @@ void main() {
           GlobalWidgetsLocalizations.delegate
       ],
       supportedLocales: [const Locale('pt', 'BR')],
+      initialRoute: "/",
+      navigatorKey: Modular.navigatorKey,
+      // add Modular to manage the routing system
+      onGenerateRoute: Modular.generateRoute,
   );;
   MaterialApp app2 = new MaterialApp(
       title: "Edição de tarefas",
@@ -54,10 +60,10 @@ void main() {
 //  LabelsApplication configuracoesLinguagem = new LabelsApplication( LabelsApplication.pt_br );
   //__________________________________________
   // Configuração do banco
-  Controlador controlador = new Controlador();
-  controlador.tarefaDao = new TarefaPersistenciaMock();
-  controlador.tempoDedicadoDao = new TempoDedicadoPersistenciaMock();
+//  Controlador controlador = new Controlador();
+//  controlador.tarefaDao = new TarefaPersistenciaMock();
+//  controlador.tempoDedicadoDao = new TempoDedicadoPersistenciaMock();
   //__________________________________________
-  runApp( app1 );
+  runApp( ModularApp(module: AppModule()) );
 }
 
