@@ -97,11 +97,11 @@ class ComunsWidgets {
     }));
   }
 
-  static void mudarParaPaginaInicial() {
+  static Future<void> mudarParaPaginaInicial() {
     Navigator.pushNamed(context, Rotas.LISTAGEM_TAREFA );
   }
 
-  static void mudarParaPaginaEdicaoDeTarefas( {Tarefa tarefa}) {
+  static Future<void> mudarParaPaginaEdicaoDeTarefas( {Tarefa tarefa}) {
     if( tarefa == null ) {
       Navigator.pushNamed(context, Rotas.CADASTRO_TAREFA );
     }else{

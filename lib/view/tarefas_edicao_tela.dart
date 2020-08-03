@@ -183,8 +183,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   Future<bool> voltarParaPaginaAnterior() {
-    this.resetarVariaveis();
-    ComunsWidgets.mudarParaTela( new ListaDeTarefasTela() ).then((value) {
+    ComunsWidgets.mudarParaPaginaInicial().then( (value) {
+      this.resetarVariaveis();
       return true;
     });
   }

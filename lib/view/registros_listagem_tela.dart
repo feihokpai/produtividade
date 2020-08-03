@@ -210,8 +210,8 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
   }
 
   Future<bool> voltarParaPaginaAnterior() {
-    this.reiniciarVariaveis();
-    ComunsWidgets.mudarParaTela( new ListaDeTarefasTela() ).then((value) {
+    ComunsWidgets.mudarParaPaginaInicial().then((value) {
+      this.reiniciarVariaveis();
       return true;
     });
   }
