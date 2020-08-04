@@ -12,6 +12,8 @@ import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
 class AppModule extends MainModule {
 
+  StatefulWidget telaInicial = new ListaDeTarefasTela();
+
   // Provide a list of dependencies to inject into your project
   @override
   List<Bind> get binds => [
@@ -30,7 +32,7 @@ class AppModule extends MainModule {
   // Provide the root widget associated with your module
   // In this case, it's the widget you created in the first step
   @override
-  Widget get bootstrap => this.criarMaterialApp( new ListaDeTarefasTela() );
+  Widget get bootstrap => this.criarMaterialApp( this.telaInicial );
 
   Widget listagemDeTarefas(BuildContext, ModularArguments argumentos){
     return new MaterialApp(
