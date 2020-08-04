@@ -160,15 +160,13 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     });
   }
 
-  void pressionouVoltar(){
-    this.resetarVariaveis();
-    ComunsWidgets.mudarParaPaginaInicial();
+  void pressionouVoltar() async{
+    ComunsWidgets.mudarParaPaginaInicial().then( (value) {
+      this.resetarVariaveis();
+    });
   }
 
   void pressionouSalvar(){
-    //##########################################################################
-    print("pressionou salvar");
-    //##########################################################################
     try{
       if( this.globalKey.currentState.validate() ) {
         Tarefa tarefa = this.widget.tarefaAtual ?? new Tarefa("sem nome", "");

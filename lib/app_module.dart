@@ -24,7 +24,7 @@ class AppModule extends MainModule {
   // Provide all the routes for your module
   @override
   List<Router> get routers => [
-    Router('/', child: this.listagemDeTarefas ),
+    Router( Rotas.LISTAGEM_TAREFA, child: this.listagemDeTarefas ),
     Router( Rotas.CADASTRO_TAREFA , child: this.edicaoDeTarefas ),
     Router( Rotas.EDICAO_TAREFA , child: this.edicaoDeTarefas ),
   ];
@@ -34,15 +34,7 @@ class AppModule extends MainModule {
   @override
   Widget get bootstrap => this.criarMaterialApp( this.telaInicial );
 
-  Widget listagemDeTarefas(BuildContext, ModularArguments argumentos){
-    return new MaterialApp(
-      home: new ListaDeTarefasTela(),
-      // set your initial route
-      initialRoute: "/",
-      navigatorKey: Modular.navigatorKey,
-      // add Modular to manage the routing system
-      onGenerateRoute: Modular.generateRoute,
-    );
+  Widget listagemDeTarefas(BuildContext context, ModularArguments argumentos){
     return new ListaDeTarefasTela();
   }
 

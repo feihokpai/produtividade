@@ -97,8 +97,10 @@ class ComunsWidgets {
     }));
   }
 
-  static Future<void> mudarParaPaginaInicial() {
-    Navigator.pushNamed(context, Rotas.LISTAGEM_TAREFA );
+  static Future<dynamic> mudarParaPaginaInicial() async{
+    Navigator.pushNamed(context, Rotas.LISTAGEM_TAREFA ).then((value) {
+      return value;
+    });
   }
 
   static Future<void> mudarParaPaginaEdicaoDeTarefas( {Tarefa tarefa}) {

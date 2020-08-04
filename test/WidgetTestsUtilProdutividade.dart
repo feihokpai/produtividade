@@ -28,7 +28,6 @@ abstract class WidgetTestsUtilProdutividade extends WidgetTestsUtil{
   WidgetTestsUtilProdutividade(String screenName) : super(screenName){
     initModule(
         AppModule(),
-        initialModule: true,
         changeBinds: [
           Bind<ITarefaPersistencia>((i) => new TarefaPersistenciaMock() ),
           Bind<ITempoDedicadoPersistencia>((i) => new TempoDedicadoPersistenciaMock() ),
