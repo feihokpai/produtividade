@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
 import 'package:registro_produtividade/control/interfaces/ITempoDedicadoPersistencia.dart';
 import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
 import 'package:registro_produtividade/model/mocks/TempoDedicadoPersistenciaMock.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/rotas.dart';
+import 'package:registro_produtividade/view/registros_cadastro_tela.dart';
+import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
@@ -28,6 +31,8 @@ class AppModule extends MainModule {
     Router( Rotas.LISTAGEM_TAREFA, child: this.listagemDeTarefas ),
     Router( Rotas.CADASTRO_TAREFA , child: this.edicaoDeTarefas ),
     Router( Rotas.EDICAO_TAREFA , child: this.edicaoDeTarefas ),
+    Router( Rotas.LISTAGEM_TEMPO , child: this.listagemDeTempo ),
+    Router( Rotas.CADASTRO_TEMPO , child: this.edicaoDeTempo ),
   ];
 
   // Provide the root widget associated with your module
@@ -37,6 +42,20 @@ class AppModule extends MainModule {
 
   Widget listagemDeTarefas(BuildContext context, ModularArguments argumentos){
     return new ListaDeTarefasTela();
+  }
+
+  Widget listagemDeTempo(BuildContext context, ModularArguments argumentos){
+    dynamic tarefa = argumentos.data;
+    Tarefa tarefaParaEditar = tarefa as Tarefa;
+    return new ListaDeTempoDedicadoTela( tarefaParaEditar );
+  }
+
+  Widget edicaoDeTempo(BuildContext, ModularArguments argumentos){
+    List<dynamic> argsList = argumentos.data as List<dynamic>;
+    Tarefa tarefa = argsList[0] as Tarefa;
+    TempoDedicado tempo = argsList[1] as TempoDedicado;
+    bool cronometroLigado = argsList[2] as bool;
+    return new CadastroTempoDedicadoTela( tarefa, tempoDedicado: tempo, cronometroLigado: cronometroLigado );
   }
 
   Widget criarMaterialApp(StatefulWidget tela){

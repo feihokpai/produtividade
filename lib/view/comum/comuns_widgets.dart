@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/rotas.dart';
 
 class ComunsWidgets {
@@ -90,13 +91,6 @@ class ComunsWidgets {
     SystemNavigator.pop();
   }
 
-  static Future<void> mudarParaTela( Widget widgetTela ) async{
-    BuildContext contexto = ComunsWidgets.context;
-    Navigator.push( contexto , new MaterialPageRoute(builder: (contexto) {
-      return widgetTela;
-    }));
-  }
-
   static Future<dynamic> mudarParaPaginaInicial() async{
     Navigator.pushNamed(context, Rotas.LISTAGEM_TAREFA ).then((value) {
       return value;
@@ -109,5 +103,18 @@ class ComunsWidgets {
     }else{
       Navigator.pushNamed(context, Rotas.EDICAO_TAREFA, arguments: tarefa );
     }
+  }
+
+  static Future<dynamic> mudarParaListagemTempoDedicado(Tarefa tarefa) async{
+    Navigator.pushNamed(context, Rotas.LISTAGEM_TEMPO, arguments: tarefa).then((value) {
+      return value;
+    });
+  }
+
+  static Future<dynamic> mudarParaEdicaoTempoDedicado(Tarefa tarefa, {TempoDedicado tempo, bool cronometroLigado}) async{
+    List<dynamic> argumentos = [tarefa, tempo, cronometroLigado];
+    Navigator.pushNamed(context, Rotas.CADASTRO_TEMPO, arguments: argumentos).then((value) {
+      return value;
+    });
   }
 }

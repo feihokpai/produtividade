@@ -226,7 +226,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
     TempoDedicado tempo = new TempoDedicado( this.widget.tarefaAtual, inicio: this.dataInicialSelecionada );
     tempo.fim = this.campoDataHoraFinal.dataSelecionada;
     this.controlador.salvarTempoDedicado( tempo );
-    ComunsWidgets.mudarParaTela( new ListaDeTempoDedicadoTela( tempo.tarefa ) ).then((value) {
+    ComunsWidgets.mudarParaListagemTempoDedicado( tempo.tarefa ).then((value) {
       this.resetarVariaveis();
     });
   }
@@ -258,7 +258,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
   }
 
   Future<bool> voltarParaPaginaAnterior(){
-    ComunsWidgets.mudarParaTela( new ListaDeTempoDedicadoTela( this.widget.tarefaAtual ) ).then( (value) {
+    ComunsWidgets.mudarParaListagemTempoDedicado( this.widget.tarefaAtual ).then( (value) {
       return true;
     });
   }

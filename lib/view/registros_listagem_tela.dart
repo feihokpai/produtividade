@@ -192,7 +192,7 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
   }
 
   void clicouNoBotaoNovoRegistro() async{
-    ComunsWidgets.mudarParaTela( new CadastroTempoDedicadoTela( this.widget.tarefaAtual ) ).then((value) {
+    ComunsWidgets.mudarParaEdicaoTempoDedicado( this.widget.tarefaAtual ).then((value) {
       this.reiniciarVariaveis();
     });
   }
