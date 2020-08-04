@@ -18,8 +18,6 @@ main(){
 
 class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
 
-  Controlador controlador = new Controlador();
-
   ListaDeTempoDedicadoTelaTest(String nomeTela) : super(nomeTela);
 
 

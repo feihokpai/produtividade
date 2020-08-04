@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
@@ -41,6 +42,11 @@ class AppModule extends MainModule {
   Widget criarMaterialApp(StatefulWidget tela){
     return new MaterialApp(
       home: tela,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [const Locale('pt', 'BR')],
       // set your initial route
       initialRoute: "/",
       navigatorKey: Modular.navigatorKey,
