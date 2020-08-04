@@ -36,6 +36,7 @@ class CadastroTempoDedicadoTela extends StatefulWidget {
   static final String KEY_STRING_BOTAO_ENCERRAR = "endButton";
   static final String KEY_STRING_BOTAO_SALVAR = "saveButton";
   static final String KEY_STRING_BOTAO_VOLTAR = "returnButton";
+  static final String KEY_STRING_BOTAO_DELETAR = "deleteButton";
 
   CadastroTempoDedicadoTela(Tarefa tarefa, {TempoDedicado tempoDedicado, bool cronometroLigado}){
     this.tarefaAtual = tarefa;

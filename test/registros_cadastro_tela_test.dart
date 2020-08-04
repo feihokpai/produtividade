@@ -52,7 +52,8 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
       keyCampoFinal,
       keyDataFinal,
       keyHoraFinal,
-      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR,
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR,
     ];
     CadastroTempoDedicadoTela telaPronta2 = new CadastroTempoDedicadoTela( this.criarTarefaValida(), cronometroLigado: false, );
     super.checarSeComponentesEstaoOcultos( keysAusentesCadastro, "Modo Cadastro:", telaPronta: telaPronta2);
@@ -71,7 +72,8 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
           keyCampoFinal,
           keyDataFinal,
           keyHoraFinal,
-          CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR
+          CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR,
+          CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR
         ];
         super.checarSeComponentesEstaoPresentes(
             keysDeveriamEstarExibidas, "Modo Cadastro:",
