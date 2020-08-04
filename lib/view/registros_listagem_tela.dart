@@ -192,7 +192,7 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
   }
 
   void clicouNoBotaoNovoRegistro() async{
-    ComunsWidgets.mudarParaTela( new CadastroTempoDedicadoTela( this.widget.tarefaAtual ) ).then((value) {
+    ComunsWidgets.mudarParaEdicaoTempoDedicado( this.widget.tarefaAtual ).then((value) {
       this.reiniciarVariaveis();
     });
   }
@@ -210,8 +210,8 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
   }
 
   Future<bool> voltarParaPaginaAnterior() {
-    this.reiniciarVariaveis();
-    ComunsWidgets.mudarParaTela( new ListaDeTarefasTela() ).then((value) {
+    ComunsWidgets.mudarParaPaginaInicial().then((value) {
+      this.reiniciarVariaveis();
       return true;
     });
   }

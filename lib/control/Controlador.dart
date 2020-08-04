@@ -1,3 +1,4 @@
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
@@ -11,6 +12,8 @@ class Controlador{
   static Controlador _instance;
 
   Controlador._construtorInterno(){
+    this.tarefaDao = Modular.get<ITarefaPersistencia>();
+    this.tempoDedicadoDao = Modular.get<ITempoDedicadoPersistencia>();
   }
 
   factory Controlador( ){

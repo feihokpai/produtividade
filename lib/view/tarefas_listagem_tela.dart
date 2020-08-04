@@ -107,12 +107,11 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   void clicouNoLapis(Tarefa tarefaParaEditar) {
-    print("Clicou no lápis");
     ComunsWidgets.mudarParaPaginaEdicaoDeTarefas(tarefa: tarefaParaEditar);
   }
 
   void clicouNoRelogio(Tarefa tarefaParaEditar) {
-    ComunsWidgets.mudarParaTela( new ListaDeTempoDedicadoTela( tarefaParaEditar ) );
+    ComunsWidgets.mudarParaListagemTempoDedicado( tarefaParaEditar );
   }
 
   void clicouNoIconeAddTarefa(){

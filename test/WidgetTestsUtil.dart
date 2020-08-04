@@ -20,7 +20,7 @@ abstract class WidgetTestsUtil{
     this.portugues = portugues;
   }
 
-  Widget _makeTestable(Widget widget) {
+  Widget makeTestable(Widget widget) {
     if( !portugues) {
       materialApp = new MaterialApp(home: widget);
     }else{
@@ -46,7 +46,7 @@ abstract class WidgetTestsUtil{
 
   Future<void> initNewScreen( Widget tela, WidgetTester tester ){
     this.tester = tester;
-    return tester.pumpWidget( this._makeTestable( tela ) );
+    return tester.pumpWidget( this.makeTestable( tela ) );
   }
 
   /// Verifica se existe apenas 1 widget.

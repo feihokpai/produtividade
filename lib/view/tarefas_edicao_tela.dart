@@ -16,8 +16,12 @@ class TarefasEdicaoTela extends StatefulWidget {
   static final String KEY_STRING_CAMPO_NOME = "nameTextField";
   static final String KEY_STRING_CAMPO_DESCRICAO = "descriptionTextField";
 
-  TarefasEdicaoTela();
+  TarefasEdicaoTela( {Tarefa tarefa} ){
+    this.tarefaAtual = tarefa;
+  }
 
+  @deprecated
+  /// Não usar mais. Usar o construtor padrão, em vez dele.
   TarefasEdicaoTela.modoEdicao( Tarefa tarefa ){
     this.tarefaAtual = tarefa;
   }
@@ -156,15 +160,13 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     });
   }
 
-  void pressionouVoltar(){
-    this.resetarVariaveis();
-    ComunsWidgets.mudarParaPaginaInicial();
+  void pressionouVoltar() async{
+    ComunsWidgets.mudarParaPaginaInicial().then( (value) {
+      this.resetarVariaveis();
+    });
   }
 
   void pressionouSalvar(){
-    //##########################################################################
-    print("pressionou salvar");
-    //##########################################################################
     try{
       if( this.globalKey.currentState.validate() ) {
         Tarefa tarefa = this.widget.tarefaAtual ?? new Tarefa("sem nome", "");
@@ -179,8 +181,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   Future<bool> voltarParaPaginaAnterior() {
-    this.resetarVariaveis();
-    ComunsWidgets.mudarParaTela( new ListaDeTarefasTela() ).then((value) {
+    ComunsWidgets.mudarParaPaginaInicial().then( (value) {
+      this.resetarVariaveis();
       return true;
     });
   }

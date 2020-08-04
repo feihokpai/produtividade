@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_modular/flutter_modular_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:registro_produtividade/app_module.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
+import 'package:registro_produtividade/control/interfaces/ITempoDedicadoPersistencia.dart';
 import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
 import 'package:registro_produtividade/model/mocks/TempoDedicadoPersistenciaMock.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
+import 'package:registro_produtividade/view/comum/rotas.dart';
 import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
@@ -15,14 +21,19 @@ import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 MaterialApp materialApp = new MaterialApp(home: new ListaDeTarefasTela());
 
 Widget makeTestable(Widget widget) {
-  materialApp = new MaterialApp(home: widget);
-  return materialApp;
+  return ModularApp( module: AppModule() );
 }
 
 Controlador getControlador(){
+  AppModule module = new AppModule();
+  initModule(
+      module,
+      changeBinds: [
+        Bind<ITarefaPersistencia>((i) => new TarefaPersistenciaMock() ),
+        Bind<ITempoDedicadoPersistencia>((i) => new TempoDedicadoPersistenciaMock() ),
+      ]
+  );
   Controlador controlador = new Controlador();
-  controlador.tarefaDao = new TarefaPersistenciaMock();
-  controlador.tempoDedicadoDao = new TempoDedicadoPersistenciaMock();
   return controlador;
 }
 
@@ -77,7 +88,6 @@ void main() {
 
   testWidgets('Tela inicial - Ícones ao lado das tarefas são gerados?', (WidgetTester tester) async {
     // Preenchendo a lista de tarefas com novos valores.
-    Controlador controlador = new Controlador();
     List<Tarefa> tarefas = controlador.getListaDeTarefas();
     tarefas.clear();
     tarefas.addAll(gerarNTarefas(3));
@@ -100,7 +110,6 @@ void main() {
 
   testWidgets('Tela inicial - Ícone Lápis existe e direciona para tela de edição?',
   (WidgetTester tester) async {
-    Controlador controlador = new Controlador();
     List<Tarefa> tarefas = controlador.getListaDeTarefas();
     tarefas.clear();
     tarefas.addAll(gerarNTarefas(1));
@@ -125,7 +134,6 @@ void main() {
 
   testWidgets('Tela inicial - Ícone Relógio existe e direciona para tela de Listagem de Tempo dedicado?',
           (WidgetTester tester) async {
-        Controlador controlador = new Controlador();
         List<Tarefa> tarefas = controlador.getListaDeTarefas();
         tarefas.clear();
         tarefas.addAll(gerarNTarefas(1));

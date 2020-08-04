@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_modular/flutter_modular_test.dart';
+import 'package:registro_produtividade/app_module.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
+import 'package:registro_produtividade/control/interfaces/ITempoDedicadoPersistencia.dart';
 import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
 import 'package:registro_produtividade/model/mocks/TempoDedicadoPersistenciaMock.dart';
 import 'package:registro_produtividade/view/registros_cadastro_tela.dart';
@@ -21,9 +26,25 @@ abstract class WidgetTestsUtilProdutividade extends WidgetTestsUtil{
   Controlador controlador;
 
   WidgetTestsUtilProdutividade(String screenName) : super(screenName){
+    initModule(
+        AppModule(),
+        changeBinds: [
+          Bind<ITarefaPersistencia>((i) => new TarefaPersistenciaMock() ),
+          Bind<ITempoDedicadoPersistencia>((i) => new TempoDedicadoPersistenciaMock() ),
+        ]
+    );
     this.controlador = new Controlador();
-    this.controlador.tarefaDao = new TarefaPersistenciaMock();
-    this.controlador.tempoDedicadoDao = new TempoDedicadoPersistenciaMock();
+  }
+
+  @override
+  Widget makeTestable(Widget widget) {
+    AppModule module = AppModule();
+    module.telaInicial = widget;
+    return ModularApp( module: module );
+  }
+
+  Controlador getControlador(){
+    return this.controlador;
   }
 
   void resetarMockDoControlador(){
