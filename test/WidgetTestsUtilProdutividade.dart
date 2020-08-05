@@ -64,7 +64,7 @@ abstract class WidgetTestsUtilProdutividade extends WidgetTestsUtil{
     return td;
   }
 
-  TempoDedicado criarTempoDedicadoValido(Tarefa tarefa, int id, int duracaoMinutos){
+  TempoDedicado criarTempoDedicadoComFimPreenchido(Tarefa tarefa, int id, int duracaoMinutos){
     TempoDedicado td = new TempoDedicado(tarefa , inicio: DateTime.now().subtract(new Duration( minutes: duracaoMinutos )), id: id);
     td.fim = DateTime.now();
     return td;

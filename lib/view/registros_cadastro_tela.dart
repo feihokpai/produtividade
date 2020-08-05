@@ -204,7 +204,12 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
                       padding: const EdgeInsets.all(8.0),
                       child: this.getCampoHoraFinalSeCronometroEncerrado(),
                     ),
-                    this.getBotaoSalvarSeCronometroEncerrado(),
+                    Row(
+                      children: <Widget>[
+                        Expanded(child: this.getBotaoSalvarSeCronometroEncerrado()),
+                        Expanded(child: this.getBotaoDeletarSeCronometroEncerrado()),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -330,5 +335,29 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
     }else{
       return new Container();
     }
+  }
+
+  Widget getBotaoDeletarSeCronometroEncerrado() {
+    if( this.widget.estadoAtual == _Estado.MODO2 || this.widget.estadoAtual == _Estado.MODO4 ) {
+      return new RaisedButton(
+          key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR ),
+          child: new Text("Deletar", style: Estilos.textStyleBotaoFormulario),
+          color: Colors.blue,
+          onPressed: this.clicouBotaoDeletar
+      );
+    }else{
+      return new Container();
+    }
+  }
+
+  void clicouBotaoDeletar() {
+    ComunsWidgets.exibirDialogConfirmacao(context, "Deletando...",
+        "Tem certeza que deseja deletar esse registro?").then((resposta) {
+      if( resposta == 1 ){
+        ComunsWidgets.mudarParaListagemTempoDedicado( this.widget.tarefaAtual ).then((value) {
+          this.resetarVariaveis();
+        });
+      }
+    });
   }
 }

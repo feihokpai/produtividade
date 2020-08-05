@@ -7,6 +7,7 @@ import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDataHora.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/registros_cadastro_tela.dart';
+import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 
 import 'WidgetTestsUtil.dart';
 import 'WidgetTestsUtilProdutividade.dart';
@@ -61,7 +62,9 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     this.testaDataInicialSetadaCorretamenteNoCampo();
     this.clicandoEmEncerrarExibeCamposEBotoesOcultos();
     this.clicandoEmEncerrarOcultaBotoes();
-
+    this.clicandoEmVoltarExibeDialogEDirecionaPraPaginaAnterior();
+    this.clicandoEmSalvarCriaRegistroEDirecionaPraPaginaAnterior();
+    this.clicandoEmDeletarNaoCriaRegistroEDirecionaPraPaginaAnterior();
   }
 
   void clicandoEmEncerrarExibeCamposEBotoesOcultos(){
@@ -99,6 +102,136 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     });
   }
 
+  void clicandoEmVoltarExibeDialogEDirecionaPraPaginaAnterior( ){
+    CadastroTempoDedicadoTela telaCampoInicial = new CadastroTempoDedicadoTela( this.criarTarefaValida() );
+    super.criarTeste("Modo Cadastro: Se clicar em voltar, mostra dialog?", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () {
+        List keysDeveriamEstarVisiveis = <String>[
+          ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG,
+          ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG
+        ];
+        super.checarSeComponentesEstaoPresentes(
+            keysDeveriamEstarVisiveis, "Modo Cadastro:",
+            telaPronta: telaCampoInicial, criarTestesIndividuais: false );
+      });
+    });
+
+    telaCampoInicial = new CadastroTempoDedicadoTela( this.criarTarefaValida() );
+    super.criarTeste("Modo Cadastro: Se clicar em voltar, e depois em NÃO, fica na mesma tela", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () {
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () {
+          expect( ComunsWidgets.context.widget.runtimeType, CadastroTempoDedicadoTela );
+        });
+      });
+    });
+
+    telaCampoInicial = new CadastroTempoDedicadoTela( this.criarTarefaValida() );
+    super.criarTeste("Modo Cadastro: Se clicar em voltar, e depois em SIM, volta pra tela anterior?", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () {
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG , FinderTypes.KEY_STRING, () {
+          expect( ComunsWidgets.context.widget.runtimeType, ListaDeTempoDedicadoTela );
+        });
+      });
+    });
+
+    Tarefa tarefa = this.criarTarefaValida();
+    telaCampoInicial = new CadastroTempoDedicadoTela( tarefa );
+    super.criarTeste("Modo Cadastro: Se clicar em voltar, e depois em NÃO, não salva o Registro", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () {
+        List lista = this.controlador.getTempoDedicadoOrderByInicio( tarefa );
+        int qtd = lista.length;
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () {
+          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+          expect( novaQtd, qtd );
+        });
+      });
+    });
+
+    tarefa = this.criarTarefaValida();
+    telaCampoInicial = new CadastroTempoDedicadoTela( tarefa );
+    super.criarTeste("Modo Cadastro: Se clicar em voltar, e depois em SIM, salva o Registro", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () {
+        List lista = this.controlador.getTempoDedicadoOrderByInicio( tarefa );
+        int qtd = lista.length;
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG , FinderTypes.KEY_STRING, () {
+          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+          expect( novaQtd, qtd+1 );
+        });
+      });
+    });
+
+  }
+
+  void clicandoEmSalvarCriaRegistroEDirecionaPraPaginaAnterior(){
+    CadastroTempoDedicadoTela telaCampoInicial = new CadastroTempoDedicadoTela( this.criarTarefaValida() );
+    super.criarTeste("Modo Cadastro: Se clicar em salvar, volta pra página anterior", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () {
+          expect( ComunsWidgets.context.widget.runtimeType, ListaDeTempoDedicadoTela );
+        });
+      });
+    });
+
+    Tarefa tarefa = this.criarTarefaValida();
+    telaCampoInicial = new CadastroTempoDedicadoTela( tarefa );
+    super.criarTeste("Modo Cadastro: Se clicar em salvar, cria novo registro?", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
+        int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () {
+          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+          expect( novaQtd, 1+qtd );
+        });
+      });
+    });
+  }
+
+  void clicandoEmDeletarNaoCriaRegistroEDirecionaPraPaginaAnterior(){
+    CadastroTempoDedicadoTela telaCampoInicial = new CadastroTempoDedicadoTela( this.criarTarefaValida() );
+    super.criarTeste("Modo Cadastro: Se clicar em deletar, exibe DIALOG", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
+          List keysDeveriamEstarVisiveis = <String>[
+            ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG,
+            ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG
+          ];
+          super.checarSeComponentesEstaoPresentes(
+              keysDeveriamEstarVisiveis, "Modo Cadastro:",
+              telaPronta: telaCampoInicial, criarTestesIndividuais: false );
+        });
+      });
+    });
+
+    Tarefa tarefa = this.criarTarefaValida();
+    telaCampoInicial = new CadastroTempoDedicadoTela( tarefa );
+    super.criarTeste("Modo Cadastro: Se clicar em deletar, clicando em não, mantem na tela e não deleta", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
+          int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+          super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () {
+            int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+            expect( ComunsWidgets.context.widget.runtimeType, CadastroTempoDedicadoTela );
+            expect( novaQtd , qtd );
+          });
+        });
+      });
+    });
+
+    tarefa = this.criarTarefaValida();
+    telaCampoInicial = new CadastroTempoDedicadoTela( tarefa );
+    super.criarTeste("Modo Cadastro: Se clicar em deletar, clicando em SIM, muda de tela e não salva", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
+          int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+          super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG, FinderTypes.KEY_STRING, () {
+            int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+            expect( ComunsWidgets.context.widget.runtimeType, ListaDeTempoDedicadoTela );
+            expect( novaQtd , qtd );
+          });
+        });
+      });
+    });
+  }
+
   void testaDataInicialSetadaCorretamenteNoCampo(){
     CadastroTempoDedicadoTela telaCampoInicial = new CadastroTempoDedicadoTela( this.criarTarefaValida(), cronometroLigado: false, );
     super.criarTeste("Modo Cadastro: Testa se data hora inicial é setada como a atual ao entrar na tela",
@@ -111,22 +244,208 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
   }
 
   void testesModoEdicao() {
+    this.testesModoEdicaoModo1();
+    this.testesModoEdicaoModo2();
+  }
+
+  CadastroTempoDedicadoTela criarTelaModoEdicao1(){
+    Tarefa t1 = this.criarTarefaValida();
+    TempoDedicado td1 = super.criarTempoDedicadoValidoComFimNull(t1, 9);
+    return new CadastroTempoDedicadoTela( t1, tempoDedicado: td1 );
+  }
+
+  void testesModoEdicaoModo1(){
     List keysPresentesEdicao = <String>[
       ComunsWidgets.KEY_STRING_TITULO_PAGINA,
-      keyCampoFinal,
+      keyCampoInicial,
+      keyDataInicial,
+      keyHoraInicial,
+      CadastroTempoDedicadoTela.KEY_STRING_CAMPO_CRONOMETRO,
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR,
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR
+    ];
+    super.checarSeComponentesEstaoPresentes(keysPresentesEdicao, "Modo Edição 1", telaPronta: this.criarTelaModoEdicao1() );
+
+    List keysAusentesEdicao = <String>[
+      CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_FINAL,
+      keyDataFinal,
+      keyHoraFinal,
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR,
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR,
+      ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG,
+      ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG
+    ];
+    super.checarSeComponentesEstaoOcultos(keysPresentesEdicao, "Modo Edição 1", telaPronta: this.criarTelaModoEdicao1() );
+
+    this.modoEdicao1ClicandoEmVoltarExibeDialogEDirecionaPraPaginaAnterior();
+
+    List keysPresentesAposEncerrar = <String>[
+      ComunsWidgets.KEY_STRING_TITULO_PAGINA,
+      keyCampoInicial,
+      keyDataInicial,
+      keyHoraInicial,
+      CadastroTempoDedicadoTela.KEY_STRING_CAMPO_CRONOMETRO,
+      CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_FINAL,
+      keyDataFinal,
+      keyHoraFinal,
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR,
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR,
+    ];
+
+    CadastroTempoDedicadoTela tela = this.criarTelaModoEdicao1();
+    super.criarTeste("Modo Edição 1: Botão encerrar - se clicar exibe itens antes ocultos", tela, () {
+      super.tapWidget(CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR, FinderTypes.KEY_STRING, () {
+        super.checarSeComponentesEstaoPresentes(keysPresentesAposEncerrar, "Modo Edição 1",
+            telaPronta: tela, criarTestesIndividuais: false );
+      });
+    });
+
+    List keysAusentesAposEncerrar = <String>[
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR,
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR,
+      ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG,
+      ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG
+    ];
+    tela = this.criarTelaModoEdicao1();
+    super.criarTeste("Modo Edição 1: Botão encerrar - se clicar oculta itens?", tela, () {
+      super.tapWidget(CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR, FinderTypes.KEY_STRING, () {
+        super.checarSeComponentesEstaoOcultos( keysAusentesAposEncerrar, "Modo Edição 1",
+            telaPronta: tela, criarTestesIndividuais: false );
+      });
+    });
+
+    this.modoEdicao1ClicandoEmSalvarEditaRegistroEDirecionaPraPaginaAnterior();
+    this.modoEdicao1ClicandoEmDeletarDeletaRegistroEDirecionaPraPaginaAnterior();
+  }
+
+  void modoEdicao1ClicandoEmVoltarExibeDialogEDirecionaPraPaginaAnterior( ){
+    CadastroTempoDedicadoTela telaCampoInicial = this.criarTelaModoEdicao1();
+    super.criarTeste("Modo Edição 1: Se clicar em voltar, mostra dialog?", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () {
+        List keysDeveriamEstarVisiveis = <String>[
+          ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG,
+          ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG
+        ];
+        super.checarSeComponentesEstaoPresentes(
+            keysDeveriamEstarVisiveis, "Modo Edição 1:",
+            telaPronta: telaCampoInicial, criarTestesIndividuais: false );
+      });
+    });
+
+    telaCampoInicial = this.criarTelaModoEdicao1();
+    super.criarTeste("Modo Edição 1: Se clicar em voltar, e depois em NÃO, fica na mesma tela", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () {
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () {
+          expect( ComunsWidgets.context.widget.runtimeType, CadastroTempoDedicadoTela );
+        });
+      });
+    });
+
+    telaCampoInicial = this.criarTelaModoEdicao1();
+    super.criarTeste("Modo Edição 1: Se clicar em voltar, e depois em SIM, volta pra tela anterior?", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () {
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG , FinderTypes.KEY_STRING, () {
+          expect( ComunsWidgets.context.widget.runtimeType, ListaDeTempoDedicadoTela );
+        });
+      });
+    });
+
+    telaCampoInicial = this.criarTelaModoEdicao1();
+    Tarefa tarefa = telaCampoInicial.tarefaAtual;
+    super.criarTeste("Modo Edição 1: Se clicar em voltar, e depois em SIM, salva o Registro, mas não cria um novo", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () {
+        int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG , FinderTypes.KEY_STRING, () {
+          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+          expect( novaQtd, qtd );
+        });
+      });
+    });
+
+  }
+
+  void modoEdicao1ClicandoEmSalvarEditaRegistroEDirecionaPraPaginaAnterior(){
+    CadastroTempoDedicadoTela telaCampoInicial = this.criarTelaModoEdicao1();
+    super.criarTeste("Modo Edição 1: Se clicar em salvar, volta pra página anterior", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () {
+          expect( ComunsWidgets.context.widget.runtimeType, ListaDeTempoDedicadoTela );
+        });
+      });
+    });
+
+    telaCampoInicial = this.criarTelaModoEdicao1();
+    Tarefa tarefa = telaCampoInicial.tarefaAtual;
+    super.criarTeste("Modo Edição 1: Se clicar em salvar, edita o registro anterior e não cria um novo", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
+        int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () {
+          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+          expect( novaQtd, qtd );
+        });
+      });
+    });
+  }
+
+  void modoEdicao1ClicandoEmDeletarDeletaRegistroEDirecionaPraPaginaAnterior(){
+    CadastroTempoDedicadoTela telaCampoInicial = this.criarTelaModoEdicao1();
+    super.criarTeste("Modo Edição 1: Se clicar em deletar, exibe DIALOG", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
+          List keysDeveriamEstarVisiveis = <String>[
+            ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG,
+            ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG
+          ];
+          super.checarSeComponentesEstaoPresentes(
+              keysDeveriamEstarVisiveis, "Modo Cadastro:",
+              telaPronta: telaCampoInicial, criarTestesIndividuais: false );
+        });
+      });
+    });
+
+    telaCampoInicial = this.criarTelaModoEdicao1();
+    Tarefa tarefa = telaCampoInicial.tarefaAtual;
+    super.criarTeste("Modo Edição 1: Se clicar em deletar, clicando em não, mantem na tela e não deleta", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
+          int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+          super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () {
+            int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+            expect( ComunsWidgets.context.widget.runtimeType, CadastroTempoDedicadoTela );
+            expect( novaQtd , qtd );
+          });
+        });
+      });
+    });
+
+    telaCampoInicial = this.criarTelaModoEdicao1();
+    tarefa = telaCampoInicial.tarefaAtual;
+    super.criarTeste("Modo Edição 1: Se clicar em deletar, clicando em SIM, muda de tela e deleta registro", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
+          int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+          super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG, FinderTypes.KEY_STRING, () {
+            int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+            expect( ComunsWidgets.context.widget.runtimeType, ListaDeTempoDedicadoTela );
+            expect( novaQtd , qtd-1 );
+          });
+        });
+      });
+    });
+  }
+
+
+  void testesModoEdicaoModo2(){
+    List keysPresentesEdicao = <String>[
+      ComunsWidgets.KEY_STRING_TITULO_PAGINA,
+      keyCampoInicial,
       keyDataInicial,
       keyHoraInicial,
       CadastroTempoDedicadoTela.KEY_STRING_CAMPO_CRONOMETRO,
     ];
-    CadastroTempoDedicadoTela telaPronta1 = new CadastroTempoDedicadoTela( this.criarTarefaValida(), cronometroLigado: false, );
-    super.checarSeComponentesEstaoPresentes(keysPresentesEdicao, "Modo Edição", telaPronta: telaPronta1);
-
-    List keysAusentesEdicao = <String>[
-      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR
-    ];
-    CadastroTempoDedicadoTela telaPronta2 = new CadastroTempoDedicadoTela( this.criarTarefaValida(), cronometroLigado: false, );
-    super.checarSeComponentesEstaoOcultos( keysAusentesEdicao, "Modo Edição:", telaPronta: telaPronta2);
+    Tarefa t1 = this.criarTarefaValida();
+    TempoDedicado td2 = super.criarTempoDedicadoComFimPreenchido(t1, 9, 50);
+    CadastroTempoDedicadoTela telaPronta1 = new CadastroTempoDedicadoTela( t1, tempoDedicado: td2 );
+    super.checarSeComponentesEstaoPresentes(keysPresentesEdicao, "Modo Edição 2", telaPronta: telaPronta1);
   }
-
-
 }
