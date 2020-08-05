@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
@@ -275,7 +274,7 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
       ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG,
       ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG
     ];
-    super.checarSeComponentesEstaoOcultos(keysPresentesEdicao, "Modo Edição 1", telaPronta: this.criarTelaModoEdicao1() );
+    super.checarSeComponentesEstaoOcultos(keysAusentesEdicao, "Modo Edição 1", telaPronta: this.criarTelaModoEdicao1() );
 
     this.modoEdicao1ClicandoEmVoltarExibeDialogEDirecionaPraPaginaAnterior();
 
@@ -314,9 +313,57 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
       });
     });
 
+    this.modoEdicao1EntrandoNaTelaOsCamposDataHoraEstaoPreenchidos();
+//    this.modoEdicao1TrocandoDataHoraInicialCampoDeTextoEAtualizado();
     this.modoEdicao1ClicandoEmSalvarEditaRegistroEDirecionaPraPaginaAnterior();
     this.modoEdicao1ClicandoEmDeletarDeletaRegistroEDirecionaPraPaginaAnterior();
   }
+
+
+  void modoEdicao1EntrandoNaTelaOsCamposDataHoraEstaoPreenchidos(){
+    CadastroTempoDedicadoTela tela = this.criarTelaModoEdicao1();
+    super.criarTeste("Modo Edição 1: Se entrar na tela, campo data inicial está preenchido?", tela, (){
+      String valor = super.getValueTextFormFieldByKeyString( CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_INICIAL );
+      expect( (valor.length > 0) , true);
+    });
+
+    tela = this.criarTelaModoEdicao1();
+    super.criarTeste("Modo Edição 1: Se entrar na tela, campo data inicial está preenchido corretamente?", tela, (){
+      String valor = super.getValueTextFormFieldByKeyString( CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_INICIAL );
+      DateTime dataHoraPreenchida = CadastroTempoDedicadoTela.formatterDataHora.parse( valor );
+      expect( DataHoraUtil.eMesmoHorarioAteSegundos(dataHoraPreenchida, tela.tempoDedicadoAtual.inicio ), true );
+    });
+  }
+
+//  void modoEdicao1TrocandoDataHoraInicialCampoDeTextoEAtualizado() async{
+//    CadastroTempoDedicadoTela tela = this.criarTelaModoEdicao1();
+//    super.criarTeste("Modo Edição 1: Se entrar na tela e mudar a hora no relógio, altera o valor no campo?", tela, () async {
+//      String valorInicial = super.getValueTextFormFieldByKeyString( CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_INICIAL );
+//      await super.selectHourInHourPickList( this.keyHoraInicial , HourClockDialog.AM_SIX_FIFTEEN );
+//      String valorDepois = super.getValueTextFormFieldByKeyString( CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_INICIAL );
+//      DateTime dataHoraDepois = CadastroTempoDedicadoTela.formatterDataHora.parse( valorDepois );
+//      expect( dataHoraDepois.hour,  6 );
+//      expect( dataHoraDepois.minute,  15 );
+//      super.selectHourInHourPickList( this.keyHoraInicial , HourClockDialog.AM_SIX_FIFTEEN ).then((value) {
+//        String valorDepois = super.getValueTextFormFieldByKeyString( CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_INICIAL );
+//        DateTime dataHoraDepois = CadastroTempoDedicadoTela.formatterDataHora.parse( valorDepois );
+//        expect( dataHoraDepois.hour,  6 );
+//        expect( dataHoraDepois.minute,  15 );
+//      });
+//      super.tapWidget( keyHoraInicial, FinderTypes.KEY_STRING , (){
+//        Offset centro = tester.getCenter( find.byKey( new ValueKey('time-picker-dial') ) );
+//        // Abaixo vai clicar primeiro às 6h
+//        super.tester.tapAt(new Offset(centro.dx, centro.dy + 5)).then((value) {
+//          super.tester.pump().then((value) {
+//            super.tapWidget( "Ok" , FinderTypes.TEXT, () {
+//              String valorDepois = super.getValueTextFormFieldByKeyString( CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_INICIAL );
+//              expect( (valorDepois != valorInicial) , true );
+//            });
+//          });
+//        });
+//      });
+//    });
+//  }
 
   void modoEdicao1ClicandoEmVoltarExibeDialogEDirecionaPraPaginaAnterior( ){
     CadastroTempoDedicadoTela telaCampoInicial = this.criarTelaModoEdicao1();
@@ -435,17 +482,128 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
   }
 
 
+  CadastroTempoDedicadoTela criarTelaModoEdicao2(){
+    Tarefa t1 = this.criarTarefaValida();
+    TempoDedicado td1 = super.criarTempoDedicadoComFimPreenchido(t1, 8, 30);
+    return new CadastroTempoDedicadoTela( t1, tempoDedicado: td1 );
+  }
+
   void testesModoEdicaoModo2(){
     List keysPresentesEdicao = <String>[
       ComunsWidgets.KEY_STRING_TITULO_PAGINA,
       keyCampoInicial,
       keyDataInicial,
       keyHoraInicial,
+      keyCampoFinal,
+      keyHoraFinal,
+      keyDataFinal,
       CadastroTempoDedicadoTela.KEY_STRING_CAMPO_CRONOMETRO,
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR,
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR,
     ];
-    Tarefa t1 = this.criarTarefaValida();
-    TempoDedicado td2 = super.criarTempoDedicadoComFimPreenchido(t1, 9, 50);
-    CadastroTempoDedicadoTela telaPronta1 = new CadastroTempoDedicadoTela( t1, tempoDedicado: td2 );
+    CadastroTempoDedicadoTela telaPronta1 = this.criarTelaModoEdicao2();
     super.checarSeComponentesEstaoPresentes(keysPresentesEdicao, "Modo Edição 2", telaPronta: telaPronta1);
+
+    List keysOcultasEdicao = <String>[
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR,
+      CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR,
+      ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG,
+      ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG,
+    ];
+    telaPronta1 = this.criarTelaModoEdicao2();
+    super.checarSeComponentesEstaoOcultos(keysOcultasEdicao, "Modo Edição 2", telaPronta: telaPronta1);
+
+    this.modoEdicao2EntrandoNaTelaOsCamposDataHoraEstaoPreenchidos();
+    this.modoEdicao2ClicandoEmSalvarEditaRegistroEDirecionaPraPaginaAnterior();
+    this.modoEdicao2ClicandoEmDeletarDeletaRegistroEDirecionaPraPaginaAnterior();
   }
+
+  void modoEdicao2EntrandoNaTelaOsCamposDataHoraEstaoPreenchidos(){
+    CadastroTempoDedicadoTela tela = this.criarTelaModoEdicao2();
+    super.criarTeste("Modo Edição 2: Se entrar na tela, campo data inicial está preenchido?", tela, (){
+      String valor = super.getValueTextFormFieldByKeyString( CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_INICIAL );
+      expect( (valor.length > 0) , true);
+    });
+
+    tela = this.criarTelaModoEdicao2();
+    super.criarTeste("Modo Edição 2: Se entrar na tela, campo data inicial está preenchido corretamente?", tela, (){
+      String valor = super.getValueTextFormFieldByKeyString( CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_INICIAL );
+      DateTime dataHoraPreenchida = CadastroTempoDedicadoTela.formatterDataHora.parse( valor );
+      expect( DataHoraUtil.eMesmoHorarioAteSegundos(dataHoraPreenchida, tela.tempoDedicadoAtual.inicio ), true );
+    });
+
+    tela = this.criarTelaModoEdicao2();
+    super.criarTeste("Modo Edição 2: Se entrar na tela, campo data final está preenchido?", tela, (){
+      String valor = super.getValueTextFormFieldByKeyString( CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_FINAL );
+      expect( (valor.length > 0) , true);
+    });
+
+    tela = this.criarTelaModoEdicao2();
+    super.criarTeste("Modo Edição 2: Se entrar na tela, campo data final está preenchido corretamente?", tela, (){
+      String valor = super.getValueTextFormFieldByKeyString( CadastroTempoDedicadoTela.KEY_STRING_CAMPO_HORA_FINAL );
+      DateTime dataHoraPreenchida = CadastroTempoDedicadoTela.formatterDataHora.parse( valor );
+      expect( DataHoraUtil.eMesmoHorarioAteSegundos(dataHoraPreenchida, tela.tempoDedicadoAtual.fim ), true );
+    });
+  }
+
+  void modoEdicao2ClicandoEmSalvarEditaRegistroEDirecionaPraPaginaAnterior(){
+    CadastroTempoDedicadoTela telaCampoInicial = this.criarTelaModoEdicao2();
+    super.criarTeste("Modo Edição 2: Se clicar em salvar, volta pra página anterior", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () {
+        expect( ComunsWidgets.context.widget.runtimeType, ListaDeTempoDedicadoTela );
+      });
+    });
+
+    telaCampoInicial = this.criarTelaModoEdicao2();
+    Tarefa tarefa = telaCampoInicial.tarefaAtual;
+    super.criarTeste("Modo Edição 2: Se clicar em salvar, edita o registro anterior e não cria um novo", telaCampoInicial, (){
+      int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () {
+        int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+        expect( novaQtd, qtd );
+      });
+    });
+  }
+
+  void modoEdicao2ClicandoEmDeletarDeletaRegistroEDirecionaPraPaginaAnterior(){
+    CadastroTempoDedicadoTela telaCampoInicial = this.criarTelaModoEdicao2();
+    super.criarTeste("Modo Edição 2: Se clicar em deletar, exibe DIALOG", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
+        List keysDeveriamEstarVisiveis = <String>[
+          ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG,
+          ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG
+        ];
+        super.checarSeComponentesEstaoPresentes(
+            keysDeveriamEstarVisiveis, "Modo Cadastro:",
+            telaPronta: telaCampoInicial, criarTestesIndividuais: false );
+      });
+    });
+
+    telaCampoInicial = this.criarTelaModoEdicao2();
+    Tarefa tarefa = telaCampoInicial.tarefaAtual;
+    super.criarTeste("Modo Edição 2: Se clicar em deletar, clicando em não, mantem na tela e não deleta", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
+        int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () {
+          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+          expect( ComunsWidgets.context.widget.runtimeType, CadastroTempoDedicadoTela );
+          expect( novaQtd , qtd );
+        });
+      });
+    });
+
+    telaCampoInicial = this.criarTelaModoEdicao2();
+    tarefa = telaCampoInicial.tarefaAtual;
+    super.criarTeste("Modo Edição 2: Se clicar em deletar, clicando em SIM, muda de tela e deleta registro", telaCampoInicial, (){
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
+        int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG, FinderTypes.KEY_STRING, () {
+          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+          expect( ComunsWidgets.context.widget.runtimeType, ListaDeTempoDedicadoTela );
+          expect( novaQtd , qtd-1 );
+        });
+      });
+    });
+  }
+
 }
