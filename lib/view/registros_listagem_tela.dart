@@ -18,6 +18,7 @@ class ListaDeTempoDedicadoTela extends StatefulWidget {
   static final String KEY_STRING_LISTA_REGISTROS = "listViewRegistros";
   static final String KEY_STRING_REGISTRO = "listViewRegistros";
   static final String KEY_STRING_ICONE_DELETAR = "deleteIcon";
+  static final String KEY_STRING_ICONE_EDITAR = "editIcon";
   static final String KEY_STRING_TOTAL_TEMPO = "sumTime";
 
   static final String TEXTO_SEM_REGISTROS = "Não há registros de tempo dedicado";
@@ -157,6 +158,7 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
             TempoDedicado registro = registrosTempo[indice];
             String descricaoRegistro = this.getRegistroTempoDedicadoFormatado( registro );
             String strKeyIconeDelecao = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_DELETAR}${registro.id}";
+            String strKeyIconeEdicao = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_EDITAR}${registro.id}";
             return Container(
               color: ( (indice % 2 == 0) ? Colors.black26 : Colors.black38 ),
               child: Padding(
@@ -168,6 +170,16 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
                       child: new Text(
                         descricaoRegistro,
                         style: Estilos.textStyleListaPaginaInicial,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: new IconButton(
+                        key: new ValueKey( strKeyIconeEdicao ),
+                        icon: new Icon(Icons.edit),
+                        onPressed: () {
+                          this.clicouNoIconeEdicao(registro);
+                        },
                       ),
                     ),
                     Padding(
@@ -208,6 +220,10 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
         });
       }
     });
+  }
+
+  void clicouNoIconeEdicao(TempoDedicado registro) {
+    ComunsWidgets.mudarParaEdicaoTempoDedicado( registro.tarefa, tempo: registro );
   }
 
   Future<bool> voltarParaPaginaAnterior() {

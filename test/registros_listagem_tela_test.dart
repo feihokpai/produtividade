@@ -10,6 +10,7 @@ import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/registros_cadastro_tela.dart';
 import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 
+import 'WidgetTestsUtil.dart';
 import 'WidgetTestsUtilProdutividade.dart';
 
 main(){
@@ -84,7 +85,7 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     Tarefa t1 = this.criarTarefaValida();
     List tarefas = controlador.getListaDeTarefas();
     tarefas.clear();
-    tarefas.add( t1 );
+    super.controlador.salvarTarefa( t1 );
     List tempos = controlador.getAllTempoDedicado();
     tempos.clear();
     TempoDedicado t9 = this.criarTempoDedicadoValidoComVariosDados( t1 , 9, 80);
@@ -98,6 +99,21 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
       super.initNewScreen(new ListaDeTempoDedicadoTela( t1 ), tester).then((value) {
         this.checarQtdItensNaListView( 3 );
         expect( find.byIcon( Icons.delete ), findsNWidgets( 3 ) );
+      });
+    });
+
+    super.criarTeste("Foram criados N ícones de Edição?", new ListaDeTempoDedicadoTela( t1 ), () {
+      List tempos = super.controlador.getTempoDedicadoOrderByInicio( t1 );
+      expect( find.byIcon( Icons.edit ), findsNWidgets( tempos.length ));
+    });
+
+    super.criarTeste("Ao clicar num ícone de edição direciona pra página de edição?", new ListaDeTempoDedicadoTela( t1 ), () {
+      List<TempoDedicado> tempos = super.controlador.getTempoDedicadoOrderByInicio( t1 );
+      String keyStringPrimeiro = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_EDITAR}${tempos[0].id}";
+      super.tapWidget( keyStringPrimeiro , FinderTypes.KEY_STRING, () {
+        expect( ComunsWidgets.context.widget.runtimeType , CadastroTempoDedicadoTela);
+        CadastroTempoDedicadoTela tela = ComunsWidgets.context.widget as CadastroTempoDedicadoTela;
+        expect( tela.tempoDedicadoAtual.id, tempos[0].id );
       });
     });
 
