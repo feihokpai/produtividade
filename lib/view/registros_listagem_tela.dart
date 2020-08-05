@@ -22,7 +22,8 @@ class ListaDeTempoDedicadoTela extends StatefulWidget {
 
   static final String TEXTO_SEM_REGISTROS = "Não há registros de tempo dedicado";
 
-  ListaDeTempoDedicadoTela( Tarefa tarefa ){
+  ListaDeTempoDedicadoTela( Tarefa tarefa )
+      : assert(tarefa != null, "Não pode iniciar a tela de listagem de tempo dedicado com tarefa nula"){
     this.tarefaAtual = tarefa;
   }
 

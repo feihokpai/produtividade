@@ -42,6 +42,11 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
       expect( telaPreenc.tarefaAtual , tAtual );
     });
 
+    ListaDeTempoDedicadoTela telaTN = new ListaDeTempoDedicadoTela( this.criarTarefaValida() );
+    super.criarTeste("Ao entrar na página, passando Tarefa null, lança exceção?", telaTN, () {
+      expect( () => super.tester.pumpWidget( new ListaDeTempoDedicadoTela(null) ), throwsAssertionError );
+    });
+
     super.criarTeste("Tem uma área de Detalhamento da Tarefa?", new ListaDeTempoDedicadoTela(this.criarTarefaValida()), () {
       super.findOneByKeyString( ListaDeTempoDedicadoTela.KEY_STRING_PAINEL_TAREFA );
     });
