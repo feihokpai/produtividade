@@ -211,32 +211,35 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
                     new Row(
                       children: <Widget>[
                         Expanded(
-                          child: this.campoCronometro.getWidget(),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: this.campoCronometro.getWidget(),
+                          ),
                         ),
                         Expanded(
                           child: new Container(),
                         )
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                              child: this.gerarBotaoEncerrar(),
-                          ),
-                          Expanded(
+                    Row(
+                      children: <Widget>[
+                        Expanded(
                             child: Padding(
-                              padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                              child: this.gerarBotaoVoltar(),
+                              padding: const EdgeInsets.all(8.0),
+                              child: this.gerarBotaoEncerrar(),
                             ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                            child: this.gerarBotaoVoltar(),
                           ),
-                          Expanded(
-                            flex: 2,
-                            child: new Container(),
-                          ),
-                        ],
-                      ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: new Container(),
+                        ),
+                      ],
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -244,8 +247,21 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
                     ),
                     Row(
                       children: <Widget>[
-                        Expanded(child: this.gerarBotaoSalvarSeCronometroEncerrado()),
-                        Expanded(child: this.gerarBotaoDeletarSeCronometroEncerrado()),
+                        Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: this.gerarBotaoSalvarSeCronometroEncerrado(),
+                            )
+                        ),
+                        Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: this.gerarBotaoDeletarSeCronometroEncerrado(),
+                            )
+                        ),
+                        Expanded(
+                            child: new Container(),
+                        ),
                       ],
                     ),
                   ],
