@@ -262,7 +262,11 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
   void clicouBotaoEncerrar(){
     this.setState(() {
       this.dataFinalSelecionada = new DateTime.now();
-      this.widget.estadoAtual = _Estado.MODO2;
+      if( this.widget.estadoAtual == _Estado.MODO1 ) {
+        this.widget.estadoAtual = _Estado.MODO2;
+      }else if( this.widget.estadoAtual == _Estado.MODO3 ){
+        this.widget.estadoAtual = _Estado.MODO4;
+      }
     });
   }
 
@@ -400,6 +404,9 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
     ComunsWidgets.exibirDialogConfirmacao(context, "Deletando...",
         "Tem certeza que deseja deletar esse registro?").then((resposta) {
       if( resposta == 1 ){
+        if( this.widget.estadoAtual == _Estado.MODO4 || this.widget.estadoAtual == _Estado.MODO5 ){
+          this.controlador.deletarRegistroTempoDedicado( this.widget.tempoDedicadoAtual );
+        }
         ComunsWidgets.mudarParaListagemTempoDedicado( this.widget.tarefaAtual ).then((value) {
           this.resetarVariaveis();
         });

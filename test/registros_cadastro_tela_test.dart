@@ -482,9 +482,9 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
   }
 
 
-  CadastroTempoDedicadoTela criarTelaModoEdicao2(){
+  CadastroTempoDedicadoTela criarTelaModoEdicao2({int idTempoDedicado=0}){
     Tarefa t1 = this.criarTarefaValida();
-    TempoDedicado td1 = super.criarTempoDedicadoComFimPreenchido(t1, 8, 30);
+    TempoDedicado td1 = super.criarTempoDedicadoComFimPreenchido(t1, idTempoDedicado, 30);
     return new CadastroTempoDedicadoTela( t1, tempoDedicado: td1 );
   }
 
@@ -556,6 +556,7 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
 
     telaCampoInicial = this.criarTelaModoEdicao2();
     Tarefa tarefa = telaCampoInicial.tarefaAtual;
+    this.controlador.salvarTempoDedicado( telaCampoInicial.tempoDedicadoAtual );
     super.criarTeste("Modo Edição 2: Se clicar em salvar, edita o registro anterior e não cria um novo", telaCampoInicial, (){
       int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
       super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () {
@@ -592,8 +593,9 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
       });
     });
 
-    telaCampoInicial = this.criarTelaModoEdicao2();
+    telaCampoInicial = this.criarTelaModoEdicao2( );
     tarefa = telaCampoInicial.tarefaAtual;
+    this.controlador.salvarTempoDedicado( telaCampoInicial.tempoDedicadoAtual );
     super.criarTeste("Modo Edição 2: Se clicar em deletar, clicando em SIM, muda de tela e deleta registro", telaCampoInicial, (){
       super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
         int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;

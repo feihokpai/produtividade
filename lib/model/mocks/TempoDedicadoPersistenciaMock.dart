@@ -49,8 +49,19 @@ class TempoDedicadoPersistenciaMock extends Mock implements ITempoDedicadoPersis
 
   void _salvarOuEditar(TempoDedicado tempo){
     if( tempo.id == 0) {
+      tempo.id = this.getProximoIdTempoDisponivel();
       this.registrosTempoDedicado.add(tempo);
     }
+  }
+
+  int getProximoIdTempoDisponivel(){
+    int maior = 0;
+    this.registrosTempoDedicado.forEach((element) {
+      if( element.id > maior){
+        maior = element.id;
+      }
+    });
+    return maior+1;
   }
 
   void deletarTempo(TempoDedicado tempo){
