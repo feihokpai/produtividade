@@ -133,9 +133,17 @@ class DataHoraUtil{
   // TODO Criar teste de unidade para eMesmoHorarioAteSegundos();
   static bool eMesmoHorarioAteSegundos( DateTime data1, DateTime data2 ){
     return (
-        data1.hour == data2.hour
-            && data1.minute == data2.minute
+        DataHoraUtil.eMesmoHorarioAteMinutos(data1, data2)
             && data1.second == data2.second);
+  }
+
+  ///    Retorna true se ambos os dateTime tiverem o mesmo horário, considerando
+  /// apenas horas e minutos apenas. Não considera a data, segundos, nem milisegundos.
+  // TODO Criar teste de unidade para eMesmoHorarioAteSegundos();
+  static bool eMesmoHorarioAteMinutos( DateTime data1, DateTime data2 ){
+    return (
+        data1.hour == data2.hour
+            && data1.minute == data2.minute);
   }
 
   // TODO Criar teste de unidade para eHorarioAnteriorAteSegundos();

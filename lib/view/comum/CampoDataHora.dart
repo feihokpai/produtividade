@@ -59,8 +59,9 @@ class CampoDataHora extends CampoDeTextoWidget{
   }
 
   void exibirCalendario( ) async {
+    DateTime dataInicial = (this.dataSelecionada ?? new DateTime.now() );
     showDatePicker(context: this.context,
-        initialDate: new DateTime.now(),
+        initialDate: dataInicial,
         firstDate: this.dataMinima,
         lastDate: this.dataMaxima ).then((selecionada) {
           if( selecionada == null ) {
@@ -78,7 +79,11 @@ class CampoDataHora extends CampoDeTextoWidget{
   }
 
   void exibirRelogio() async{
-    showTimePicker(context: this.context, initialTime: new TimeOfDay.now() ).then((value) {
+    TimeOfDay horaInicial = new TimeOfDay.now();
+    if( this.dataSelecionada != null ){
+      horaInicial = new TimeOfDay.fromDateTime( this.dataSelecionada );
+    }
+    showTimePicker(context: this.context, initialTime: horaInicial ).then((value) {
       if( value == null ){
         return;
       }

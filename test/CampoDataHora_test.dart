@@ -40,6 +40,29 @@ class CampoDataHoraTest extends WidgetTestsUtilProdutividade{
       expect( valorCampo.length , 0 );
     });
 
+    TelaFakeTesteCampoDataHora tela = telaFake();
+    super.criarTeste("Se campo está preenchido, ao clicar no relógio, exibe a mesma hora preenchida?", tela, () {
+      DateTime dataPreenchida = new DateTime.now().subtract( new Duration( hours: 3, minutes: 20 ) );
+      tela.campoDaPagina.dataSelecionada = dataPreenchida;
+      super.tapWidget( this.keyHora, FinderTypes.KEY_STRING , () {
+        super.tapWidget( "Ok" , FinderTypes.TEXT, () {
+          expect( DataHoraUtil.eDataMesmoDia( tela.campoDaPagina.dataSelecionada , dataPreenchida ), true );
+          expect( DataHoraUtil.eMesmoHorarioAteMinutos( tela.campoDaPagina.dataSelecionada , dataPreenchida ), true );
+        });
+      });
+    });
+
+    TelaFakeTesteCampoDataHora tela2 = telaFake();
+    super.criarTeste("Se campo está preenchido, ao clicar no calendário, exibe a mesma data preenchida?", tela2, () {
+      DateTime dataPreenchida = new DateTime.now().subtract( new Duration( days: 2 ) );
+      tela2.campoDaPagina.dataSelecionada = dataPreenchida;
+      super.tapWidget( this.keyData, FinderTypes.KEY_STRING , () {
+        super.tapWidget( "Ok" , FinderTypes.TEXT, () {
+          expect( DataHoraUtil.eDataMesmoDia( tela2.campoDaPagina.dataSelecionada , dataPreenchida ), true );
+        });
+      });
+    });
+
     this.testarPreenchimentoCampoAposSelecionarDataMesmoMes();
 
     this.testarPreenchimentoCampoAposSelecionarDataMesAnterior();
@@ -78,12 +101,12 @@ class CampoDataHoraTest extends WidgetTestsUtilProdutividade{
       );
     });
 
-//    super.criarTeste("Construtor CampoDataHora se atribuir Formatter não nulo, muda realmente o formatter", this.telaFake(), () {
-//      expect( new CampoDataHora("aaaa", ComunsWidgets.context, dateTimeFormatter:
-//            DataHoraUtil.formatterHoraResumidaBrasileira).formatter,
-//          DataHoraUtil.formatterHoraResumidaBrasileira
-//      );
-//    });
+    super.criarTeste("Construtor CampoDataHora se atribuir Formatter não nulo, muda realmente o formatter", this.telaFake(), () {
+      expect( new CampoDataHora("aaaa", ComunsWidgets.context, dateTimeFormatter:
+            DataHoraUtil.formatterHoraResumidaBrasileira).formatter,
+          DataHoraUtil.formatterHoraResumidaBrasileira
+      );
+    });
 
   }
 

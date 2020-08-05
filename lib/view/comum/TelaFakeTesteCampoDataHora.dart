@@ -7,6 +7,8 @@ class TelaFakeTesteCampoDataHora extends StatefulWidget {
   static String KEY_STRING_COLUNA_PRINCIPAL = "colunaPrincipal";
   static String KEY_STRING_CAMPO_DATA_HORA = "campoDataHora";
 
+  CampoDataHora campoDaPagina = null;
+
   @override
   _TelaFakeTesteCampoDataHoraState createState() => _TelaFakeTesteCampoDataHoraState();
 }
@@ -25,6 +27,7 @@ class _TelaFakeTesteCampoDataHoraState extends State<TelaFakeTesteCampoDataHora>
   void inicializarCampos() {
     this.campoDataHora = new CampoDataHora("Data Hora aqui", context,
         chave: new ValueKey(TelaFakeTesteCampoDataHora.KEY_STRING_CAMPO_DATA_HORA));
+    this.widget.campoDaPagina = this.campoDataHora;
   }
 
   Widget criarHome() {
