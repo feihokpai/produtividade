@@ -241,7 +241,7 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtilProdutividade{
   void testeModoEdicaoPreenchimentoObjetoTarefa() {
     Tarefa tarefaTesteEdicao = new Tarefa("aaa", "bbb");
     tarefaTesteEdicao.id = 999;
-    TarefasEdicaoTela tela = new TarefasEdicaoTela.modoEdicao( tarefaTesteEdicao );
+    TarefasEdicaoTela tela = new TarefasEdicaoTela( tarefa: tarefaTesteEdicao );
     super.criarTeste("Modo edição: o objeto da Tarefa atual é preenchido?", tela, () {
       expect( tela.tarefaAtual , isNotNull);
       expect( tela.tarefaAtual.id , 999 );
@@ -253,7 +253,7 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtilProdutividade{
   void testeModoEdicaoPreenchimentoNomeDescricao(){
     Tarefa tarefaTesteEdicao = new Tarefa( "aaa", "bbb" );
     tarefaTesteEdicao.id = 999;
-    TarefasEdicaoTela tela = new TarefasEdicaoTela.modoEdicao(tarefaTesteEdicao);
+    TarefasEdicaoTela tela = new TarefasEdicaoTela( tarefa: tarefaTesteEdicao );
     super.criarTeste("Modo edição: os campos são preenchidos?", tela, () {
       String valorCampoNome = super.getValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME );
       expect( valorCampoNome, "aaa" );
@@ -276,7 +276,7 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtilProdutividade{
   }
 
   void modoEdicaoClicaVoltarResetaVariaveis() {
-    TarefasEdicaoTela telaVoltarClear = new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() );
+    TarefasEdicaoTela telaVoltarClear = new TarefasEdicaoTela( tarefa: this.criarTarefaValida() );
     super.criarTeste("Modo Edição: Botão voltar. Clicando reseta variáveis setadas?", telaVoltarClear, () {
       TextFormField campoNome = super.setValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME , "aaaa");
       TextFormField campoDescricao = super.setValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_DESCRICAO , "bbbb");
@@ -290,11 +290,11 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtilProdutividade{
 
   void testesBotaoDeletar() {
     Finder finderBotaoDeletar;
-    super.criarTeste("Modo Edição: Botão Deletar fica visível?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
+    super.criarTeste("Modo Edição: Botão Deletar fica visível?", new TarefasEdicaoTela( tarefa: this.criarTarefaValida() ), () {
       finderBotaoDeletar = super.findOneByKeyString( TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR );
     });
 
-    super.criarTeste("Modo Edição: Botão Deletar- abre Popup?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
+    super.criarTeste("Modo Edição: Botão Deletar- abre Popup?", new TarefasEdicaoTela( tarefa: this.criarTarefaValida() ), () {
       super.tapWidgetWithKeyString( TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR, () {
         Finder finder = find.byType( AlertDialog );
         expect( finder , findsOneWidget );
