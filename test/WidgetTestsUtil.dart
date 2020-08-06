@@ -34,6 +34,57 @@ abstract class WidgetTestsUtil{
     return materialApp;
   }
 
+  ///     Change the screen dimensions to values of parameters [width] and [height], execute the [callback]
+  /// and change the screen dimensions to the initial values.
+  void changeScreenSize( double width, double height, StatefulWidget widget, void Function() callback ) async{
+    final TestWidgetsFlutterBinding binding = TestWidgetsFlutterBinding.ensureInitialized();
+    Size defaultDimensions = binding.window.physicalSize;
+    binding.setSurfaceSize( Size( width, height ) ).then((value) {
+      tester.pumpWidget( this.makeTestable( widget ) ).then((value) {
+        if( callback != null ) {
+          callback();
+        }
+        // Finish the test Return the screen to the Initial Size.
+        binding.setSurfaceSize( Size( defaultDimensions.width, defaultDimensions.height ) ).then((value) {
+          this.tester.pumpAndSettle();
+        });
+      });
+    });
+  }
+
+  ///     Executes 6 widget tests in a StateFull Widget. Executes 4 horizontal tests and 4 vertical tests
+  /// to try identify Overflow erros.
+  /// Vertical Dimensions tested: 400x800, 300x600, 200x400
+  /// Horizontal Dimensions tested: 800x400, 600x300, 400x200
+  Future<void> executeSeveralOverflowTests( StatefulWidget Function() callbackCreateInstance ){
+    String msgVertical = "Tests if an Overflow occurrs in a vertical little screen of";
+    String msgHorizontal = "Tests if an Overflow occurrs in a horizontal little screen of";
+    this.criarTeste("${msgVertical} 400x800", callbackCreateInstance(), () async {
+      await this.changeScreenSize( 400.0 , 800.0, callbackCreateInstance(), null);
+    });
+
+    this.criarTeste("${msgVertical} 300x600", callbackCreateInstance(), () async {
+      await this.changeScreenSize( 300.0 , 600.0, callbackCreateInstance(), null);
+    });
+
+    this.criarTeste("${msgVertical}  200x400", callbackCreateInstance(), () async {
+      await this.changeScreenSize( 200.0 , 400.0, callbackCreateInstance(), null);
+    });
+
+    this.criarTeste("${msgHorizontal} 800x400", callbackCreateInstance(), () async {
+      await this.changeScreenSize( 800.0 , 400.0, callbackCreateInstance(), null);
+    });
+
+    this.criarTeste("${msgHorizontal} 600x300", callbackCreateInstance(), () async {
+      await this.changeScreenSize( 600.0 , 300.0, callbackCreateInstance(), null);
+    });
+
+    this.criarTeste("${msgHorizontal} 400x200", callbackCreateInstance(), () async {
+      await this.changeScreenSize( 400.0 , 200.0, callbackCreateInstance(), null);
+    });
+
+  }
+
   /// Return a string with amount letters
   /// Ex: getStringNLetters(5) returns "aaaaa"
   String getStringNLetters(int amount){
