@@ -64,6 +64,8 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     this.clicandoEmVoltarExibeDialogEDirecionaPraPaginaAnterior();
     this.clicandoEmSalvarCriaRegistroEDirecionaPraPaginaAnterior();
     this.clicandoEmDeletarNaoCriaRegistroEDirecionaPraPaginaAnterior();
+
+    super.executeSeveralOverflowTests(() => new CadastroTempoDedicadoTela( this.criarTarefaValida() ) );
   }
 
   void clicandoEmEncerrarExibeCamposEBotoesOcultos(){
@@ -516,6 +518,8 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     this.modoEdicao2EntrandoNaTelaOsCamposDataHoraEstaoPreenchidos();
     this.modoEdicao2ClicandoEmSalvarEditaRegistroEDirecionaPraPaginaAnterior();
     this.modoEdicao2ClicandoEmDeletarDeletaRegistroEDirecionaPraPaginaAnterior();
+
+    super.executeSeveralOverflowTests(() => this.criarTelaModoEdicao2( ) );
   }
 
   void modoEdicao2EntrandoNaTelaOsCamposDataHoraEstaoPreenchidos(){

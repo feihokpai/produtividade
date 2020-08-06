@@ -79,6 +79,8 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
         expect( telaSeguinte.tarefaAtual , tarefaN2);
       });
     });
+
+    super.executeSeveralOverflowTests(() => new ListaDeTempoDedicadoTela( this.criarTarefaValida() ) );
   }
 
   void testarListView(){
