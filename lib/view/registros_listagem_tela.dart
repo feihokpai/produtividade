@@ -21,7 +21,7 @@ class ListaDeTempoDedicadoTela extends StatefulWidget {
   static final String KEY_STRING_ICONE_EDITAR = "editIcon";
   static final String KEY_STRING_TOTAL_TEMPO = "sumTime";
 
-  static final String TEXTO_SEM_REGISTROS = "Não há registros de tempo dedicado";
+  static final String TEXTO_SEM_REGISTROS = "Ainda não há registros encerrados";
 
   ListaDeTempoDedicadoTela( Tarefa tarefa )
       : assert(tarefa != null, "Não pode iniciar a tela de listagem de tempo dedicado com tarefa nula"){
@@ -150,7 +150,6 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
 
   Widget gerarListView() {
     List<TempoDedicado> registrosTempo = this.controlador.getTempoDedicadoOrderByInicio( this.widget.tarefaAtual );
-    int duracao = this.controlador.getTotalGastoNaTarefaEmMinutos( this.widget.tarefaAtual );
     return new ListView.builder(
           scrollDirection: Axis.vertical,
           itemCount: registrosTempo.length,

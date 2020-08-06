@@ -16,12 +16,12 @@ class TempoDedicado implements Comparable<TempoDedicado>{
     this.id = id;
   }
   ///     Retorna a duração deste registro em minutos. Caso não tenha sido registrado um horário de fim
-  /// retorna -1.
+  /// retorna 0.
   int getDuracaoEmMinutos(){
     if( this.fim != null ){
       return this.fim.difference( this.inicio ).inMinutes;
     }
-    return -1;
+    return 0;
   }
 
   int get id => this._id;
