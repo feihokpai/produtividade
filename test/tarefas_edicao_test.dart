@@ -234,6 +234,8 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtilProdutividade{
 
     this.testesBotaoDeletar();
 
+    super.executeSeveralOverflowTests( () => new TarefasEdicaoTela() );
+
   }
 
   void testeModoEdicaoPreenchimentoObjetoTarefa() {

@@ -78,7 +78,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     Widget item = new Padding( padding: const EdgeInsets.all(8.0) );
     if( this.widget.tarefaAtual != null ) {
       item = new Padding(
-        padding: EdgeInsets.fromLTRB(60, 0, 0, 0),
+        padding: EdgeInsets.fromLTRB(8.0, 0, 0, 0),
         child: new RaisedButton(
           key: new ValueKey(TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR),
           onPressed: this.pressionouDeletar,
@@ -119,20 +119,24 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
                 ),
                 new Row(
                   children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: new RaisedButton(
+                          key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
+                          onPressed: this.pressionouSalvar,
+                          child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
+                          color: Colors.blue,),
+                      ),
+                    ),
+                    Expanded(
                       child: new RaisedButton(
-                        key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
-                        onPressed: this.pressionouSalvar,
-                        child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
+                        key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
+                        onPressed: this.pressionouVoltar,
+                        child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
                         color: Colors.blue,),
                     ),
-                    new RaisedButton(
-                      key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
-                      onPressed: this.pressionouVoltar,
-                      child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
-                      color: Colors.blue,),
-                    this.gerarBotaoDeletar(),
+                    Expanded(child: this.gerarBotaoDeletar()),
                   ],
                 ),
               ],
