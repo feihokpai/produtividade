@@ -86,22 +86,24 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
     return WillPopScope(
       onWillPop: pedirConfirmacaoAntesDeFechar,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: new Text( "Tarefas em andamento",
-                style: Estilos.textStyleListaTituloDaPagina,
-                key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
-          ),
-          this.gerarListaViewDasTarefas(),
-          new IconButton(
-            key: new ValueKey( ListaDeTarefasTela.KEY_STRING_ICONE_ADD_TAREFA ),
-            icon: new Icon(Icons.add, size:50),
-            onPressed: this.clicouNoIconeAddTarefa,
-          ),
-        ],
+      child: new SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new Text( "Tarefas em andamento",
+                  style: Estilos.textStyleListaTituloDaPagina,
+                  key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
+            ),
+            this.gerarListaViewDasTarefas(),
+            new IconButton(
+              key: new ValueKey( ListaDeTarefasTela.KEY_STRING_ICONE_ADD_TAREFA ),
+              icon: new Icon(Icons.add, size:50),
+              onPressed: this.clicouNoIconeAddTarefa,
+            ),
+          ],
+        ),
       ),
     );
   }

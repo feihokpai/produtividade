@@ -41,6 +41,62 @@ void main() {
 
   Controlador controlador = getControlador();
 
+  const double PORTRAIT_WIDTH = 400.0;
+  const double PORTRAIT_HEIGHT = 800.0;
+  const double LANDSCAPE_WIDTH = PORTRAIT_HEIGHT;
+  const double LANDSCAPE_HEIGHT = PORTRAIT_WIDTH;
+  Size defaultDimensions;
+
+  testWidgets("Testa se ocorre Overflow na tela 400x800 em pé após inserir 4 registros de Tarefas", (tester) async {
+    final TestWidgetsFlutterBinding binding = TestWidgetsFlutterBinding.ensureInitialized();
+    defaultDimensions = binding.window.physicalSize;
+
+    controlador.getListaDeTarefas().clear();
+    // In the Mock returns 2 Tasks.
+    controlador.salvarTarefa( new Tarefa("aa", "bbbb") );
+    controlador.salvarTarefa( new Tarefa("bb", "cccc") );
+    controlador.salvarTarefa( new Tarefa("cc", "cccc") );
+    controlador.salvarTarefa( new Tarefa("dd", "cccc") );
+
+    await binding.setSurfaceSize(Size(PORTRAIT_WIDTH, PORTRAIT_HEIGHT));
+    await tester.pumpWidget( new MaterialApp (home: new ListaDeTarefasTela()));
+
+  });
+
+  testWidgets("Testa se ocorre Overflow após deitar a tela 800x400 - 4 registros apenas", (tester) async {
+    final TestWidgetsFlutterBinding binding = TestWidgetsFlutterBinding.ensureInitialized();
+    // Test in portrait
+    await binding.setSurfaceSize(Size(LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT));
+    await tester.pumpWidget( new MaterialApp (home: new ListaDeTarefasTela()));
+  });
+
+  testWidgets("Testa se ocorre Overflow na tela 400x800 em pé após inserir 12 registros de Tarefas", (tester) async {
+    controlador.salvarTarefa( new Tarefa("aa", "bbbb") );
+    controlador.salvarTarefa( new Tarefa("bb", "cccc") );
+    controlador.salvarTarefa( new Tarefa("cc", "cccc") );
+    controlador.salvarTarefa( new Tarefa("dd", "cccc") );
+    controlador.salvarTarefa( new Tarefa("cc", "cccc") );
+    controlador.salvarTarefa( new Tarefa("dd", "cccc") );
+
+    final TestWidgetsFlutterBinding binding = TestWidgetsFlutterBinding.ensureInitialized();
+    await binding.setSurfaceSize(Size(PORTRAIT_WIDTH, PORTRAIT_HEIGHT));
+    await tester.pumpWidget( new MaterialApp (home: new ListaDeTarefasTela()));
+
+    await binding.setSurfaceSize(Size(defaultDimensions.width, defaultDimensions.height));
+    tester.pumpAndSettle();
+  });
+
+  testWidgets("Testa se ocorre Overflow na tela 800x400 em pé após inserir 12 registros de Tarefas", (tester) async {
+    final TestWidgetsFlutterBinding binding = TestWidgetsFlutterBinding.ensureInitialized();
+    await binding.setSurfaceSize(Size(LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT));
+    await tester.pumpWidget( new MaterialApp (home: new ListaDeTarefasTela()));
+
+    await binding.setSurfaceSize(Size(defaultDimensions.width, defaultDimensions.height));
+    tester.pumpAndSettle();
+  });
+
+  controlador = getControlador();
+
   testWidgets('Tela inicial - Geração da List view',
       (WidgetTester tester) async {
 
@@ -53,19 +109,20 @@ void main() {
 
     List<Tarefa> tarefas = controlador.getListaDeTarefas();
     Finder finderScrolls = find.byType(SingleChildScrollView);
-    expect(finderScrolls, findsNWidgets(tarefas.length));
+    // "1+" porque tem um SingleChildScrollView como widget inicial.
+    expect(finderScrolls, findsNWidgets( 1+tarefas.length));
 
     // Teste: Adicionar uma tarefa na lista
     tarefas.add(new Tarefa("tarefa 3", "blablabla"));
     await tester.pumpWidget(makeTestable(new ListaDeTarefasTela()));
     finderScrolls = find.byType(SingleChildScrollView);
-    expect(finderScrolls, findsNWidgets(tarefas.length));
+    expect(finderScrolls, findsNWidgets(1+tarefas.length));
 
     // teste: remover tarefa da lista.
     tarefas.removeLast();
     await tester.pumpWidget(makeTestable(new ListaDeTarefasTela()));
     finderScrolls = find.byType(SingleChildScrollView);
-    expect(finderScrolls, findsNWidgets(tarefas.length));
+    expect(finderScrolls, findsNWidgets(1+tarefas.length));
 
     // teste: remover todos da lista.
     while (!tarefas.isEmpty) {
@@ -73,7 +130,7 @@ void main() {
     }
     await tester.pumpWidget(makeTestable(new ListaDeTarefasTela()));
     finderScrolls = find.byType(SingleChildScrollView);
-    expect(finderScrolls, findsNothing);
+    expect(finderScrolls, findsOneWidget);
   });
 
   List<Tarefa> gerarNTarefas(int qtd) {
