@@ -75,7 +75,7 @@ class CampoDeTextoWidget{
     if( this._widget == null ){
       this._widget = new TextFormField(
         key: this._key,
-        enabled: this.editavel,
+        readOnly: !(this.editavel),
         keyboardType: TextInputType.text,
         decoration: new InputDecoration(
             contentPadding: EdgeInsets.all(10.0),
