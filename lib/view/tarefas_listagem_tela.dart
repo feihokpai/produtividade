@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
@@ -124,7 +125,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     ComunsWidgets.exibirDialogConfirmacao(this.context,
         "Você deseja sair do aplicativo?", "").then((resposta) {
        if( resposta == 1 ){
-         Navigator.of(this.context).pop(true);
+         SystemNavigator.pop();
          return true;
        }
     });
