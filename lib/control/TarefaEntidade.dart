@@ -34,9 +34,6 @@ class Tarefa{
   int get id => this._id;
 
   void set id( int valor ){
-    if( valor <= 0 ){
-      throw new Exception("Não pode setar um valor menor ou igual a zero (${valor}) para o id de uma tarefa ");
-    }
     this._id = valor;
   }
 

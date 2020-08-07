@@ -16,12 +16,6 @@ void main(){
     expect( tarefa.id, 0 );
   } );
 
-  test( "Tarefa: (id) setter Impede id <=0" , (){
-    final tarefa = new Tarefa("nome", "descricao");
-    expect( (){ tarefa.id = 0;} , throwsException );
-    expect( (){ tarefa.id = -1;} , throwsException );
-  });
-
   test( "Tarefa: (id) setter Permite id > 0" , (){
     final tarefa = new Tarefa("nome", "descricao");
     expect(  tarefa.id = 1 , 1 );
