@@ -160,7 +160,7 @@ class CampoDataHoraTest extends WidgetTestsUtilProdutividade{
     super.criarTeste("Campo de texto é preenchido corretamente ao selecionar hora?", this.telaFake(), () {
       super.tapWidget( this.keyHora, FinderTypes.KEY_STRING , () {
         Offset centro = tester.getCenter( find.byKey(new ValueKey('time-picker-dial') ) );
-        // Abaixo vai clicar primeiro às 6h
+        // Abaixo vai clicar primeiro às 12h
         super.tester.tapAt( new Offset(centro.dx, centro.dy+5 ) ).then((value) {
           super.tester.pump().then((value) {
             // Abaixo vai clicar em 15m
@@ -173,7 +173,7 @@ class CampoDataHoraTest extends WidgetTestsUtilProdutividade{
                   expect( dataHoraSelecionada.day , agora.day);
                   expect( dataHoraSelecionada.month , agora.month);
                   expect( dataHoraSelecionada.year , agora.year);
-                  expect( dataHoraSelecionada.hour , 6);
+                  expect( dataHoraSelecionada.hour , 12);
                   expect( dataHoraSelecionada.minute , 15);
                   expect( dataHoraSelecionada.second , 0);
                   String valorEsperado = CampoDataHora.formatterPadrao.format( dataHoraSelecionada );
