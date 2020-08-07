@@ -3,7 +3,6 @@ import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
-import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 
 class ListaDeTarefasTela extends StatefulWidget {
 
@@ -38,6 +37,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     return new ListView.builder(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
+      physics: ScrollPhysics(),
       padding: EdgeInsets.fromLTRB(5, 20, 0, 0),
       itemCount: tarefas.length,
       itemBuilder: (context, indice) {
