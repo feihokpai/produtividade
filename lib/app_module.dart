@@ -5,6 +5,8 @@ import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
 import 'package:registro_produtividade/control/interfaces/ITempoDedicadoPersistencia.dart';
+import 'package:registro_produtividade/model/json/TarefaPersistenciaJson.dart';
+import 'package:registro_produtividade/model/json/TempoDedicadoPersistenciaJson.dart';
 import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
 import 'package:registro_produtividade/model/mocks/TempoDedicadoPersistenciaMock.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
@@ -21,8 +23,8 @@ class AppModule extends MainModule {
   // Provide a list of dependencies to inject into your project
   @override
   List<Bind> get binds => [
-    new Bind<ITarefaPersistencia>( (injects) => new TarefaPersistenciaMock() ),
-    new Bind<ITempoDedicadoPersistencia>( (injects) => new TempoDedicadoPersistenciaMock() ),
+    new Bind<ITarefaPersistencia>( (injects) => new TarefaPersistenciaJson() ),
+    new Bind<ITempoDedicadoPersistencia>( (injects) => new TempoDedicadoPersistenciaJson() ),
   ];
 
   // Provide all the routes for your module
