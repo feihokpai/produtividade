@@ -7,7 +7,7 @@ class Tarefa{
   int _status = Tarefa.ABERTA;
   bool arquivada = false;
   Tarefa _tarefaPai = null;
-  DateTime dataHoraCadastro = null;
+  DateTime _dataHoraCadastro = null;
   DateTime _dataHoraConclusao = null;
 
   static const int ABERTA = 1;
@@ -19,7 +19,14 @@ class Tarefa{
   Tarefa( String nome, this.descricao ){
     this._id = 0; // Não passa pelo setter, pra evitar erro.
     this.nome = nome;
-    this.dataHoraCadastro = DateTime.now();
+    this._dataHoraCadastro = DateTime.now();
+  }
+
+  DateTime get dataHoraCadastro => this._dataHoraCadastro;
+
+  void set dataHoraCadastro(DateTime dataHoraCadastro){
+    assert( dataHoraCadastro != null, "A data e hora de cadastro não podem ser nulas" );
+    this._dataHoraCadastro = dataHoraCadastro;
   }
 
   int get status => this._status;
@@ -68,9 +75,12 @@ class Tarefa{
   DateTime get dataHoraConclusao => this._dataHoraConclusao;
 
   void set dataHoraConclusao(DateTime valor){
-    DateTime agora = DateTime.now();
-    if( (valor.day - agora.day ) > 0 ){
-      throw new Exception( "${valor} é posterior a data de hoje ${agora}. A data de conclusão não pode ser uma data futura" );
+    if( valor != null ) {
+      DateTime agora = DateTime.now();
+      if ((valor.day - agora.day) > 0) {
+        throw new Exception(
+            "${valor} é posterior a data de hoje ${agora}. A data de conclusão não pode ser uma data futura");
+      }
     }
     this._dataHoraConclusao = valor;
   }
