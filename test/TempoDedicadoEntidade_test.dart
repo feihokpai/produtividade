@@ -21,8 +21,8 @@ class TempoDedicadoEntidadeTest{
   }
 
   void runAll(){
-    test("Tempo dedicado: (id) construtor não permite id<0?", (){
-      expect( () => new TempoDedicado( this.criarTarefaValida(), id: -1 ), throwsException );
+    test("Tempo dedicado: (id) construtor permite id<0?", (){
+      expect( new TempoDedicado( this.criarTarefaValida(), id: -1 ).id, -1 );
     });
 
     test("Tempo dedicado: (id) construtor permite id=0?", (){
@@ -33,9 +33,9 @@ class TempoDedicadoEntidadeTest{
       expect( new TempoDedicado( this.criarTarefaValida(), id: 1 ).id, 1 );
     });
 
-    test("Tempo dedicado: (id) setter não permite id<0?", (){
+    test("Tempo dedicado: (id) setter permite id<0?", (){
       TempoDedicado td = new TempoDedicado( this.criarTarefaValida() );
-      expect( () => td.id = -1, throwsException );
+      expect( td.id = -1, -1 );
     });
 
     test("Tempo dedicado: (id) setter permite id=0?", (){
@@ -52,18 +52,13 @@ class TempoDedicadoEntidadeTest{
       expect( () => new TempoDedicado( null ), throwsException );
     });
 
-    test("Tempo dedicado: (tarefa) construtor não permite tarefa com id=0?", (){
-      expect( () => new TempoDedicado( this.criarTarefaValidaSemId() ), throwsException );
+    test("Tempo dedicado: (tarefa) construtor permite tarefa com id=0?", (){
+      expect( new TempoDedicado( this.criarTarefaValidaSemId() ).id, 0 );
     });
 
     test("Tempo dedicado: (tarefa) setter não permite valor nulo?", (){
       TempoDedicado td = new TempoDedicado( this.criarTarefaValida() );
       expect( () => td.tarefa = null, throwsException );
-    });
-
-    test("Tempo dedicado: (tarefa) setter não permite tarefa com id=0?", (){
-      TempoDedicado td = new TempoDedicado( this.criarTarefaValida() );
-      expect( () => td.tarefa = this.criarTarefaValidaSemId(), throwsException );
     });
 
     test("Tempo dedicado: (inicio) construtor por default seta a data/hora atual?", (){

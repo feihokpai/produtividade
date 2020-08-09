@@ -99,6 +99,12 @@ class Tarefa{
     return "id(${this.id}): nome(${this.nome}) - descrição: ${this.descricao}";
   }
 
+  ///     Retorna uma instância da classe Tarefa com o id passado como parâmetro, com um nome qualquer
+  /// e com descrição null.
+  static Tarefa gerarTarefaSomenteComId( int id ){
+    return new Tarefa("nem nome", null, id: id);
+  }
+
 
 
   /*
