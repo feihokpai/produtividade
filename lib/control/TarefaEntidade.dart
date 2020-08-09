@@ -16,8 +16,8 @@ class Tarefa{
 
   static const int LIMITE_TAMANHO_NOME = 35;
 
-  Tarefa( String nome, this.descricao ){
-    this._id = 0; // Não passa pelo setter, pra evitar erro.
+  Tarefa( String nome, this.descricao, {int id=0} ){
+    this.id = id;
     this.nome = nome;
     this._dataHoraCadastro = DateTime.now();
   }
