@@ -62,7 +62,7 @@ class TarefaPersistenciaJsonTest {
       expect( instanciado, false );
     });
 
-    test("Tarefa persistência JSON: Se chamar o setter de arquivo, instancia?", () async{
+    test("Tarefa persistência JSON: Se chamar o getter de arquivo, instancia?", () async{
       TarefaPersistenciaJson obj1 = new TarefaPersistenciaJson();
       expect(obj1.arquivoInstanciado(), false);
       File arquivo = await obj1.arquivo;

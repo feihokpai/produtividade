@@ -7,7 +7,7 @@ import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.da
 import 'package:registro_produtividade/model/json/TarefaJSON.dart';
 import 'IPersistenciaJSON.dart';
 
-class TarefaPersistenciaJson extends ITarefaPersistencia{
+class TarefaPersistenciaJson implements ITarefaPersistencia{
   File _arquivo;
   File arquivoBackup;
   /// Classe que auxilia no salvamento e leitura de arquivos no formato JSON.
