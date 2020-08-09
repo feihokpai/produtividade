@@ -1,25 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
 
-class PersistenciaJson{
-  File _arquivoSalvamento;
+import 'package:registro_produtividade/model/json/IPersistenciaJSON.dart';
 
-  PersistenciaJson( String pathArquivo ){
-    this._arquivoSalvamento = new File( pathArquivo );
-  }
-
-  File get arquivoSalvamento{
-    return this._arquivoSalvamento;
+class PersistenciaJson implements IPersistenciaJSON{
+  PersistenciaJson(  ){
   }
 
   /// Lê o conteúdo completo do arquivo configurado e retorna uma String com o conteúdo.
   /// Lança exceção se o arquivo não tiver sido configurado corretamente ou se ocorrer erro de leitura.
-  Future<List<dynamic>> lerArquivo() async{
-    if( this.arquivoSalvamento == null) {
-      throw new Exception("Não é possível ler os dados do arquivo JSON, porque ele não foi configurado.");
-    }
+  Future<List<dynamic>> lerArquivo(File arquivo) async{
+    assert(arquivo != null, "Não é possível ler os dados do arquivo JSON, porque ele não foi repassado.");
     try{
-        String conteudo = await this.arquivoSalvamento.readAsString();
+        String conteudo = await arquivo.readAsString();
         //###################################################################
         print("conteúdo do arquivo: ${conteudo}");
         //###################################################################
@@ -30,20 +23,20 @@ class PersistenciaJson{
   }
 
   /**     Apaga o conteúdo do arquivo Json e salva no lugar a string passada como parâmetro. */
-  void salvarSubstituindoConteudo( String conteudo ){
-    this.arquivoSalvamento.writeAsString( conteudo, mode: FileMode.write );
+  void salvarSubstituindoConteudo( File arquivo, String conteudo ){
+    arquivo.writeAsString( conteudo, mode: FileMode.write );
   }
 
   /**     Apaga o conteúdo do arquivo Json e salva no lugar a string passada como parâmetro. */
-  void salvarObjetoSubstituindoConteudo( dynamic objeto ){
+  void salvarObjetoSubstituindoConteudo( File arquivo, dynamic objeto ){
     String conteudoString = json.encode( objeto );
-    this.salvarSubstituindoConteudo( conteudoString );
+    this.salvarSubstituindoConteudo( arquivo, conteudoString );
   }
 
   /**     Salva no arquivo Json o conteúdo passado como parâmetro ao final do arquivo. Ou seja,
    *  não substitui o conteúdo. Apenas adiciona. */
-  void salvarAdicionandoConteudo( String conteudo ){
-    this.arquivoSalvamento.writeAsString( conteudo, mode: FileMode.append );
+  void salvarAdicionandoConteudo( File arquivo, String conteudo ){
+    arquivo.writeAsString( conteudo, mode: FileMode.append );
   }
 
 }

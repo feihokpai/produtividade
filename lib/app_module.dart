@@ -5,6 +5,8 @@ import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
 import 'package:registro_produtividade/control/interfaces/ITempoDedicadoPersistencia.dart';
+import 'package:registro_produtividade/model/json/IPersistenciaJSON.dart';
+import 'package:registro_produtividade/model/json/PersistenciaJSON.dart';
 import 'package:registro_produtividade/model/json/TarefaPersistenciaJson.dart';
 import 'package:registro_produtividade/model/json/TempoDedicadoPersistenciaJson.dart';
 import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
@@ -18,6 +20,9 @@ import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
 class AppModule extends MainModule {
 
+  static const String nomeArquivoTarefas = "tarefa.json";
+  static const String nomeArquivoTarefasBackup = "tarefa_backup.json";
+
   StatefulWidget telaInicial = new ListaDeTarefasTela();
 
   // Provide a list of dependencies to inject into your project
@@ -25,6 +30,7 @@ class AppModule extends MainModule {
   List<Bind> get binds => [
     new Bind<ITarefaPersistencia>( (injects) => new TarefaPersistenciaJson() ),
     new Bind<ITempoDedicadoPersistencia>( (injects) => new TempoDedicadoPersistenciaJson() ),
+    new Bind<IPersistenciaJSON>( (injects) => new PersistenciaJson() ),
   ];
 
   // Provide all the routes for your module
