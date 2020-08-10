@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:registro_produtividade/app_module.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITempoDedicadoPersistencia.dart';
 import 'package:registro_produtividade/model/json/GenericoPersistenciaJson.dart';
 import 'package:registro_produtividade/model/json/TempoDedicadoJSON.dart';
@@ -13,8 +13,8 @@ class TempoDedicadoPersistenciaJson extends GenericoPersistenciaJson implements 
 
   static TempoDedicadoPersistenciaJson _instance;
 
-  TempoDedicadoPersistenciaJson._privado(): super(){
-    super.nomeArquivo = AppModule.nomeArquivoTempoDedicado;
+  TempoDedicadoPersistenciaJson._privado()
+      : super( new TempoDedicadoJSON(), AppModule.nomeArquivoTempoDedicado ){
   }
 
   factory TempoDedicadoPersistenciaJson(){
@@ -45,7 +45,7 @@ class TempoDedicadoPersistenciaJson extends GenericoPersistenciaJson implements 
   void cadastrarTempo(TempoDedicado tempo) {
     assert(tempo != null, "Tentou cadastrar um registro de tempo com instância nula.");
     tempo.id = this._getProximoIdDisponivel( );
-    this.listaJson.add( TempoDedicadoJSON.toMap( tempo ) );
+    this.listaJson.add( super.jsonConverter.toMap( tempo ) );
     super.salvarConteudoJsonNoArquivo();
   }
 
@@ -75,9 +75,9 @@ class TempoDedicadoPersistenciaJson extends GenericoPersistenciaJson implements 
     this._assertsTempoDedicado( tempo );
     Map map = this._getTempoDedicadoMapOuException( tempo );
     // Não checa se tempo.inicio é null, pois o setter e o contrutor da entidade impedem isso.
-    map[ TempoDedicadoJSON.DT_INICIO_COLUNA ] = TempoDedicadoJSON.formatter.format( tempo.inicio );
+    map[ TempoDedicadoJSON.DT_INICIO_COLUNA ] = super.jsonConverter.formatter.format( tempo.inicio );
     String dataFormatada = tempo.fim == null ?
-      TempoDedicadoJSON.DATA_VAZIA : TempoDedicadoJSON.formatter.format( tempo.fim );
+      TempoDedicadoJSON.DATA_VAZIA : super.jsonConverter.formatter.format( tempo.fim );
     map[ TempoDedicadoJSON.DT_FIM_COLUNA ] = dataFormatada;
     super.salvarConteudoJsonNoArquivo();
   }
@@ -112,7 +112,7 @@ class TempoDedicadoPersistenciaJson extends GenericoPersistenciaJson implements 
   void _transfereDaListaJsonParaListaDeRegistros(){
     this.registrosTempoDedicado.clear();
     this.listaJson.forEach( (element) {
-      this.registrosTempoDedicado.add( TempoDedicadoJSON.fromMap( element ) );
+      this.registrosTempoDedicado.add( super.jsonConverter.fromMap( element ) );
     });
   }
   

@@ -6,8 +6,8 @@ import 'package:flutter_modular/flutter_modular_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:registro_produtividade/app_module.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/model/json/IPersistenciaJSON.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:registro_produtividade/model/json/TarefaJSON.dart';
@@ -116,7 +116,7 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
     test("Tempo dedicado persistência JSON: Cadastrar - cria um Map com dados corretos?", () async {
       TempoDedicadoPersistenciaJson obj = this.criarPersistenciaListasVazias();
       TempoDedicado tempo = this.criarTempoValido();
-      Map mapTempo = TempoDedicadoJSON.toMap( tempo );
+      Map mapTempo = obj.jsonConverter.toMap( tempo );
       await obj.cadastrarTempo( tempo );
       expect( obj.listaJson[ 0 ][ TempoDedicadoJSON.ID_COLUNA] , 1 );
       expect( obj.listaJson[ 0 ][ TempoDedicadoJSON.ID_TAREFA_COLUNA] , mapTempo[TempoDedicadoJSON.ID_TAREFA_COLUNA]);
@@ -181,12 +181,12 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
     test("Tempo dedicado persistência JSON: Editar - Altera o Map corretamente?", ()async{
       TempoDedicadoPersistenciaJson obj = await this.criarPersistenciaListasVazias();
       TempoDedicado t1 = this.criarTempoValido();
-      Map t1Map = TempoDedicadoJSON.toMap( t1 );
-      String antigoInicio = TempoDedicadoJSON.formatter.format( t1.inicio );
+      Map t1Map = obj.jsonConverter.toMap( t1 );
+      String antigoInicio = obj.jsonConverter.formatter.format( t1.inicio );
       await obj.cadastrarTempo( t1 );
       expect( obj.listaJson[0][TempoDedicadoJSON.DT_INICIO_COLUNA] , antigoInicio );
       t1.inicio = t1.inicio.subtract( new Duration( hours: 2 ) );
-      String novoInicio = TempoDedicadoJSON.formatter.format( t1.inicio );
+      String novoInicio = obj.jsonConverter.formatter.format( t1.inicio );
       await obj.editarTempo( t1 );
       expect( obj.listaJson[0][TempoDedicadoJSON.DT_INICIO_COLUNA] , novoInicio);
     });
@@ -204,12 +204,12 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
     test("Tempo dedicado persistência JSON: Editar - edita no Map, mas não na Lista de tempo?", ()async{
       TempoDedicadoPersistenciaJson obj = await this.criarPersistenciaComRegistrosCadastrados( 1 );
       await obj.getAllTempoDedicado();
-      String dataFimFormatada = TempoDedicadoJSON.formatter.format( obj.registrosTempoDedicado[0].fim );
+      String dataFimFormatada = obj.jsonConverter.formatter.format( obj.registrosTempoDedicado[0].fim );
       expect( obj.listaJson[0][TempoDedicadoJSON.DT_FIM_COLUNA] , dataFimFormatada );
       TempoDedicado t1 = this.criarTempoValido( id: 1 );
       t1.fim = DataHoraUtil.criarDataHojeFimDoDia();
       await obj.editarTempo( t1 );
-      dataFimFormatada = TempoDedicadoJSON.formatter.format( obj.registrosTempoDedicado[0].fim );
+      dataFimFormatada = obj.jsonConverter.formatter.format( obj.registrosTempoDedicado[0].fim );
       expect( (obj.listaJson[0][TempoDedicadoJSON.DT_FIM_COLUNA] != dataFimFormatada), true );
     });
   }
@@ -263,9 +263,9 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
       obj.getAllTempoDedicado();
       expect( obj.registrosTempoDedicado[0].id , obj.listaJson[0][TempoDedicadoJSON.ID_COLUNA]);
       expect( obj.registrosTempoDedicado[0].tarefa.id , obj.listaJson[0][TempoDedicadoJSON.ID_TAREFA_COLUNA]);
-      DateTime inicioDateTime = TarefaJSON.formatter.parse( obj.listaJson[0][TempoDedicadoJSON.DT_INICIO_COLUNA] ) ;
+      DateTime inicioDateTime = obj.jsonConverter.formatter.parse( obj.listaJson[0][TempoDedicadoJSON.DT_INICIO_COLUNA] ) ;
       expect( obj.registrosTempoDedicado[0].inicio , inicioDateTime );
-      DateTime fimDateTime = TarefaJSON.formatter.parse( obj.listaJson[0][TempoDedicadoJSON.DT_FIM_COLUNA] ) ;
+      DateTime fimDateTime = obj.jsonConverter.formatter.parse( obj.listaJson[0][TempoDedicadoJSON.DT_FIM_COLUNA] ) ;
       expect( obj.registrosTempoDedicado[0].fim , fimDateTime );
     });
   }

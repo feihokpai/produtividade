@@ -5,7 +5,7 @@ import 'package:flutter_modular/flutter_modular_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:registro_produtividade/app_module.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/model/json/IPersistenciaJSON.dart';
 import 'package:registro_produtividade/model/json/TarefaJSON.dart';
 import 'package:registro_produtividade/model/json/TarefaPersistenciaJson.dart';
@@ -94,7 +94,7 @@ class TarefaPersistenciaJsonTest {
       TarefaPersistenciaJson obj1 = new TarefaPersistenciaJson();
       obj1.listaJson.clear();
       Tarefa tarefa = this.criarTarefaValida();
-      Map tarefaMap = TarefaJSON.toMap( tarefa );
+      Map tarefaMap = obj1.jsonConverter.toMap( tarefa );
       await obj1.cadastrarTarefa( tarefa );
       Map mapaSalvo = obj1.listaJson[0];
       // Só tem 1 item no mapa. Sendo assim, pela regra, o próximo id da tarefa tem de ser 1.
@@ -187,7 +187,7 @@ class TarefaPersistenciaJsonTest {
       await obj1.cadastrarTarefa( t1 );
       t1.nome = "xxxx";
       t1.descricao = "yyyyy";
-      Map tarefaMap = TarefaJSON.toMap( t1 );
+      Map tarefaMap = obj1.jsonConverter.toMap( t1 );
       obj1.editarTarefa( t1 );
       Map mapaSalvo = obj1.listaJson[0];
       // Só tem 1 item no mapa. Sendo assim, pela regra, o próximo id da tarefa tem de ser 1.

@@ -1,12 +1,9 @@
 import 'dart:io';
-import 'package:flutter_modular/flutter_modular.dart';
-import "package:path_provider/path_provider.dart";
 import 'package:registro_produtividade/app_module.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
 import 'package:registro_produtividade/model/json/GenericoPersistenciaJson.dart';
 import 'package:registro_produtividade/model/json/TarefaJSON.dart';
-import 'IPersistenciaJSON.dart';
 
 class TarefaPersistenciaJson extends GenericoPersistenciaJson implements ITarefaPersistencia{
   /// Armazena todas as tarefas lidas do arquivo JSON.
@@ -15,8 +12,8 @@ class TarefaPersistenciaJson extends GenericoPersistenciaJson implements ITarefa
   static TarefaPersistenciaJson _instancia;
 
   /// Construtor acessado somente dentro da classe, para evitar que entidades fora daqui criem novas instãncias.
-  TarefaPersistenciaJson._construtorPrivado() {
-    super.nomeArquivo = AppModule.nomeArquivoTarefas;
+  TarefaPersistenciaJson._construtorPrivado()
+      :super( new TarefaJSON() , AppModule.nomeArquivoTarefas ){
   }
 
   factory TarefaPersistenciaJson(){
@@ -45,7 +42,7 @@ class TarefaPersistenciaJson extends GenericoPersistenciaJson implements ITarefa
   @override
   Future<void> cadastrarTarefa(Tarefa tarefa) async {
     tarefa.id = this.getProximoIdDisponivel();
-    this.listaJson.add( TarefaJSON.toMap( tarefa ) );
+    this.listaJson.add( super.jsonConverter.toMap( tarefa ) );
     await super.salvarConteudoJsonNoArquivo();
   }
 
@@ -91,7 +88,7 @@ class TarefaPersistenciaJson extends GenericoPersistenciaJson implements ITarefa
   void _transfereDaListaJsonParaListaDeTarefas(){
     this.tarefas.clear();
     this.listaJson.forEach( (element) {
-      this.tarefas.add( TarefaJSON.fromMap( element ) );
+      this.tarefas.add( super.jsonConverter.fromMap( element ) );
     });
   }
 

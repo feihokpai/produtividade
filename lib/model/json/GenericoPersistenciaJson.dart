@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:registro_produtividade/model/json/GenericJsonConverter.dart';
 import 'IPersistenciaJSON.dart';
 
 class GenericoPersistenciaJson{
@@ -9,13 +9,17 @@ class GenericoPersistenciaJson{
   String nomeArquivo;
   String nomeArquivoBackup;
 
+  GenericJsonConverter jsonConverter;
+
   File _arquivo;
   /// Classe que auxilia no salvamento e leitura de arquivos no formato JSON.
   IPersistenciaJSON _daoJson;
 
   List<Map<String, dynamic>> listaJson = new List();
 
-  GenericoPersistenciaJson(){
+  GenericoPersistenciaJson( GenericJsonConverter jsonConverter, String nomeArquivo ){
+    this.nomeArquivo = nomeArquivo;
+    this.jsonConverter = jsonConverter;
     this._daoJson = Modular.get<IPersistenciaJSON>();
   }
 
