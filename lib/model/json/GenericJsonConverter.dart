@@ -14,4 +14,5 @@ abstract class GenericJsonConverter{
 
   Map<String, dynamic> toMap( EntidadeDominio entidade );
   EntidadeDominio fromMap( Map<String, dynamic> mapa );
+  List<String> columnsList();
 }

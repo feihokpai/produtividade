@@ -52,4 +52,11 @@ class TarefaJSON extends GenericJsonConverter{
     return tarefa;
   }
 
+  @override
+  List<String> columnsList() {
+    return <String>[ ID_COLUNA, NOME_COLUNA, DESCRICAO_COLUNA, DATA_CONCLUSAO_COLUNA, DATA_CADASTRO_COLUNA,
+      ARQUIVADA_COLUNA, STATUS_COLUNA, TAREFA_PAI_COLUNA
+    ];
+  }
+
 }

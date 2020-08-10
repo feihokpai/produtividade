@@ -37,4 +37,11 @@ class TempoDedicadoJSON extends GenericJsonConverter{
     return obj;
   }
 
+  @override
+  List<String> columnsList() {
+    return <String>[
+      ID_COLUNA, ID_TAREFA_COLUNA, DT_FIM_COLUNA, DT_INICIO_COLUNA
+    ];
+  }
+
 }
