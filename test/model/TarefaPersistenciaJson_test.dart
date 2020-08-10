@@ -77,6 +77,12 @@ class TarefaPersistenciaJsonTest {
   }
 
   void cadastrarTarefaTestes(){
+
+    test("Tarefa persistência JSON: Cadastrar Tarefa passando null, gera erro de assert?", () async{
+      TarefaPersistenciaJson obj1 = new TarefaPersistenciaJson();
+      expect( ()=> obj1.cadastrarTarefa( null ), throwsAssertionError );
+    });
+
     test("Tarefa persistência JSON: Cadastrar Tarefa cria um registro na lista de maps?", () async{
       TarefaPersistenciaJson obj1 = new TarefaPersistenciaJson();
       int qtdAntes = obj1.listaJson.length;
@@ -132,10 +138,10 @@ class TarefaPersistenciaJsonTest {
     test("Tarefa persistência JSON: Cadastrar Tarefa adiciona no Map, mas não na Lista de tarefas?", () async{
       TarefaPersistenciaJson obj = new TarefaPersistenciaJson();
       int qtdJson = obj.listaJson.length;
-      int qtdTarefas = obj.tarefas.length;
+      int qtdTarefas = obj.entidades.length;
       await obj.cadastrarTarefa( this.criarTarefaValida() );
       expect( obj.listaJson.length, (qtdJson+1) );
-      expect( obj.tarefas.length, qtdTarefas );
+      expect( obj.entidades.length, qtdTarefas );
     });
   }
 
@@ -220,7 +226,8 @@ class TarefaPersistenciaJsonTest {
       t.nome = "outro nome qualquer";
       await obj.editarTarefa( t );
       expect( obj.listaJson[0][TarefaJSON.NOME_COLUNA], t.nome );
-      expect( obj.tarefas[0].nome, nomeInicial );
+      Tarefa tarefa = obj.entidades[0];
+      expect( tarefa.nome, nomeInicial );
     });
 
   }
@@ -277,10 +284,10 @@ class TarefaPersistenciaJsonTest {
       // carrega os dados para a lista de objetos Tarefa.
       await obj.getAllTarefa();
       int qtdJson = obj.listaJson.length;
-      int qtdTarefas = obj.tarefas.length;
+      int qtdTarefas = obj.entidades.length;
       await obj.deletarTarefa( this.criarTarefaValida(id: 1) );
       expect( obj.listaJson.length, (qtdJson-1) );
-      expect( obj.tarefas.length, qtdTarefas );
+      expect( obj.entidades.length, qtdTarefas );
     });
 
   }
@@ -289,12 +296,12 @@ class TarefaPersistenciaJsonTest {
     test("Tarefa persistência JSON: getAllTarefa() carrega a lista de objetos Tarefa?", () async{
       TarefaPersistenciaJson obj = new TarefaPersistenciaJson();
       obj.listaJson.clear();
-      obj.tarefas.clear();
+      obj.entidades.clear();
       await obj.cadastrarTarefa( this.criarTarefaValida() );
       await obj.cadastrarTarefa( this.criarTarefaValida() );
-      expect( obj.tarefas.length , 0 );
+      expect( obj.entidades.length , 0 );
       await obj.getAllTarefa();
-      expect( obj.tarefas.length , 2 );
+      expect( obj.entidades.length , 2 );
     });
   }
 }
