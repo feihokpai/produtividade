@@ -1,5 +1,5 @@
 import 'package:mockito/mockito.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
 
 class TarefaPersistenciaMock extends Mock implements ITarefaPersistencia{

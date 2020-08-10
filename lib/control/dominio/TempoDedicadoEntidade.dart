@@ -1,8 +1,8 @@
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/EntidadeDominio.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 
-class TempoDedicado implements Comparable<TempoDedicado>{
-  int _id;
+class TempoDedicado extends EntidadeDominio implements Comparable<TempoDedicado>{
   Tarefa _tarefa;
   DateTime _inicio;
   DateTime _fim;
@@ -22,12 +22,6 @@ class TempoDedicado implements Comparable<TempoDedicado>{
       return this.fim.difference( this.inicio ).inMinutes;
     }
     return 0;
-  }
-
-  int get id => this._id;
-
-  void set id(int valor){
-    this._id = valor;
   }
 
   DateTime get inicio => this._inicio;

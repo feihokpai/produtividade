@@ -1,5 +1,5 @@
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 
 abstract class ITempoDedicadoPersistencia{
   void cadastrarTempo(TempoDedicado tempo);

@@ -1,7 +1,8 @@
 import 'dart:io';
 
-class Tarefa{
-  int _id;
+import 'package:registro_produtividade/control/dominio/EntidadeDominio.dart';
+
+class Tarefa extends EntidadeDominio{
   String _nome;
   String descricao;
   int _status = Tarefa.ABERTA;
@@ -36,12 +37,6 @@ class Tarefa{
       throw new Exception("Tentou passar para uma tarefa um status inválido: ${valor}");
     }
     this._status = valor;
-  }
-
-  int get id => this._id;
-
-  void set id( int valor ){
-    this._id = valor;
   }
 
   String get nome => _nome;
