@@ -47,6 +47,10 @@ class GenericoPersistenciaJson{
   }
 
   Future<void> _instanciarArquivo() async {
+    if( this.nomeArquivo == null ){
+      throw new Exception( "Tentou instanciar o arquivo para persistência, mas não configurou o nome do"
+          " mesmo." );
+    }
     String pathDiretorio = await this._pathDiretorioArquivos();
     String pathCompleto = pathDiretorio+"/"+this.nomeArquivo;
     this._arquivo = new File( pathCompleto );

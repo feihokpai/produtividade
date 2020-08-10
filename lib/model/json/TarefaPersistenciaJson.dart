@@ -4,23 +4,19 @@ import "package:path_provider/path_provider.dart";
 import 'package:registro_produtividade/app_module.dart';
 import 'package:registro_produtividade/control/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
+import 'package:registro_produtividade/model/json/GenericoPersistenciaJson.dart';
 import 'package:registro_produtividade/model/json/TarefaJSON.dart';
 import 'IPersistenciaJSON.dart';
 
-class TarefaPersistenciaJson implements ITarefaPersistencia{
-  File _arquivo;
-  File arquivoBackup;
-  /// Classe que auxilia no salvamento e leitura de arquivos no formato JSON.
-  IPersistenciaJSON _daoJson;
+class TarefaPersistenciaJson extends GenericoPersistenciaJson implements ITarefaPersistencia{
   /// Armazena todas as tarefas lidas do arquivo JSON.
   List<Tarefa> tarefas = new List();
-  List<dynamic> tarefasJson = new List();
 
   static TarefaPersistenciaJson _instancia;
 
   /// Construtor acessado somente dentro da classe, para evitar que entidades fora daqui criem novas instãncias.
   TarefaPersistenciaJson._construtorPrivado() {
-    this._daoJson = Modular.get<IPersistenciaJSON>();
+    super.nomeArquivo = AppModule.nomeArquivoTarefas;
   }
 
   factory TarefaPersistenciaJson(){
@@ -28,33 +24,17 @@ class TarefaPersistenciaJson implements ITarefaPersistencia{
     return TarefaPersistenciaJson._instancia;
   }
 
-  IPersistenciaJSON get daoJson => this._daoJson;
-
   Future<File> get arquivo async{
-    if( this._arquivo == null ){
-      await this._configurar();
+    if( !super.arquivoFoiInstanciado() ){
+      await super.configurarArquivo();
     }
-    return this._arquivo;
-  }
-
-  void _configurar() async{
-    await this._configurarArquivo();
-    await this._carregarDadosDoArquivo();
-  }
-
-  void _configurarArquivo() async {
-    if( this._arquivo != null ){
-      return;
-    }
-    Directory pastaDeDocumentos = await getApplicationDocumentsDirectory();
-    String path = "${pastaDeDocumentos.path}/${AppModule.nomeArquivoTarefas}";
-    this._arquivo = new File( path );
+    return super.arquivo;
   }
 
   void _carregarDadosDoArquivo() async {
     List<dynamic> resultado = await this.daoJson.lerArquivo(await this.arquivo);
     if(resultado != null){
-      this.tarefasJson = resultado;
+      this.listaJson = resultado;
     }
     this._transfereDaListaJsonParaListaDeTarefas();
     //###########################################################
@@ -62,15 +42,11 @@ class TarefaPersistenciaJson implements ITarefaPersistencia{
     //###########################################################
   }
 
-  Future<void> _salvarConteudoJsonNoArquivo() async {
-    this.daoJson.salvarObjetoSubstituindoConteudo( (await this.arquivo), this.tarefasJson );
-  }
-
   @override
   Future<void> cadastrarTarefa(Tarefa tarefa) async {
     tarefa.id = this.getProximoIdDisponivel();
-    this.tarefasJson.add( TarefaJSON.toMap( tarefa ) );
-    await this._salvarConteudoJsonNoArquivo();
+    this.listaJson.add( TarefaJSON.toMap( tarefa ) );
+    await super.salvarConteudoJsonNoArquivo();
   }
 
   @override
@@ -81,14 +57,14 @@ class TarefaPersistenciaJson implements ITarefaPersistencia{
     if( mapa == null ){
       throw new Exception( "Tetou deletar tarefa, passando identificador inexistente" );
     }
-    this.tarefasJson.remove( mapa );
+    this.listaJson.remove( mapa );
     //this.tarefasJson.remove((mapAtual) => mapAtual[TarefaJSON.ID_COLUNA] == tarefa.id );
-    await this._salvarConteudoJsonNoArquivo();
+    await super.salvarConteudoJsonNoArquivo();
   }
 
   Map<String, dynamic> _getTarefaMap( Tarefa tarefa ){
     Map<String, dynamic> map;
-    this.tarefasJson.forEach( (mapAtual) {
+    this.listaJson.forEach( (mapAtual) {
       if( mapAtual[TarefaJSON.ID_COLUNA] == tarefa.id ){
         map = mapAtual;
       }
@@ -108,13 +84,13 @@ class TarefaPersistenciaJson implements ITarefaPersistencia{
     }
     mapa[TarefaJSON.NOME_COLUNA] = tarefa.nome;
     mapa[TarefaJSON.DESCRICAO_COLUNA] = tarefa.descricao;
-    await this._salvarConteudoJsonNoArquivo();
+    await super.salvarConteudoJsonNoArquivo();
   }
 
   /// Transfere os dados da Lista Json para a lista de objetos Tarefa.
   void _transfereDaListaJsonParaListaDeTarefas(){
     this.tarefas.clear();
-    this.tarefasJson.forEach( (element) {
+    this.listaJson.forEach( (element) {
       this.tarefas.add( TarefaJSON.fromMap( element ) );
     });
   }
@@ -127,17 +103,13 @@ class TarefaPersistenciaJson implements ITarefaPersistencia{
 
   int getProximoIdDisponivel() {
     int maior = 0;
-    this.tarefasJson.forEach( (mapAtual) {
+    this.listaJson.forEach( (mapAtual) {
       int id = mapAtual[TarefaJSON.ID_COLUNA];
       if( id > maior ){
         maior = id;
       }
     });
     return (maior+1);
-  }
-
-  bool arquivoInstanciado(){
-    return this._arquivo != null;
   }
 
 }
