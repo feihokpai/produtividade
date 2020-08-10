@@ -46,7 +46,7 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
   TempoDedicadoPersistenciaJson criarPersistenciaListasVazias(){
     TempoDedicadoPersistenciaJson obj =  new TempoDedicadoPersistenciaJson();
     obj.listaJson.clear();
-    obj.registrosTempoDedicado.clear();
+    obj.entidades.clear();
     return obj;
   }
 
@@ -139,7 +139,7 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
       await obj.cadastrarTempo( this.criarTempoValido() );
       await obj.cadastrarTempo( this.criarTempoValido() );
       expect( obj.listaJson.length , 2);
-      expect( obj.registrosTempoDedicado.length , 0);
+      expect( obj.entidades.length , 0);
     });
   }
 
@@ -204,12 +204,14 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
     test("Tempo dedicado persistência JSON: Editar - edita no Map, mas não na Lista de tempo?", ()async{
       TempoDedicadoPersistenciaJson obj = await this.criarPersistenciaComRegistrosCadastrados( 1 );
       await obj.getAllTempoDedicado();
-      String dataFimFormatada = obj.jsonConverter.formatter.format( obj.registrosTempoDedicado[0].fim );
+      TempoDedicado tempo1 = obj.entidades[0] as TempoDedicado;
+      String dataFimFormatada = obj.jsonConverter.formatter.format( tempo1.fim );
       expect( obj.listaJson[0][TempoDedicadoJSON.DT_FIM_COLUNA] , dataFimFormatada );
       TempoDedicado t1 = this.criarTempoValido( id: 1 );
       t1.fim = DataHoraUtil.criarDataHojeFimDoDia();
       await obj.editarTempo( t1 );
-      dataFimFormatada = obj.jsonConverter.formatter.format( obj.registrosTempoDedicado[0].fim );
+      TempoDedicado tempo2 = obj.entidades[0] as TempoDedicado;
+      dataFimFormatada = obj.jsonConverter.formatter.format( tempo2.fim );
       expect( (obj.listaJson[0][TempoDedicadoJSON.DT_FIM_COLUNA] != dataFimFormatada), true );
     });
   }
@@ -244,29 +246,30 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
     test("Tempo dedicado persistência JSON: Deletar - deleta no Map, mas não na Lista de Tempo?", ()async{
       TempoDedicadoPersistenciaJson obj = await this.criarPersistenciaComRegistrosCadastrados( 3 );
       obj.getAllTempoDedicado();
-      expect(obj.listaJson.length, obj.registrosTempoDedicado.length );
+      expect(obj.listaJson.length, obj.entidades.length );
       obj.deletarTempo( this.criarTempoValido( id: 1 ) );
-      expect( obj.listaJson.length, (obj.registrosTempoDedicado.length -1) );
+      expect( obj.listaJson.length, (obj.entidades.length -1) );
     });
   }
 
   void testesGetAllTempoDedicado() {
     test("Tempo dedicado persistência JSON: getAllTempoDedicado() - carrega a lista de objetos TempoDedicado?", () async{
       TempoDedicadoPersistenciaJson obj = await this.criarPersistenciaComRegistrosCadastrados( 3 );
-      expect( obj.registrosTempoDedicado.length , 0);
+      expect( obj.entidades.length , 0);
       obj.getAllTempoDedicado();
-      expect( obj.registrosTempoDedicado.length , 3);
+      expect( obj.entidades.length , 3);
     });
 
     test("Tempo dedicado persistência JSON: getAllTempoDedicado() - os dados carregados na lista de objetos TempoDedicado estão corretos?", () async{
       TempoDedicadoPersistenciaJson obj = await this.criarPersistenciaComRegistrosCadastrados( 1 );
       obj.getAllTempoDedicado();
-      expect( obj.registrosTempoDedicado[0].id , obj.listaJson[0][TempoDedicadoJSON.ID_COLUNA]);
-      expect( obj.registrosTempoDedicado[0].tarefa.id , obj.listaJson[0][TempoDedicadoJSON.ID_TAREFA_COLUNA]);
+      expect( obj.entidades[0].id , obj.listaJson[0][TempoDedicadoJSON.ID_COLUNA]);
+      TempoDedicado tempo1 = obj.entidades[0] as TempoDedicado;
+      expect( tempo1.tarefa.id , obj.listaJson[0][TempoDedicadoJSON.ID_TAREFA_COLUNA]);
       DateTime inicioDateTime = obj.jsonConverter.formatter.parse( obj.listaJson[0][TempoDedicadoJSON.DT_INICIO_COLUNA] ) ;
-      expect( obj.registrosTempoDedicado[0].inicio , inicioDateTime );
+      expect( tempo1.inicio , inicioDateTime );
       DateTime fimDateTime = obj.jsonConverter.formatter.parse( obj.listaJson[0][TempoDedicadoJSON.DT_FIM_COLUNA] ) ;
-      expect( obj.registrosTempoDedicado[0].fim , fimDateTime );
+      expect( tempo1.fim , fimDateTime );
     });
   }
 

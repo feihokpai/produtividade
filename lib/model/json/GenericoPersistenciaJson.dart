@@ -18,12 +18,18 @@ abstract class GenericoPersistenciaJson{
 
   List<Map<String, dynamic>> listaJson = new List();
 
-  List<EntidadeDominio> entidades = new List();
+  List<EntidadeDominio> _entidades = new List();
 
   GenericoPersistenciaJson( GenericJsonConverter jsonConverter, String nomeArquivo ){
     this.nomeArquivo = nomeArquivo;
     this.jsonConverter = jsonConverter;
     this._daoJson = Modular.get<IPersistenciaJSON>();
+  }
+
+  List<EntidadeDominio> get entidades => this._entidades;
+
+  void set entidades(List<EntidadeDominio> entidades){
+    this._entidades = entidades;
   }
 
   bool arquivoFoiInstanciado() => this._arquivo != null ;
