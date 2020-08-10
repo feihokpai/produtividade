@@ -40,7 +40,7 @@ class ListaDeTarefasTelaTest extends WidgetTestsUtilProdutividade{
 
           // Teste: Verificar quantos SingleChildScrollView foram gerados;
 
-          List<Tarefa> tarefas = controlador.getListaDeTarefas();
+          List<Tarefa> tarefas = await controlador.getListaDeTarefas();
           Finder finderScrolls = find.byType(SingleChildScrollView);
           // "1+" porque tem um SingleChildScrollView como widget inicial.
           expect(finderScrolls, findsNWidgets( 1+tarefas.length));
@@ -78,7 +78,7 @@ class ListaDeTarefasTelaTest extends WidgetTestsUtilProdutividade{
 
     testWidgets('Tela inicial - Ícones ao lado das tarefas são gerados?', (WidgetTester tester) async {
       // Preenchendo a lista de tarefas com novos valores.
-      List<Tarefa> tarefas = controlador.getListaDeTarefas();
+      List<Tarefa> tarefas = await controlador.getListaDeTarefas();
       tarefas.clear();
       tarefas.addAll(gerarNTarefas(3));
       await tester.pumpWidget(makeTestable(new ListaDeTarefasTela()));
@@ -100,7 +100,7 @@ class ListaDeTarefasTelaTest extends WidgetTestsUtilProdutividade{
 
     testWidgets('Tela inicial - Ícone Lápis existe e direciona para tela de edição?',
             (WidgetTester tester) async {
-          List<Tarefa> tarefas = controlador.getListaDeTarefas();
+          List<Tarefa> tarefas = await controlador.getListaDeTarefas();
           tarefas.clear();
           tarefas.addAll(gerarNTarefas(1));
           await tester.pumpWidget(makeTestable(new ListaDeTarefasTela()));
@@ -124,7 +124,7 @@ class ListaDeTarefasTelaTest extends WidgetTestsUtilProdutividade{
 
     testWidgets('Tela inicial - Ícone Relógio existe e direciona para tela de Listagem de Tempo dedicado?',
             (WidgetTester tester) async {
-          List<Tarefa> tarefas = controlador.getListaDeTarefas();
+          List<Tarefa> tarefas = await controlador.getListaDeTarefas();
           tarefas.clear();
           tarefas.addAll(gerarNTarefas(1));
           await tester.pumpWidget(makeTestable(new ListaDeTarefasTela()));
@@ -176,8 +176,9 @@ class ListaDeTarefasTelaTest extends WidgetTestsUtilProdutividade{
   }
 
 
-  void testeDeOverflow() {
-    super.controlador.getListaDeTarefas().clear();
+  Future<void> testeDeOverflow() async {
+    List<Tarefa> tarefas = await super.controlador.getListaDeTarefas();
+    tarefas.clear();
     // In the Mock returns 2 Tasks.
     controlador.salvarTarefa( new Tarefa("aa", "bbbb") );
     controlador.salvarTarefa( new Tarefa("bb", "cccc") );

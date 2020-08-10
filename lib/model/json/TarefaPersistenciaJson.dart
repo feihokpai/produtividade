@@ -39,8 +39,8 @@ class TarefaPersistenciaJson extends GenericoPersistenciaJson implements ITarefa
   }
 
   @override
-  List<Tarefa> getAllTarefa() {
-    return super.getAllEntidade<Tarefa>();
+  Future<List<Tarefa>> getAllTarefa() async{
+    return await super.getAllEntidade<Tarefa>();
   }
 
   void _assertsTarefa(Tarefa tarefa){

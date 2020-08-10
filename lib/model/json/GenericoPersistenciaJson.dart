@@ -53,7 +53,19 @@ abstract class GenericoPersistenciaJson{
     await this._carregarDadosDoArquivo();
   }
 
-  void salvarConteudoJsonNoArquivo(){
+  Future<void> configurarArquivoSeNaoConfigurado() async{
+    bool existe = await this._arquivoFisicoExiste();
+    if( !existe ){
+      this.configurarArquivo();
+    }
+  }
+
+  Future<void> salvarConteudoJsonNoArquivo() async {
+    bool existe = await this._arquivoFisicoExiste();
+    if( !existe ){
+      throw new Exception( "Tentou salvar os dados da lista JSON nu arquivo, mas o arquivo não"
+          " foi instanciado ou não foi criado." );
+    }
     this.daoJson.salvarObjetoSubstituindoConteudo(this._arquivo, this.listaJson );
   }
 
@@ -76,15 +88,16 @@ abstract class GenericoPersistenciaJson{
   }
 
   /// Transfere os dados da Lista Json para a lista de objetos EntidadeDominio.
-  void transfereDaListaJsonParaListaDeEntidades(){
+  void transfereDaListaJsonParaListaDeEntidades() async{
+    await this.configurarArquivoSeNaoConfigurado();
     this.entidades.clear();
     this.listaJson.forEach( (element) {
       this.entidades.add( this.jsonConverter.fromMap( element ) );
     });
   }
 
-  List<T> getAllEntidade<T extends EntidadeDominio>(){
-    this.transfereDaListaJsonParaListaDeEntidades();
+  Future<List<T>> getAllEntidade<T extends EntidadeDominio>() async {
+    await this.transfereDaListaJsonParaListaDeEntidades();
     return this._converterListEntidadesParaListSubclasse<T>();
   }
 
@@ -135,6 +148,9 @@ abstract class GenericoPersistenciaJson{
       throw new Exception( "Tentou instanciar o arquivo para persistência, mas não configurou o nome do"
           " mesmo." );
     }
+    if( this._arquivo != null ){
+      return;
+    }
     String pathDiretorio = await this._pathDiretorioArquivos();
     String pathCompleto = pathDiretorio+"/"+this.nomeArquivo;
     this._arquivo = new File( pathCompleto );
@@ -159,10 +175,7 @@ abstract class GenericoPersistenciaJson{
     if( !arquivoFisicoExiste ){
       throw new Exception( "Tentou ler os dados de um arquivo que não foi criado" );
     }
-    List<dynamic> resultado = await this.daoJson.lerArquivo(await this.arquivo);
-    if(resultado != null){
-      this.listaJson = resultado;
-    }
+    this.listaJson = await this.daoJson.lerArquivo(await this.arquivo);
   }
 
   List<T> _converterListEntidadesParaListSubclasse<T extends EntidadeDominio>( ){

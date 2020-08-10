@@ -49,14 +49,14 @@ class TempoDedicadoPersistenciaJson extends GenericoPersistenciaJson implements 
   }
 
   @override
-  List<TempoDedicado> getAllTempoDedicado() {
+  Future<List<TempoDedicado>> getAllTempoDedicado() async{
     return super.getAllEntidade<TempoDedicado>();
   }
 
   @override
-  List<TempoDedicado> getTempoDedicado(Tarefa tarefa) {
+  Future<List<TempoDedicado>> getTempoDedicado(Tarefa tarefa) async {
     this._assertsTarefa( tarefa );
-    super.transfereDaListaJsonParaListaDeEntidades();
+    await super.transfereDaListaJsonParaListaDeEntidades();
     List<TempoDedicado> lista = new List();
     this.entidades.forEach((element) {
       TempoDedicado tempo = element as TempoDedicado;
@@ -68,8 +68,8 @@ class TempoDedicadoPersistenciaJson extends GenericoPersistenciaJson implements 
   }
 
   @override
-  List<TempoDedicado> getTempoDedicadoOrderByInicio(Tarefa tarefa) {
-    List<TempoDedicado> lista = this.getTempoDedicado( tarefa );
+  Future<List<TempoDedicado>> getTempoDedicadoOrderByInicio(Tarefa tarefa) async {
+    List<TempoDedicado> lista = await this.getTempoDedicado( tarefa );
     lista.sort();
     return lista.reversed.toList();
   }

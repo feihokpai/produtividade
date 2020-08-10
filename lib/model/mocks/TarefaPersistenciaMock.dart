@@ -21,7 +21,7 @@ class TarefaPersistenciaMock extends Mock implements ITarefaPersistencia{
     TarefaPersistenciaMock.tarefas.removeWhere( (tarefaAtual) => tarefaAtual.id == tarefa.id );
   }
 
-  List<Tarefa> getAllTarefa(){
+  Future<List<Tarefa>> getAllTarefa() async{
     return TarefaPersistenciaMock.tarefas;
   }
 

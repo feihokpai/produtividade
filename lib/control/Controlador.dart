@@ -22,7 +22,7 @@ class Controlador{
     return Controlador._instance;
   }
 
-  List<Tarefa> getListaDeTarefas(){
+  Future<List<Tarefa>> getListaDeTarefas() async{
     return this.tarefaDao.getAllTarefa();
   }
 
@@ -38,12 +38,12 @@ class Controlador{
     this.tarefaDao.deletarTarefa(tarefa);
   }
 
-  List<TempoDedicado> getAllTempoDedicado(){
+  Future<List<TempoDedicado>> getAllTempoDedicado(){
     return this.tempoDedicadoDao.getAllTempoDedicado();
   }
 
-  List<TempoDedicado> getTempoDedicadoOrderByInicio(Tarefa tarefa){
-    return this.tempoDedicadoDao.getTempoDedicadoOrderByInicio( tarefa );
+  Future<List<TempoDedicado>> getTempoDedicadoOrderByInicio(Tarefa tarefa) async {
+    return await this.tempoDedicadoDao.getTempoDedicadoOrderByInicio( tarefa );
   }
 
   void deletarRegistroTempoDedicado(TempoDedicado registro) {
@@ -51,8 +51,8 @@ class Controlador{
   }
 
   /// Retorna o total de tempo gasto numa tarefa em Minutos.
-  int getTotalGastoNaTarefaEmMinutos(Tarefa tarefa){
-    List<TempoDedicado> tempos = this.getTempoDedicadoOrderByInicio( tarefa );
+  Future<int> getTotalGastoNaTarefaEmMinutos(Tarefa tarefa) async {
+    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa );
     int somatorio = 0;
     tempos.forEach((tempo) { 
       somatorio += tempo.getDuracaoEmMinutos();

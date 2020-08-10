@@ -68,11 +68,11 @@ class TempoDedicadoPersistenciaMock extends Mock implements ITempoDedicadoPersis
     this.registrosTempoDedicado.removeWhere(( atual) => atual.id == tempo.id );
   }
 
-  List<TempoDedicado> getAllTempoDedicado(){
+  Future<List<TempoDedicado>> getAllTempoDedicado() async{
     return this.registrosTempoDedicado;
   }
 
-  List<TempoDedicado> getTempoDedicado(Tarefa tarefa){
+  Future<List<TempoDedicado>> getTempoDedicado(Tarefa tarefa) async{
     if( tarefa == null ){
       return new List();
     }
@@ -85,8 +85,8 @@ class TempoDedicadoPersistenciaMock extends Mock implements ITempoDedicadoPersis
     return lista;
   }
 
-  List<TempoDedicado> getTempoDedicadoOrderByInicio(Tarefa tarefa){
-    List<TempoDedicado> lista = this.getTempoDedicado( tarefa );
+  Future<List<TempoDedicado>> getTempoDedicadoOrderByInicio(Tarefa tarefa) async{
+    List<TempoDedicado> lista = await this.getTempoDedicado( tarefa );
     lista.sort();
     return lista.reversed.toList();
   }

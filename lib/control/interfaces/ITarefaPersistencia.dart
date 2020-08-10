@@ -5,5 +5,5 @@ abstract class ITarefaPersistencia{
   void cadastrarTarefa(Tarefa tarefa);
   void editarTarefa(Tarefa tarefa);
   void deletarTarefa(Tarefa tarefa);
-  List<Tarefa> getAllTarefa();
+  Future<List<Tarefa>> getAllTarefa();
 }

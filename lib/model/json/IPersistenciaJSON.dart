@@ -13,6 +13,6 @@ abstract class IPersistenciaJSON{
 
   /// Lê o conteúdo completo do arquivo configurado e retorna uma String com o conteúdo.
   /// Lança exceção se o arquivo não tiver sido configurado corretamente ou se ocorrer erro de leitura.
-  Future<List<dynamic>> lerArquivo( File arquivo );
+  Future< List<Map<String, dynamic>> > lerArquivo( File arquivo );
 
 }

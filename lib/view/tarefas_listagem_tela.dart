@@ -33,8 +33,8 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     return scaffold1;
   }
 
-  Widget gerarListaViewDasTarefas(){
-    List<Tarefa> tarefas = this.controlador.getListaDeTarefas();
+  Future<Widget> gerarListaViewDasTarefas() async {
+    List<Tarefa> tarefas = await this.controlador.getListaDeTarefas();
     return new ListView.builder(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
@@ -83,7 +83,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     );
   }
 
-  Widget gerarConteudoCentral() {
+  Widget gerarConteudoCentral(){
 
     return WillPopScope(
       onWillPop: pedirConfirmacaoAntesDeFechar,
@@ -97,7 +97,16 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
                   style: Estilos.textStyleListaTituloDaPagina,
                   key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
             ),
-            this.gerarListaViewDasTarefas(),
+            FutureBuilder<Widget>(
+                future: this.gerarListaViewDasTarefas(),
+                builder: (context, snapshot) {
+                  if ( snapshot.connectionState == ConnectionState.waiting) {
+                    return new CircularProgressIndicator();
+                  }else{
+                    return snapshot.data;
+                  }
+                },
+            ),
             new IconButton(
               key: new ValueKey( ListaDeTarefasTela.KEY_STRING_ICONE_ADD_TAREFA ),
               icon: new Icon(Icons.add, size:50),
