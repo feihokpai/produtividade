@@ -1,9 +1,11 @@
 import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/control/dominio/EntidadeDominio.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/model/json/GenericJsonConverter.dart';
 
-class TempoDedicadoJSON{
+class TempoDedicadoJSON extends GenericJsonConverter{
   static const String ID_COLUNA = "id";
   static const String ID_TAREFA_COLUNA = "id_tarefa";
   static const String DT_INICIO_COLUNA = "dt_inicio";
@@ -11,9 +13,12 @@ class TempoDedicadoJSON{
 
   static const String DATA_VAZIA = "00/00/0000";
 
-  static DateFormat formatter = DataHoraUtil.formatterDataHoraBrasileira;
+  TempoDedicadoJSON(  ) : super(DataHoraUtil.formatterDataHoraBrasileira, ID_COLUNA ){
+  }
 
-  static Map<String, dynamic> toMap( TempoDedicado tempo ){
+  @override
+  Map<String, dynamic> toMap( EntidadeDominio entidade ){
+    TempoDedicado tempo = entidade as TempoDedicado;
     Map<String, dynamic> mapa = <String, dynamic> {
       ID_COLUNA: tempo.id,
       ID_TAREFA_COLUNA: (tempo.tarefa == null) ? 0 : tempo.tarefa.id,
@@ -23,7 +28,8 @@ class TempoDedicadoJSON{
     return mapa;
   }
 
-  static TempoDedicado fromMap( Map<String, dynamic> map ){
+  @override
+  TempoDedicado fromMap( Map<String, dynamic> map ){
     Tarefa tarefa = Tarefa.gerarTarefaSomenteComId( map[ ID_TAREFA_COLUNA ] );
     TempoDedicado obj = new TempoDedicado(tarefa, id: map[ ID_COLUNA ]);
     obj.inicio = map[DT_INICIO_COLUNA] == DATA_VAZIA ? null : formatter.parse( map[DT_INICIO_COLUNA] );
