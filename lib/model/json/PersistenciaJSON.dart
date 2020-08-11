@@ -16,8 +16,12 @@ class PersistenciaJson implements IPersistenciaJSON{
         //###################################################################
         print("conteúdo do arquivo: ${conteudo}");
         //###################################################################
-        List<dynamic> resultado = json.decode( conteudo );
-        return this._converterEmMap( resultado );
+        if( conteudo.length > 0 ) {
+          List<dynamic> resultado = json.decode(conteudo);
+          return this._converterEmMap(resultado);
+        }else{
+          return List<Map<String, dynamic>>();
+        }
     }catch( ex ){
       throw new Exception( "Erro na leitura do arquivo: ${ex}" );
     }

@@ -26,11 +26,11 @@ class Controlador{
     return this.tarefaDao.getAllTarefa();
   }
 
-  void salvarTarefa( Tarefa tarefa ){
+  Future<void> salvarTarefa( Tarefa tarefa ) async {
     if( tarefa.id == 0) {
-      this.tarefaDao.cadastrarTarefa(tarefa);
+      await this.tarefaDao.cadastrarTarefa(tarefa);
     }else{
-      this.tarefaDao.editarTarefa(tarefa);
+      await this.tarefaDao.editarTarefa(tarefa);
     }
   }
 
@@ -61,7 +61,7 @@ class Controlador{
   }
 
   void salvarTempoDedicado(TempoDedicado tempo) {
-    if( tempo == 0) {
+    if( tempo.id == 0) {
       this.tempoDedicadoDao.cadastrarTempo(tempo);
     }else{
       this.tempoDedicadoDao.editarTempo(tempo);

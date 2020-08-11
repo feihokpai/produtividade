@@ -45,10 +45,10 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
     return this.criarHome();
   }
 
-  void inicializarVariaveis() {
+  Future<void> inicializarVariaveis() async{
     ComunsWidgets.context = context;
     this.inicializarCampoDeTexto();
-    this.inicializarCampoDuracaoTotal();
+    await this.inicializarCampoDuracaoTotal();
   }
 
   void inicializarCampoDeTexto(){
@@ -62,11 +62,15 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
     this.campoDescricaoTarefa.setText( descricao );
   }
 
-  void inicializarCampoDuracaoTotal(){
+  Future<void> inicializarCampoDuracaoTotal() async {
     Key keyString = new ValueKey( ListaDeTempoDedicadoTela.KEY_STRING_TOTAL_TEMPO );
     this.campoDuracaoTotal = new CampoDeTextoWidget("Total de tempo dedicado na tarefa", 1, null,
         editavel: false, chave: keyString );
-    int minutos = this.controlador.getTotalGastoNaTarefaEmMinutos( this.widget.tarefaAtual );
+//    await this.setarTextoCampoDuracaoTotal();
+  }
+
+  Future<void> setarTextoCampoDuracaoTotal() async {
+    int minutos = await this.controlador.getTotalGastoNaTarefaEmMinutos( this.widget.tarefaAtual );
     String duracaoFormatada = DataHoraUtil.criarStringQtdHorasEMinutos( new Duration(minutes: minutos) );
     if( minutos == 0 ){
       duracaoFormatada = ListaDeTempoDedicadoTela.TEXTO_SEM_REGISTROS;
@@ -96,24 +100,15 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
                   style: Estilos.textStyleListaTituloDaPagina,
                   key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: this.gerarCampoDaTarefa(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: this.gerarCampoDaDuracaoTotal(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                  height: 150,
-                  decoration: new BoxDecoration(
-                    border: new Border.all(width: 0.5, color: Colors.black, ),
-                    borderRadius: BorderRadius.circular( 4.0 ),
-                  ),
-                  child: this.gerarListView(),
-              ),
+            new FutureBuilder<Widget>(
+              future: this.carregarDadosRegistroDaTarefa(),
+                builder: (context, snapshot) {
+                  if ( snapshot.connectionState == ConnectionState.waiting ) {
+                    return Center( child: CircularProgressIndicator() );
+                  }else if(  snapshot.connectionState == ConnectionState.done  ){
+                    return snapshot.data;
+                  }
+                }
             ),
             new IconButton(
               key: new ValueKey( ListaDeTempoDedicadoTela.KEY_STRING_BOTAO_NOVO ),
@@ -127,11 +122,47 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
     );
   }
 
+  Future<Widget> carregarDadosRegistroDaTarefa() async{
+    return new Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: this.gerarCampoDaTarefa(),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: await this.gerarCampoDaDuracaoTotal(),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            height: 150,
+            decoration: new BoxDecoration(
+              border: new Border.all(width: 0.5, color: Colors.black, ),
+              borderRadius: BorderRadius.circular( 4.0 ),
+            ),
+            child: FutureBuilder<Widget>(
+              future: this.gerarListView(),
+              builder: (context, snapshot) {
+                if ( snapshot.connectionState == ConnectionState.waiting ) {
+                  return Center( child: CircularProgressIndicator() );
+                }else{
+                  return snapshot.data;
+                }
+              }
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget gerarCampoDaTarefa() {
     return this.campoDescricaoTarefa.widget;
   }
 
-  Widget gerarCampoDaDuracaoTotal() {
+  Future<Widget> gerarCampoDaDuracaoTotal() async{
+    await this.setarTextoCampoDuracaoTotal();
     return this.campoDuracaoTotal.widget;
   }
 
@@ -148,8 +179,8 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
     return formatada;
   }
 
-  Widget gerarListView() {
-    List<TempoDedicado> registrosTempo = this.controlador.getTempoDedicadoOrderByInicio( this.widget.tarefaAtual );
+  Future<Widget> gerarListView() async {
+    List<TempoDedicado> registrosTempo = await this.controlador.getTempoDedicadoOrderByInicio( this.widget.tarefaAtual );
     return new ListView.builder(
           scrollDirection: Axis.vertical,
           itemCount: registrosTempo.length,

@@ -10,14 +10,14 @@ class TarefaPersistenciaMock extends Mock implements ITarefaPersistencia{
     this.criarDados();
   }
 
-  void cadastrarTarefa(Tarefa tarefa){
+  Future<void> cadastrarTarefa(Tarefa tarefa){
     this._salvarOuEditar(tarefa);
   }
-  void editarTarefa(Tarefa tarefa){
+  Future<void> editarTarefa(Tarefa tarefa){
     this._salvarOuEditar(tarefa);
   }
 
-  void deletarTarefa(Tarefa tarefa){
+  Future<void> deletarTarefa(Tarefa tarefa){
     TarefaPersistenciaMock.tarefas.removeWhere( (tarefaAtual) => tarefaAtual.id == tarefa.id );
   }
 

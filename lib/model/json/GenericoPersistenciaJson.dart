@@ -56,7 +56,7 @@ abstract class GenericoPersistenciaJson{
   Future<void> configurarArquivoSeNaoConfigurado() async{
     bool existe = await this._arquivoFisicoExiste();
     if( !existe ){
-      this.configurarArquivo();
+      await this.configurarArquivo();
     }
   }
 
@@ -88,7 +88,7 @@ abstract class GenericoPersistenciaJson{
   }
 
   /// Transfere os dados da Lista Json para a lista de objetos EntidadeDominio.
-  void transfereDaListaJsonParaListaDeEntidades() async{
+  Future<void> transfereDaListaJsonParaListaDeEntidades() async{
     await this.configurarArquivoSeNaoConfigurado();
     this.entidades.clear();
     this.listaJson.forEach( (element) {
