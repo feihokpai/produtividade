@@ -42,6 +42,11 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
       padding: EdgeInsets.fromLTRB(5, 20, 0, 0),
       itemCount: tarefas.length,
       itemBuilder: (context, indice) {
+        // Este IF está aqui, porque às vezes, a lista não se atualiza corretamente na estimativa de
+        // children. Aí se entrar aqui com um índice maior do que tem, dá erro.
+        if( indice > (tarefas.length-1) ){
+          return null;
+        }
         Tarefa tarefa = tarefas[indice];
         String strKeyLapis = "${ListaDeTarefasTela.KEY_STRING_ICONE_LAPIS}${tarefa.id}";
         String strKeyRelogio = "${ListaDeTarefasTela.KEY_STRING_ICONE_RELOGIO}${tarefa.id}";
