@@ -44,7 +44,7 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
   }
 
   TempoDedicadoPersistenciaJson criarPersistenciaListasVazias(){
-    TempoDedicadoPersistenciaJson obj =  new TempoDedicadoPersistenciaJson();
+    TempoDedicadoPersistenciaJson obj =  this.entidadeComMocks();
     obj.listaJson.clear();
     obj.entidades.clear();
     return obj;
@@ -55,6 +55,19 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
     for(int i=0; i<qtd; i++){
       await obj.cadastrarTempo( this.criarTempoValido() );
     }
+    return obj;
+  }
+
+  TempoDedicadoPersistenciaJson entidadeComMocks(){
+    TempoDedicadoPersistenciaJson obj = new TempoDedicadoPersistenciaJson();
+    Future< List<Map<String, dynamic>> > lista = new Future(
+            () {
+          new List<Map<String, dynamic>>();
+        }
+    );
+    when( obj.daoJson.lerArquivo( any ) ).thenAnswer( (invocation) {
+      return new Future( () => new List<Map<String, dynamic>>() );
+    });
     return obj;
   }
 
@@ -194,11 +207,10 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
     test("Tempo dedicado persistência JSON: Editar - repassa a edição do arquivo para o Mock?", ()async{
       TempoDedicadoPersistenciaJson obj = await this.criarPersistenciaComRegistrosCadastrados( 3 );
       int qtdAntes = verify( obj.daoJson.salvarObjetoSubstituindoConteudo(any, any)  ).callCount;
-      obj.editarTempo( this.criarTempoValido( id: 1 ) );
-      obj.editarTempo( this.criarTempoValido( id: 2 ) );
-      obj.editarTempo( this.criarTempoValido( id: 3 ) );
-      int qtdAposAntes = verify( obj.daoJson.salvarObjetoSubstituindoConteudo(any, any)  ).callCount;
-      expect( qtdAposAntes , 3 );
+      await obj.editarTempo( this.criarTempoValido( id: 1 ) );
+      await obj.editarTempo( this.criarTempoValido( id: 2 ) );
+      await obj.editarTempo( this.criarTempoValido( id: 3 ) );
+      verify( obj.daoJson.salvarObjetoSubstituindoConteudo(any, any)  ).called( 3 );
     });
 
     test("Tempo dedicado persistência JSON: Editar - edita no Map, mas não na Lista de tempo?", ()async{
@@ -245,9 +257,9 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
 
     test("Tempo dedicado persistência JSON: Deletar - deleta no Map, mas não na Lista de Tempo?", ()async{
       TempoDedicadoPersistenciaJson obj = await this.criarPersistenciaComRegistrosCadastrados( 3 );
-      obj.getAllTempoDedicado();
+      await obj.getAllTempoDedicado();
       expect(obj.listaJson.length, obj.entidades.length );
-      obj.deletarTempo( this.criarTempoValido( id: 1 ) );
+      await obj.deletarTempo( this.criarTempoValido( id: 1 ) );
       expect( obj.listaJson.length, (obj.entidades.length -1) );
     });
   }
@@ -256,13 +268,13 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
     test("Tempo dedicado persistência JSON: getAllTempoDedicado() - carrega a lista de objetos TempoDedicado?", () async{
       TempoDedicadoPersistenciaJson obj = await this.criarPersistenciaComRegistrosCadastrados( 3 );
       expect( obj.entidades.length , 0);
-      obj.getAllTempoDedicado();
+      await obj.getAllTempoDedicado();
       expect( obj.entidades.length , 3);
     });
 
     test("Tempo dedicado persistência JSON: getAllTempoDedicado() - os dados carregados na lista de objetos TempoDedicado estão corretos?", () async{
       TempoDedicadoPersistenciaJson obj = await this.criarPersistenciaComRegistrosCadastrados( 1 );
-      obj.getAllTempoDedicado();
+      await obj.getAllTempoDedicado();
       expect( obj.entidades[0].id , obj.listaJson[0][TempoDedicadoJSON.ID_COLUNA]);
       TempoDedicado tempo1 = obj.entidades[0] as TempoDedicado;
       expect( tempo1.tarefa.id , obj.listaJson[0][TempoDedicadoJSON.ID_TAREFA_COLUNA]);
@@ -292,7 +304,8 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
 
     test("Tempo dedicado persistência JSON: getTempoDedicado( Tarefa ) - passar entidade com id de Tarefa inexistente na lista de Maps, retorna lista vazia?", () async{
       TempoDedicadoPersistenciaJson obj = await this.criarPersistenciaComRegistrosCadastrados( 1 );
-      expect( obj.getTempoDedicado( this.criarTarefaValida( id: 2 ) ).length, 0 );
+      List<TempoDedicado> lista = await obj.getTempoDedicado( this.criarTarefaValida( id: 2 ) );
+      expect( lista.length, 0 );
     });
 
     test("Tempo dedicado persistência JSON: getTempoDedicado( Tarefa ) - passar entidade com id de tarefa existente na lista de Maps, retorna os dados corretamente?", () async{
@@ -321,7 +334,8 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
 
     test("Tempo dedicado persistência JSON: testesGetTempoDedicadoOrderByInicio( Tarefa ) - passar entidade com id de Tarefa inexistente na lista de Maps, retorna lista vazia?", () async{
       TempoDedicadoPersistenciaJson obj = await this.criarPersistenciaComRegistrosCadastrados( 1 );
-      expect( obj.getTempoDedicadoOrderByInicio( this.criarTarefaValida(id: 2) ).length, 0 );
+      List<TempoDedicado> lista = await obj.getTempoDedicadoOrderByInicio( this.criarTarefaValida( id: 2 ) );
+      expect( lista.length, 0 );
     });
 
     test("Tempo dedicado persistência JSON: testesGetTempoDedicadoOrderByInicio( Tarefa ) - passar entidade com id de tarefa existente na lista de Maps, retorna os dados ORDENADOS corretamente?", () async{
@@ -337,7 +351,7 @@ class TempoDedicadoPersistenciaJson_test extends TestsUtilProdutividade{
       obj.cadastrarTempo( tempo2 );
       obj.cadastrarTempo( tempo3 );
       obj.cadastrarTempo( tempo4 );
-      List<TempoDedicado> lista =obj.getTempoDedicadoOrderByInicio( ta1 );
+      List<TempoDedicado> lista = await obj.getTempoDedicadoOrderByInicio( ta1 );
       expect( lista[0].getDuracaoEmMinutos() , 10);
       expect( lista[1].getDuracaoEmMinutos() , 50);
       expect( lista[2].getDuracaoEmMinutos() , 100);

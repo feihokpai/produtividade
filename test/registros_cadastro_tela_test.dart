@@ -138,11 +138,12 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     Tarefa tarefa = this.criarTarefaValida();
     telaCampoInicial = new CadastroTempoDedicadoTela( tarefa );
     super.criarTeste("Modo Cadastro: Se clicar em voltar, e depois em NÃO, não salva o Registro", telaCampoInicial, (){
-      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () {
-        List lista = this.controlador.getTempoDedicadoOrderByInicio( tarefa );
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () async {
+        List lista = await this.controlador.getTempoDedicadoOrderByInicio( tarefa );
         int qtd = lista.length;
-        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () {
-          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () async {
+          List<TempoDedicado> lista = await this.controlador.getTempoDedicadoOrderByInicio( tarefa );
+          int novaQtd = lista.length;
           expect( novaQtd, qtd );
         });
       });
@@ -151,11 +152,12 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     tarefa = this.criarTarefaValida();
     telaCampoInicial = new CadastroTempoDedicadoTela( tarefa );
     super.criarTeste("Modo Cadastro: Se clicar em voltar, e depois em SIM, salva o Registro", telaCampoInicial, (){
-      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () {
-        List lista = this.controlador.getTempoDedicadoOrderByInicio( tarefa );
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () async {
+        List lista = await this.controlador.getTempoDedicadoOrderByInicio( tarefa );
         int qtd = lista.length;
-        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG , FinderTypes.KEY_STRING, () {
-          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG , FinderTypes.KEY_STRING, () async{
+          List<TempoDedicado> lista = await this.controlador.getTempoDedicadoOrderByInicio( tarefa );
+          int novaQtd = lista.length;
           expect( novaQtd, qtd+1 );
         });
       });
@@ -176,10 +178,11 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     Tarefa tarefa = this.criarTarefaValida();
     telaCampoInicial = new CadastroTempoDedicadoTela( tarefa );
     super.criarTeste("Modo Cadastro: Se clicar em salvar, cria novo registro?", telaCampoInicial, (){
-      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
-        int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
-        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () {
-          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () async {
+        List<TempoDedicado> lista = await this.controlador.getTempoDedicadoOrderByInicio( tarefa );
+        int qtd = lista.length;
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () async {
+          int novaQtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
           expect( novaQtd, 1+qtd );
         });
       });
@@ -206,10 +209,10 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     telaCampoInicial = new CadastroTempoDedicadoTela( tarefa );
     super.criarTeste("Modo Cadastro: Se clicar em deletar, clicando em não, mantem na tela e não deleta", telaCampoInicial, (){
       super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
-        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
-          int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
-          super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () {
-            int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () async {
+          int qtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa ) ).length;
+          super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () async {
+            int novaQtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
             expect( ComunsWidgets.context.widget.runtimeType, CadastroTempoDedicadoTela );
             expect( novaQtd , qtd );
           });
@@ -221,10 +224,10 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     telaCampoInicial = new CadastroTempoDedicadoTela( tarefa );
     super.criarTeste("Modo Cadastro: Se clicar em deletar, clicando em SIM, muda de tela e não salva", telaCampoInicial, (){
       super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
-        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
-          int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
-          super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG, FinderTypes.KEY_STRING, () {
-            int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () async {
+          int qtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
+          super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG, FinderTypes.KEY_STRING, () async {
+            int novaQtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
             expect( ComunsWidgets.context.widget.runtimeType, ListaDeTempoDedicadoTela );
             expect( novaQtd , qtd );
           });
@@ -402,10 +405,10 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     telaCampoInicial = this.criarTelaModoEdicao1();
     Tarefa tarefa = telaCampoInicial.tarefaAtual;
     super.criarTeste("Modo Edição 1: Se clicar em voltar, e depois em SIM, salva o Registro, mas não cria um novo", telaCampoInicial, (){
-      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () {
-        int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
-        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG , FinderTypes.KEY_STRING, () {
-          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR , FinderTypes.KEY_STRING, () async {
+        int qtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG , FinderTypes.KEY_STRING, () async {
+          int novaQtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
           expect( novaQtd, qtd );
         });
       });
@@ -426,10 +429,10 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     telaCampoInicial = this.criarTelaModoEdicao1();
     Tarefa tarefa = telaCampoInicial.tarefaAtual;
     super.criarTeste("Modo Edição 1: Se clicar em salvar, edita o registro anterior e não cria um novo", telaCampoInicial, (){
-      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
-        int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
-        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () {
-          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () async {
+        int qtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () async {
+          int novaQtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
           expect( novaQtd, qtd );
         });
       });
@@ -456,10 +459,10 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     Tarefa tarefa = telaCampoInicial.tarefaAtual;
     super.criarTeste("Modo Edição 1: Se clicar em deletar, clicando em não, mantem na tela e não deleta", telaCampoInicial, (){
       super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
-        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
-          int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
-          super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () {
-            int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () async {
+          int qtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
+          super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () async {
+            int novaQtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
             expect( ComunsWidgets.context.widget.runtimeType, CadastroTempoDedicadoTela );
             expect( novaQtd , qtd );
           });
@@ -471,10 +474,10 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     tarefa = telaCampoInicial.tarefaAtual;
     super.criarTeste("Modo Edição 1: Se clicar em deletar, clicando em SIM, muda de tela e deleta registro", telaCampoInicial, (){
       super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR , FinderTypes.KEY_STRING, () {
-        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
-          int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
-          super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG, FinderTypes.KEY_STRING, () {
-            int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+        super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () async {
+          int qtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
+          super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG, FinderTypes.KEY_STRING, () async {
+            int novaQtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
             expect( ComunsWidgets.context.widget.runtimeType, ListaDeTempoDedicadoTela );
             expect( novaQtd , qtd-1 );
           });
@@ -561,10 +564,10 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     telaCampoInicial = this.criarTelaModoEdicao2();
     Tarefa tarefa = telaCampoInicial.tarefaAtual;
     this.controlador.salvarTempoDedicado( telaCampoInicial.tempoDedicadoAtual );
-    super.criarTeste("Modo Edição 2: Se clicar em salvar, edita o registro anterior e não cria um novo", telaCampoInicial, (){
-      int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
-      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () {
-        int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+    super.criarTeste("Modo Edição 2: Se clicar em salvar, edita o registro anterior e não cria um novo", telaCampoInicial, () async {
+      int qtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR , FinderTypes.KEY_STRING, () async {
+        int novaQtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
         expect( novaQtd, qtd );
       });
     });
@@ -587,10 +590,10 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     telaCampoInicial = this.criarTelaModoEdicao2();
     Tarefa tarefa = telaCampoInicial.tarefaAtual;
     super.criarTeste("Modo Edição 2: Se clicar em deletar, clicando em não, mantem na tela e não deleta", telaCampoInicial, (){
-      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
-        int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
-        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () {
-          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () async {
+        int qtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , FinderTypes.KEY_STRING, () async {
+          int novaQtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
           expect( ComunsWidgets.context.widget.runtimeType, CadastroTempoDedicadoTela );
           expect( novaQtd , qtd );
         });
@@ -601,10 +604,10 @@ class CadastroTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     tarefa = telaCampoInicial.tarefaAtual;
     this.controlador.salvarTempoDedicado( telaCampoInicial.tempoDedicadoAtual );
     super.criarTeste("Modo Edição 2: Se clicar em deletar, clicando em SIM, muda de tela e deleta registro", telaCampoInicial, (){
-      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () {
-        int qtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
-        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG, FinderTypes.KEY_STRING, () {
-          int novaQtd = this.controlador.getTempoDedicadoOrderByInicio( tarefa ).length;
+      super.tapWidget( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR , FinderTypes.KEY_STRING, () async {
+        int qtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
+        super.tapWidget( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG, FinderTypes.KEY_STRING, () async {
+          int novaQtd = (await this.controlador.getTempoDedicadoOrderByInicio( tarefa )).length;
           expect( ComunsWidgets.context.widget.runtimeType, ListaDeTempoDedicadoTela );
           expect( novaQtd , qtd-1 );
         });

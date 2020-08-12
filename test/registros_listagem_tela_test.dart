@@ -30,7 +30,7 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
   }
 
   @override
-  void runAll() {
+  void runAll() async{
     ComunsWidgets.modoTeste = true;
     super.criarTeste("Tem título na página?", new ListaDeTempoDedicadoTela(this.criarTarefaValida()), () {
       super.findOneByKeyString( ComunsWidgets.KEY_STRING_TITULO_PAGINA );
@@ -49,10 +49,10 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     });
 
     super.criarTeste("Tem uma área de Detalhamento da Tarefa?", new ListaDeTempoDedicadoTela(this.criarTarefaValida()), () {
-      super.findOneByKeyString( ListaDeTempoDedicadoTela.KEY_STRING_PAINEL_TAREFA );
+      super.tester.pump(new Duration(seconds: 1)).then((value) {
+        super.findOneByKeyString( ListaDeTempoDedicadoTela.KEY_STRING_PAINEL_TAREFA );
+      });
     });
-
-    this.testarListView();
 
     super.criarTeste("Botão de Novo Registro, ele existe?", new ListaDeTempoDedicadoTela(this.criarTarefaValida()), () {
       super.findOneByKeyString( ListaDeTempoDedicadoTela.KEY_STRING_BOTAO_NOVO );
@@ -81,36 +81,46 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     });
 
     super.executeSeveralOverflowTests(() => new ListaDeTempoDedicadoTela( this.criarTarefaValida() ) );
+
+    await this.testarListView();
   }
 
-  void testarListView(){
-    Tarefa t1 = this.criarTarefaValida();
-    List tarefas = controlador.getListaDeTarefas();
+  Future<void> zerarECriarRegistrosDeTempo(int qtdRegistros, Tarefa tarefa ) async {
+    List tarefas = await controlador.getListaDeTarefas();
     tarefas.clear();
-    super.controlador.salvarTarefa( t1 );
-    List tempos = controlador.getAllTempoDedicado();
+    await controlador.salvarTarefa( tarefa );
+    List tempos = await controlador.getAllTempoDedicado();
     tempos.clear();
-    TempoDedicado t9 = this.criarTempoDedicadoValidoComVariosDados( t1 , 9, 80);
-    tempos.add( t9 );
-    tempos.add( this.criarTempoDedicadoValidoComVariosDados( t1 , 10, 30) );
-    int x=1;
-    super.criarTeste("Tem uma ListView? Foram gerados 2 itens na lista?", new ListaDeTempoDedicadoTela( t1 ), () {
-      this.checarQtdItensNaListView( 2 );
-      expect( find.byIcon( Icons.delete ), findsNWidgets( 2 ) );
-      tempos.add( this.criarTempoDedicadoValidoComVariosDados( t1 , 11, 30) );
-      super.initNewScreen(new ListaDeTempoDedicadoTela( t1 ), tester).then((value) {
-        this.checarQtdItensNaListView( 3 );
-        expect( find.byIcon( Icons.delete ), findsNWidgets( 3 ) );
+    for(int i=0; i< qtdRegistros; i++){
+      TempoDedicado t = this.criarTempoDedicadoValidoComVariosDados( tarefa , 0, (i+1)*50 );
+      await controlador.salvarTempoDedicado( t );
+    }
+  }
+
+  Future<void> testarListView()  async {
+    Tarefa t1 = this.criarTarefaValida(id: 0);
+    super.criarTeste("Tem uma ListView? Foram gerados 2 itens na lista?", new ListaDeTempoDedicadoTela( t1 ), () async{
+      await this.zerarECriarRegistrosDeTempo( 2, t1 );
+      super.pumpWidgetAndPumpAgain( new ListaDeTempoDedicadoTela( t1 ) , 2, () async {
+        this.checarQtdItensNaListView( 2 );
+        expect( find.byIcon( Icons.delete ), findsNWidgets( 2 ) );
+        TempoDedicado t11 = this.criarTempoDedicadoValidoComVariosDados( t1 , 0, 30);
+        await controlador.salvarTempoDedicado( t11 );
+        super.pumpWidgetAndPumpAgain( new ListaDeTempoDedicadoTela( t1 ) , 2, () {
+          this.checarQtdItensNaListView( 3 );
+          expect( find.byIcon( Icons.delete ), findsNWidgets( 3 ) );
+        });
       });
     });
 
-    super.criarTeste("Foram criados N ícones de Edição?", new ListaDeTempoDedicadoTela( t1 ), () {
-      List tempos = super.controlador.getTempoDedicadoOrderByInicio( t1 );
+    super.createAsynchronousTest("Foram criados N ícones de Edição?", new ListaDeTempoDedicadoTela( t1 ), 2, () async {
+      List tempos = await super.controlador.getTempoDedicadoOrderByInicio( t1 );
       expect( find.byIcon( Icons.edit ), findsNWidgets( tempos.length ));
     });
 
-    super.criarTeste("Ao clicar num ícone de edição direciona pra página de edição?", new ListaDeTempoDedicadoTela( t1 ), () {
-      List<TempoDedicado> tempos = super.controlador.getTempoDedicadoOrderByInicio( t1 );
+    super.createAsynchronousTest("Ao clicar num ícone de edição direciona pra página de edição?",
+        new ListaDeTempoDedicadoTela( t1 ), 2, () async {
+      List<TempoDedicado> tempos = await super.controlador.getTempoDedicadoOrderByInicio( t1 );
       String keyStringPrimeiro = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_EDITAR}${tempos[0].id}";
       super.tapWidget( keyStringPrimeiro , FinderTypes.KEY_STRING, () {
         expect( ComunsWidgets.context.widget.runtimeType , CadastroTempoDedicadoTela);
@@ -119,8 +129,11 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
       });
     });
 
-    super.criarTeste("Ao clicar em um dos ícones de deletar, exibe popup?", new ListaDeTempoDedicadoTela( t1 ), () {
-      String key = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_DELETAR}${t9.id}";
+    super.createAsynchronousTest("Ao clicar em um dos ícones de deletar, exibe popup?",
+        new ListaDeTempoDedicadoTela( t1 ), 2, () {
+      this.zerarECriarRegistrosDeTempo( 1 , this.criarTarefaValida( id: 0 ));
+      int idRegistro = 1;
+      String key = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_DELETAR}${idRegistro}";
       super.tapWidgetWithKeyString( key , () {
         super.findOneByKeyString( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG );
         super.findOneByKeyString( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG );
@@ -128,46 +141,51 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
     });
 
     ListaDeTempoDedicadoTela telaBotaoNao = new ListaDeTempoDedicadoTela( t1 );
-    super.criarTeste("Ao clicar em um dos ícones de deletar, Se clicar no Não, faz nada?.", telaBotaoNao, () {
-      String keyBotaoDeletar = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_DELETAR}${t9.id}";
+    super.createAsynchronousTest("Ao clicar em um dos ícones de deletar, Se clicar no Não, faz nada?.", telaBotaoNao, 2, () {
+      this.zerarECriarRegistrosDeTempo( 1 , this.criarTarefaValida( id: 0 ));
+      int idRegistro = 1;
+      String keyBotaoDeletar = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_DELETAR}${idRegistro}";
       super.tapWidgetWithKeyString( keyBotaoDeletar , () {
         super.tapWidgetWithKeyString( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG , () {
           expect( telaBotaoNao.tarefaAtual, isNotNull);
           expect( ComunsWidgets.context.widget.runtimeType , ListaDeTempoDedicadoTela);
-          this.checarQtdItensNaListView( 3 );
-          expect( find.byIcon( Icons.delete ), findsNWidgets( 3 ) );
+          this.checarQtdItensNaListView( 1 );
+          expect( find.byIcon( Icons.delete ), findsNWidgets( 1 ) );
         });
-      });      
+      });
     });
 
     ListaDeTempoDedicadoTela telaDelecao = new ListaDeTempoDedicadoTela( t1 );
-    super.criarTeste("Ao clicar em um dos ícones de deletar, Se clicar no Sim, deleta?.", telaDelecao, () {
-      String key = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_DELETAR}${t9.id}";
+    super.createAsynchronousTest("Ao clicar em um dos ícones de deletar, Se clicar no Sim, deleta?.", telaDelecao, 2, () async{
+      await this.zerarECriarRegistrosDeTempo( 2 , this.criarTarefaValida( id: 0 ));
+      int idRegistro = 1;
+      String key = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_DELETAR}${idRegistro}";
       super.tapWidgetWithKeyString( key , () {
         super.tapWidgetWithKeyString( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG , () {
-          super.initNewScreen( new ListaDeTempoDedicadoTela( t1 ), tester).then((value) {
+          super.pumpWidgetAndPumpAgain( new ListaDeTempoDedicadoTela( this.criarTarefaValida( id: 1 ) ) , 2, () {
             expect( ComunsWidgets.context.widget.runtimeType , ListaDeTempoDedicadoTela);
-            this.checarQtdItensNaListView( 2 );
-            expect( find.byIcon( Icons.delete ), findsNWidgets( 2 ) );
+            this.checarQtdItensNaListView( 1 );
+            expect( find.byIcon( Icons.delete ), findsNWidgets( 1 ) );
           } );
         });
       });
     });
 
-    super.criarTeste("Há um local onde é exibido o total de tempo gasto na tarefa?", new ListaDeTempoDedicadoTela( t1 ), () {
+    super.createAsynchronousTest("Há um local onde é exibido o total de tempo gasto na tarefa?", new ListaDeTempoDedicadoTela( t1 ),2, () {
       super.findOneByKeyString( ListaDeTempoDedicadoTela.KEY_STRING_TOTAL_TEMPO );
     });
 
-    super.criarTeste("O total de tempo gasto na tarefa está correto?", new ListaDeTempoDedicadoTela( t1 ), () {
-      int minutos = this.controlador.getTotalGastoNaTarefaEmMinutos( t1 );
+    super.createAsynchronousTest("O total de tempo gasto na tarefa está correto?", new ListaDeTempoDedicadoTela( t1 ), 2, () async {
+      int minutos = await this.controlador.getTotalGastoNaTarefaEmMinutos( t1 );
       String correta = DataHoraUtil.criarStringQtdHorasEMinutos( new Duration( minutes: minutos ) );
       String textoExibido = super.getValueTextFormFieldByKeyString( ListaDeTempoDedicadoTela.KEY_STRING_TOTAL_TEMPO );
       expect( textoExibido, correta );
     });
 
-    super.criarTeste("O total de tempo gasto na tarefa está correto?", new ListaDeTempoDedicadoTela( t1 ), () {
-      this.controlador.getAllTempoDedicado().clear();
-      super.initNewScreen( new ListaDeTempoDedicadoTela( t1 ) , tester ).then((value) {
+    super.createAsynchronousTest("O total de tempo gasto na tarefa está correto quando não tem registros?", new ListaDeTempoDedicadoTela( t1 ), 2, () async {
+      List<TempoDedicado> lista = await this.controlador.getAllTempoDedicado();
+      lista.clear();
+      super.pumpWidgetAndPumpAgain( new ListaDeTempoDedicadoTela( t1 ), 2, () {
         String correta = ListaDeTempoDedicadoTela.TEXTO_SEM_REGISTROS;
         String textoExibido = super.getValueTextFormFieldByKeyString( ListaDeTempoDedicadoTela.KEY_STRING_TOTAL_TEMPO );
         expect( textoExibido, correta );
@@ -178,27 +196,19 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
   }
 
   void checaSeExibeInformacoesDeTempoDedicadoSemDataHoraFim(){
-    Tarefa t = this.criarTarefaValida();
+
+    Tarefa t = this.criarTarefaValida( );
     ListaDeTempoDedicadoTela tela = new ListaDeTempoDedicadoTela( t );
-    super.criarTeste("Se tempo dedicado tem fim null, exibe seus dados sem exceção?", tela, () {
-      List tarefas = controlador.getListaDeTarefas();
+    super.criarTeste("Se tempo dedicado tem fim null, exibe seus dados sem exceção?", tela, () async {
+      List tarefas = await controlador.getListaDeTarefas();
       tarefas.clear();
-      tarefas.add( t );
-      List tempos = controlador.getAllTempoDedicado();
+      await controlador.salvarTarefa( this.criarTarefaValida(id: 0) );
+      List tempos = await controlador.getAllTempoDedicado();
       tempos.clear();
-      TempoDedicado td9 = this.criarTempoDedicadoValidoComVariosDados( t , 9, 80);
-      tempos.add( td9 );
-//      super.tester.pumpWidget( new ListaDeTempoDedicadoTela( t ) );
-      tempos.add( this.criarTempoDedicadoValidoComFimNull( t , 10 ) );
-//      super.tester.pumpWidget( new ListaDeTempoDedicadoTela( t ) );
-      MaterialApp app = new MaterialApp( home: new ListaDeTempoDedicadoTela( t ),
-          localizationsDelegates: [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate
-          ],
-          supportedLocales: [const Locale('en', 'US')]);
-      super.tester.pumpWidget( app ).then((value) {
-        super.resetarMockDoControlador();
+      TempoDedicado td9 = this.criarTempoDedicadoValidoComFimNull( this.criarTarefaValida(id: 1), 0 );
+      await controlador.salvarTempoDedicado( td9 );
+      super.pumpWidgetAndPumpAgain( new ListaDeTempoDedicadoTela( this.criarTarefaValida(id: 1) ) , 2, () {
+//        find.byText( ListaDeTempoDedicadoTela. );
       });
     });
   }

@@ -16,6 +16,7 @@ void main() async{
   await teste.runAll();
 }
 
+// Esse é o mock para a classe que efetivamente salva no arquivo texto.
 class _PersistenciaJSONMock extends Mock implements IPersistenciaJSON{
 // Não precisa ter nada.
 }
@@ -42,6 +43,19 @@ class TarefaPersistenciaJsonTest {
     tarefa.dataHoraCadastro = DateTime.now().subtract( Duration(days: 14)  );
     tarefa.dataHoraConclusao = DateTime.now();
     return tarefa;
+  }
+
+  TarefaPersistenciaJson entidadeComMocks(){
+    TarefaPersistenciaJson obj = new TarefaPersistenciaJson();
+    Future< List<Map<String, dynamic>> > lista = new Future(
+            () {
+              new List<Map<String, dynamic>>();
+            }
+    );
+    when( obj.daoJson.lerArquivo( any ) ).thenAnswer( (invocation) {
+      return new Future( () => new List<Map<String, dynamic>>() );
+    });
+    return obj;
   }
 
   void runAll() async{
@@ -84,7 +98,8 @@ class TarefaPersistenciaJsonTest {
     });
 
     test("Tarefa persistência JSON: Cadastrar Tarefa cria um registro na lista de maps?", () async{
-      TarefaPersistenciaJson obj1 = new TarefaPersistenciaJson();
+      TarefaPersistenciaJson obj1 = this.entidadeComMocks();
+//      when( obj1.listaJson ).thenReturn(expected);
       int qtdAntes = obj1.listaJson.length;
       await obj1.cadastrarTarefa( this.criarTarefaValida() );
       expect( obj1.listaJson.length, (qtdAntes+1) );

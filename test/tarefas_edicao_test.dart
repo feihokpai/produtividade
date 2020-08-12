@@ -22,12 +22,6 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtilProdutividade{
     expect( key.currentState.validate(), passou );
   }
 
-  Tarefa criarTarefaValida(){
-    Tarefa tarefa = new Tarefa("aaa", "bbb");
-    tarefa.id = 999;
-    return tarefa;
-  }
-
   @override
   void runAll(){
     super.criarTeste("Modo Cadastro: Tem título na página?", new TarefasEdicaoTela(), () {

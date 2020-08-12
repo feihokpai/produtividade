@@ -141,16 +141,7 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
               border: new Border.all(width: 0.5, color: Colors.black, ),
               borderRadius: BorderRadius.circular( 4.0 ),
             ),
-            child: FutureBuilder<Widget>(
-              future: this.gerarListView(),
-              builder: (context, snapshot) {
-                if ( snapshot.connectionState == ConnectionState.waiting ) {
-                  return Center( child: CircularProgressIndicator() );
-                }else{
-                  return snapshot.data;
-                }
-              }
-            ),
+            child: await this.gerarListView(),
           ),
         ),
       ],
