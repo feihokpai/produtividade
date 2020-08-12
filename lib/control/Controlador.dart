@@ -34,8 +34,10 @@ class Controlador{
     }
   }
 
-  void deletarTarefa(Tarefa tarefa){
-    this.tarefaDao.deletarTarefa(tarefa);
+  Future<void> deletarTarefa(Tarefa tarefa) async {
+    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa );
+    await this.tarefaDao.deletarTarefa(tarefa);
+    tempos.forEach((tempo) => this.deletarRegistroTempoDedicado(tempo) );
   }
 
   Future<List<TempoDedicado>> getAllTempoDedicado(){
