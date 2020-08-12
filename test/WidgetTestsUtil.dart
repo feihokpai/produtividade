@@ -170,5 +170,22 @@ abstract class WidgetTestsUtil{
     });
   }
 
+  void createAsynchronousTest(String testName, StatefulWidget widget, int pumpDurationInSeconds, void Function() executeAfter ){
+    testWidgets( "${this.screenName} - $testName" , (WidgetTester tester) async {
+      this.tester = tester;
+      this.pumpWidgetAndPumpAgain( widget, pumpDurationInSeconds, executeAfter );
+    });
+  }
+
+  ///     Execute tester.pumpWidget, creating a Material App folding [widget]. After execute tester.pump()
+  /// with duration of [pumpDurationInSeconds] seconds
+  void pumpWidgetAndPumpAgain( StatefulWidget widget, int pumpDurationInSeconds, void Function() executeAfter ){
+    this.tester.pumpWidget( this.makeTestable( widget ) ).then((value) {
+      this.tester.pump( new Duration(seconds: pumpDurationInSeconds) ).then((value) {
+        executeAfter.call();
+      });
+    });
+  }
+
   void runAll();
 }

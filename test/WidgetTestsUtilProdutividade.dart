@@ -52,9 +52,9 @@ abstract class WidgetTestsUtilProdutividade extends WidgetTestsUtil{
     this.controlador.tempoDedicadoDao = new TempoDedicadoPersistenciaMock();
   }
 
-  Tarefa criarTarefaValida(){
+  Tarefa criarTarefaValida({int id=0}){
     Tarefa tarefa = new Tarefa("aaa", "bbb");
-    tarefa.id = 999;
+    tarefa.id = id;
     return tarefa;
   }
 
