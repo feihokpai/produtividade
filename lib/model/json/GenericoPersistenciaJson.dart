@@ -175,7 +175,10 @@ abstract class GenericoPersistenciaJson{
     if( !arquivoFisicoExiste ){
       throw new Exception( "Tentou ler os dados de um arquivo que não foi criado" );
     }
-    this.listaJson = await this.daoJson.lerArquivo(await this.arquivo);
+    var resultado = await this.daoJson.lerArquivo(await this.arquivo);
+    if( resultado != null ){
+      this.listaJson = resultado;
+    }
   }
 
   List<T> _converterListEntidadesParaListSubclasse<T extends EntidadeDominio>( ){
