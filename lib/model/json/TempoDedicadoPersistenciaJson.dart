@@ -61,6 +61,7 @@ class TempoDedicadoPersistenciaJson extends GenericoPersistenciaJson implements 
     this.entidades.forEach((element) {
       TempoDedicado tempo = element as TempoDedicado;
       if( tempo.tarefa.id == tarefa.id ){
+        tempo.tarefa = tarefa;
         lista.add( tempo );
       }
     });
