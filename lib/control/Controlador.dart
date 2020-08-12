@@ -1,6 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
 import 'package:registro_produtividade/control/interfaces/ITempoDedicadoPersistencia.dart';
 
@@ -22,28 +22,30 @@ class Controlador{
     return Controlador._instance;
   }
 
-  List<Tarefa> getListaDeTarefas(){
+  Future<List<Tarefa>> getListaDeTarefas() async{
     return this.tarefaDao.getAllTarefa();
   }
 
-  void salvarTarefa( Tarefa tarefa ){
+  Future<void> salvarTarefa( Tarefa tarefa ) async {
     if( tarefa.id == 0) {
-      this.tarefaDao.cadastrarTarefa(tarefa);
+      await this.tarefaDao.cadastrarTarefa(tarefa);
     }else{
-      this.tarefaDao.editarTarefa(tarefa);
+      await this.tarefaDao.editarTarefa(tarefa);
     }
   }
 
-  void deletarTarefa(Tarefa tarefa){
-    this.tarefaDao.deletarTarefa(tarefa);
+  Future<void> deletarTarefa(Tarefa tarefa) async {
+    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa );
+    await this.tarefaDao.deletarTarefa(tarefa);
+    tempos.forEach((tempo) => this.deletarRegistroTempoDedicado(tempo) );
   }
 
-  List<TempoDedicado> getAllTempoDedicado(){
+  Future<List<TempoDedicado>> getAllTempoDedicado(){
     return this.tempoDedicadoDao.getAllTempoDedicado();
   }
 
-  List<TempoDedicado> getTempoDedicadoOrderByInicio(Tarefa tarefa){
-    return this.tempoDedicadoDao.getTempoDedicadoOrderByInicio( tarefa );
+  Future<List<TempoDedicado>> getTempoDedicadoOrderByInicio(Tarefa tarefa) async {
+    return await this.tempoDedicadoDao.getTempoDedicadoOrderByInicio( tarefa );
   }
 
   void deletarRegistroTempoDedicado(TempoDedicado registro) {
@@ -51,8 +53,8 @@ class Controlador{
   }
 
   /// Retorna o total de tempo gasto numa tarefa em Minutos.
-  int getTotalGastoNaTarefaEmMinutos(Tarefa tarefa){
-    List<TempoDedicado> tempos = this.getTempoDedicadoOrderByInicio( tarefa );
+  Future<int> getTotalGastoNaTarefaEmMinutos(Tarefa tarefa) async {
+    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa );
     int somatorio = 0;
     tempos.forEach((tempo) { 
       somatorio += tempo.getDuracaoEmMinutos();
@@ -61,7 +63,7 @@ class Controlador{
   }
 
   void salvarTempoDedicado(TempoDedicado tempo) {
-    if( tempo == 0) {
+    if( tempo.id == 0) {
       this.tempoDedicadoDao.cadastrarTempo(tempo);
     }else{
       this.tempoDedicadoDao.editarTempo(tempo);

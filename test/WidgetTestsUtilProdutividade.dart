@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_modular/flutter_modular_test.dart';
 import 'package:registro_produtividade/app_module.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
 import 'package:registro_produtividade/control/interfaces/ITempoDedicadoPersistencia.dart';
 import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
@@ -52,9 +52,9 @@ abstract class WidgetTestsUtilProdutividade extends WidgetTestsUtil{
     this.controlador.tempoDedicadoDao = new TempoDedicadoPersistenciaMock();
   }
 
-  Tarefa criarTarefaValida(){
+  Tarefa criarTarefaValida({int id=0}){
     Tarefa tarefa = new Tarefa("aaa", "bbb");
-    tarefa.id = 999;
+    tarefa.id = id;
     return tarefa;
   }
 

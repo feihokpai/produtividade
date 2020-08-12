@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 
 String getStringComNumeroDeCaracteres(int qtd){
   String texto = "";
@@ -98,10 +98,18 @@ void main(){
     expect( (diferenca), 0 );
   } );
 
+  test("Tarefa: (dataHoraCadastro) setter NÃO permite nulo. ", (){
+    expect( () => new Tarefa("aaa", "bb").dataHoraCadastro = null , throwsAssertionError );
+  });
+
   test("Tarefa: (dataHoraConclusao) Construtor cria nulo. ", (){
     final tarefa = new Tarefa("nome", "descricao");
     expect( tarefa.dataHoraConclusao , null );
   } );
+
+  test("Tarefa: (dataHoraConclusao) setter permite nulo. ", (){
+    expect( new Tarefa("aaa", "bb").dataHoraConclusao = null , isNull );
+  });
 
   test("Tarefa: (dataHoraConclusao) setter não permite data futura. ", (){
     final tarefa = new Tarefa("nome", "descricao");

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
 import 'package:registro_produtividade/control/interfaces/ITempoDedicadoPersistencia.dart';
-import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
-import 'package:registro_produtividade/model/mocks/TempoDedicadoPersistenciaMock.dart';
-import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
+import 'package:registro_produtividade/model/json/IPersistenciaJSON.dart';
+import 'package:registro_produtividade/model/json/PersistenciaJSON.dart';
+import 'package:registro_produtividade/model/json/TarefaPersistenciaJson.dart';
+import 'package:registro_produtividade/model/json/TempoDedicadoPersistenciaJson.dart';
 import 'package:registro_produtividade/view/comum/rotas.dart';
 import 'package:registro_produtividade/view/registros_cadastro_tela.dart';
 import 'package:registro_produtividade/view/registros_listagem_tela.dart';
@@ -16,13 +17,19 @@ import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
 class AppModule extends MainModule {
 
+  static const String nomeArquivoTarefas = "tarefa.json";
+  static const String nomeArquivoTarefasBackup = "tarefa_backup.json";
+  static const String nomeArquivoTempoDedicado = "tempo.json";
+  static const String nomeArquivoTempoDedicadoBackup = "tempo_backup.json";
+
   StatefulWidget telaInicial = new ListaDeTarefasTela();
 
   // Provide a list of dependencies to inject into your project
   @override
   List<Bind> get binds => [
-    new Bind<ITarefaPersistencia>( (injects) => new TarefaPersistenciaMock() ),
-    new Bind<ITempoDedicadoPersistencia>( (injects) => new TempoDedicadoPersistenciaMock() ),
+    new Bind<ITarefaPersistencia>( (injects) => new TarefaPersistenciaJson() ),
+    new Bind<ITempoDedicadoPersistencia>( (injects) => new TempoDedicadoPersistenciaJson() ),
+    new Bind<IPersistenciaJSON>( (injects) => new PersistenciaJson() ),
   ];
 
   // Provide all the routes for your module

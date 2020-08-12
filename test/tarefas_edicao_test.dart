@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
@@ -20,12 +20,6 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtilProdutividade{
     Form formulario = super.tester.widget( find.byType( Form ) ) as Form;
     GlobalKey<FormState> key = formulario.key as GlobalKey<FormState>;
     expect( key.currentState.validate(), passou );
-  }
-
-  Tarefa criarTarefaValida(){
-    Tarefa tarefa = new Tarefa("aaa", "bbb");
-    tarefa.id = 999;
-    return tarefa;
   }
 
   @override
