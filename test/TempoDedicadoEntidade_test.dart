@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 
 void main(){
   new TempoDedicadoEntidadeTest().runAll();
@@ -21,8 +21,8 @@ class TempoDedicadoEntidadeTest{
   }
 
   void runAll(){
-    test("Tempo dedicado: (id) construtor não permite id<0?", (){
-      expect( () => new TempoDedicado( this.criarTarefaValida(), id: -1 ), throwsException );
+    test("Tempo dedicado: (id) construtor permite id<0?", (){
+      expect( new TempoDedicado( this.criarTarefaValida(), id: -1 ).id, -1 );
     });
 
     test("Tempo dedicado: (id) construtor permite id=0?", (){
@@ -33,9 +33,9 @@ class TempoDedicadoEntidadeTest{
       expect( new TempoDedicado( this.criarTarefaValida(), id: 1 ).id, 1 );
     });
 
-    test("Tempo dedicado: (id) setter não permite id<0?", (){
+    test("Tempo dedicado: (id) setter permite id<0?", (){
       TempoDedicado td = new TempoDedicado( this.criarTarefaValida() );
-      expect( () => td.id = -1, throwsException );
+      expect( td.id = -1, -1 );
     });
 
     test("Tempo dedicado: (id) setter permite id=0?", (){
@@ -52,18 +52,13 @@ class TempoDedicadoEntidadeTest{
       expect( () => new TempoDedicado( null ), throwsException );
     });
 
-    test("Tempo dedicado: (tarefa) construtor não permite tarefa com id=0?", (){
-      expect( () => new TempoDedicado( this.criarTarefaValidaSemId() ), throwsException );
+    test("Tempo dedicado: (tarefa) construtor permite tarefa com id=0?", (){
+      expect( new TempoDedicado( this.criarTarefaValidaSemId() ).id, 0 );
     });
 
     test("Tempo dedicado: (tarefa) setter não permite valor nulo?", (){
       TempoDedicado td = new TempoDedicado( this.criarTarefaValida() );
       expect( () => td.tarefa = null, throwsException );
-    });
-
-    test("Tempo dedicado: (tarefa) setter não permite tarefa com id=0?", (){
-      TempoDedicado td = new TempoDedicado( this.criarTarefaValida() );
-      expect( () => td.tarefa = this.criarTarefaValidaSemId(), throwsException );
     });
 
     test("Tempo dedicado: (inicio) construtor por default seta a data/hora atual?", (){
@@ -98,6 +93,11 @@ class TempoDedicadoEntidadeTest{
       expect( new TempoDedicado( this.criarTarefaValida() ).fim , null );
     });
 
+    test("Tempo dedicado: (fim) setter permite data nula?", (){
+      TempoDedicado t = new TempoDedicado( this.criarTarefaValida() );
+      expect( t.fim = null , null );
+    });
+
     test("Tempo dedicado: (fim) setter não permite data anterior a início?", (){
       DateTime agora = new DateTime.now();
       TempoDedicado td = new TempoDedicado( this.criarTarefaValida(), inicio: agora );
@@ -105,7 +105,7 @@ class TempoDedicadoEntidadeTest{
       expect( () => td.fim = umSegundoAntes, throwsException );
     });
 
-    test("Tempo dedicado: (duracaoEmMinutos) Calcula corretamente?", (){
+    test("Tempo dedicado: (duracaoEmMinutos) com fim preenchido calcula corretamente?", (){
       DateTime agora = new DateTime.now();
       TempoDedicado td = new TempoDedicado( this.criarTarefaValida(), inicio: agora );
       td.fim = agora.add( new Duration(minutes: 20) );
@@ -116,6 +116,42 @@ class TempoDedicadoEntidadeTest{
       expect( td.getDuracaoEmMinutos(), 19 );
       td.fim = agora.add( new Duration(hours: 1,minutes: 25, seconds: 59) );
       expect( td.getDuracaoEmMinutos(), 85 );
+    });
+
+    test("Tempo dedicado: (duracaoEmMinutos) com fim null calcula corretamente?", (){
+      DateTime agora = new DateTime.now();
+      TempoDedicado td = new TempoDedicado( this.criarTarefaValida(), inicio: agora );
+      td.fim = null;
+      expect( td.getDuracaoEmMinutos(), 0 );
+    });
+
+    test("Tempo dedicado: (compare) Retorna -1 com tempo de início menor", (){
+      DateTime agora = DateTime.now();
+      DateTime agoraMais1 = DateTime.now().add( new Duration( seconds: 1 ) );
+      TempoDedicado t1 = new TempoDedicado(this.criarTarefaValida(), inicio: agora);
+      TempoDedicado t2 = new TempoDedicado(this.criarTarefaValida(), inicio: agoraMais1);
+      expect( t1.compareTo(t2) , -1 );
+    });
+
+    test("Tempo dedicado: (compare) Retorna 1 com tempo de início maior", (){
+      DateTime agora = DateTime.now();
+      DateTime agoraMais1 = DateTime.now().add( new Duration( seconds: 1 ) );
+      TempoDedicado t1 = new TempoDedicado(this.criarTarefaValida(), inicio: agora);
+      TempoDedicado t2 = new TempoDedicado(this.criarTarefaValida(), inicio: agoraMais1);
+      expect( t2.compareTo(t1) , 1 );
+    });
+
+    test("Tempo dedicado: (compare) Retorna 0 se objeto tiver mesma hora, minuto e segundo", (){
+      DateTime agora = DateTime.now();
+      DateTime agoraMais1 = DateTime.now().add( new Duration( seconds: 0 ) );
+      TempoDedicado t1 = new TempoDedicado(this.criarTarefaValida(), inicio: agora);
+      TempoDedicado t2 = new TempoDedicado(this.criarTarefaValida(), inicio: agoraMais1);
+      expect( t1.compareTo(t2) , 0 );
+    });
+
+    test("Tempo dedicado: (compare) Retorna 0 se for mesmo objeto", (){
+      TempoDedicado t1 = new TempoDedicado(this.criarTarefaValida(), inicio: DateTime.now());
+      expect( t1.compareTo(t1) , 0 );
     });
   }
 }

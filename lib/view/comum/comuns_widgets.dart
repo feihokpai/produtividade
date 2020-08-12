@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
-import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/view/comum/rotas.dart';
 
 class ComunsWidgets {
 
   static BuildContext context;
+  static bool modoTeste = false;
 
   static String KEY_STRING_TITULO_PAGINA = "titulo_pagina";
   static String KEY_STRING_BOTAO_SIM_DIALOG = "yesButtonDialog";
@@ -90,22 +91,30 @@ class ComunsWidgets {
     SystemNavigator.pop();
   }
 
-  static Future<void> mudarParaTela( Widget widgetTela ){
-    BuildContext contexto = ComunsWidgets.context;
-    Navigator.push( contexto , new MaterialPageRoute(builder: (contexto) {
-      return widgetTela;
-    }));
+  static Future<dynamic> mudarParaPaginaInicial() async{
+    Navigator.pushNamed(context, Rotas.LISTAGEM_TAREFA ).then((value) {
+      return value;
+    });
   }
 
-  static void mudarParaPaginaInicial() {
-    ComunsWidgets.mudarParaTela( new ListaDeTarefasTela() );
-  }
-
-  static void mudarParaPaginaEdicaoDeTarefas( {Tarefa tarefa}) {
+  static Future<void> mudarParaPaginaEdicaoDeTarefas( {Tarefa tarefa}) {
     if( tarefa == null ) {
-      ComunsWidgets.mudarParaTela(new TarefasEdicaoTela());
+      Navigator.pushNamed(context, Rotas.CADASTRO_TAREFA );
     }else{
-      ComunsWidgets.mudarParaTela( new TarefasEdicaoTela.modoEdicao( tarefa ) );
+      Navigator.pushNamed(context, Rotas.EDICAO_TAREFA, arguments: tarefa );
     }
+  }
+
+  static Future<dynamic> mudarParaListagemTempoDedicado(Tarefa tarefa) async{
+    Navigator.pushNamed(context, Rotas.LISTAGEM_TEMPO, arguments: tarefa).then((value) {
+      return value;
+    });
+  }
+
+  static Future<dynamic> mudarParaEdicaoTempoDedicado(Tarefa tarefa, {TempoDedicado tempo, bool cronometroLigado}) async{
+    List<dynamic> argumentos = [tarefa, tempo, cronometroLigado];
+    Navigator.pushNamed(context, Rotas.CADASTRO_TEMPO, arguments: argumentos).then((value) {
+      return value;
+    });
   }
 }

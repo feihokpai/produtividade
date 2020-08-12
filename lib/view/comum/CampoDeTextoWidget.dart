@@ -8,7 +8,7 @@ class CampoDeTextoWidget{
   TextStyle _textStyleLabel = Estilos.textStyleLabelTextFormField;
   TextStyle _textStyleTexto = Estilos.textStyleListaPaginaInicial;
   TextFormField _widget;
-  Key _key;
+  ValueKey<String> _key;
   /// Quantidade de linhas do campo de texto.
   int _linhas;
   /// Máximo de linhas que a mensagem de erro pode ocupar.
@@ -17,15 +17,11 @@ class CampoDeTextoWidget{
 
   String Function(String) funcaoValidacao;
 
-  CampoDeTextoWidget( String label, int qtdLinhas, String Function(String) validacao, {Key chave, bool editavel=true} ){
+  CampoDeTextoWidget( String label, int qtdLinhas, String Function(String) validacao, {ValueKey<String> chave, bool editavel=true} ){
     this.linhas = qtdLinhas;
     this.labelCampo = label;
     this.funcaoValidacao = validacao;
-    if( chave != null){
-      this._key = chave;
-    }else{
-      this._key = UniqueKey();
-    }
+    this._key = chave ?? new ValueKey<String>( this.toString() );
     this.editavel = editavel;
   }
 
@@ -34,8 +30,10 @@ class CampoDeTextoWidget{
       throw new Exception( "Não pode setar a key depois que o widget já foi criado. Somente use setKeyString()"
           " se não tiver atribuído o valor no construtor ou não tiver chamado este mesmo método para o mesmo objeto antes." );
     }
-    this._key = new ValueKey( valor );
+    this._key = new ValueKey<String>( valor );
   }
+
+  ValueKey<String> get key => this._key;
 
   String getText(){
     return this.campoController.text;
@@ -77,7 +75,7 @@ class CampoDeTextoWidget{
     if( this._widget == null ){
       this._widget = new TextFormField(
         key: this._key,
-        enabled: this.editavel,
+        readOnly: !(this.editavel),
         keyboardType: TextInputType.text,
         decoration: new InputDecoration(
             contentPadding: EdgeInsets.all(10.0),

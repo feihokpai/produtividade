@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
@@ -18,11 +18,13 @@ class ListaDeTempoDedicadoTela extends StatefulWidget {
   static final String KEY_STRING_LISTA_REGISTROS = "listViewRegistros";
   static final String KEY_STRING_REGISTRO = "listViewRegistros";
   static final String KEY_STRING_ICONE_DELETAR = "deleteIcon";
+  static final String KEY_STRING_ICONE_EDITAR = "editIcon";
   static final String KEY_STRING_TOTAL_TEMPO = "sumTime";
 
-  static final String TEXTO_SEM_REGISTROS = "Não há registros de tempo dedicado";
+  static final String TEXTO_SEM_REGISTROS = "Ainda não há registros encerrados";
 
-  ListaDeTempoDedicadoTela( Tarefa tarefa ){
+  ListaDeTempoDedicadoTela( Tarefa tarefa )
+      : assert(tarefa != null, "Não pode iniciar a tela de listagem de tempo dedicado com tarefa nula"){
     this.tarefaAtual = tarefa;
   }
 
@@ -43,13 +45,16 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
     return this.criarHome();
   }
 
-  void inicializarVariaveis() {
+  Future<void> inicializarVariaveis() async{
     ComunsWidgets.context = context;
     this.inicializarCampoDeTexto();
-    this.inicializarCampoDuracaoTotal();
+    await this.inicializarCampoDuracaoTotal();
   }
 
   void inicializarCampoDeTexto(){
+    if( this.widget.tarefaAtual == null ) {
+      return;
+    }
     String nome = this.widget.tarefaAtual.nome;
     String descricao = this.widget.tarefaAtual.descricao;
     Key keyString = new ValueKey( ListaDeTempoDedicadoTela.KEY_STRING_PAINEL_TAREFA );
@@ -57,11 +62,15 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
     this.campoDescricaoTarefa.setText( descricao );
   }
 
-  void inicializarCampoDuracaoTotal(){
+  Future<void> inicializarCampoDuracaoTotal() async {
     Key keyString = new ValueKey( ListaDeTempoDedicadoTela.KEY_STRING_TOTAL_TEMPO );
     this.campoDuracaoTotal = new CampoDeTextoWidget("Total de tempo dedicado na tarefa", 1, null,
         editavel: false, chave: keyString );
-    int minutos = this.controlador.getTotalGastoNaTarefaEmMinutos( this.widget.tarefaAtual );
+//    await this.setarTextoCampoDuracaoTotal();
+  }
+
+  Future<void> setarTextoCampoDuracaoTotal() async {
+    int minutos = await this.controlador.getTotalGastoNaTarefaEmMinutos( this.widget.tarefaAtual );
     String duracaoFormatada = DataHoraUtil.criarStringQtdHorasEMinutos( new Duration(minutes: minutos) );
     if( minutos == 0 ){
       duracaoFormatada = ListaDeTempoDedicadoTela.TEXTO_SEM_REGISTROS;
@@ -91,24 +100,15 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
                   style: Estilos.textStyleListaTituloDaPagina,
                   key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: this.gerarCampoDaTarefa(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: this.gerarCampoDaDuracaoTotal(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                  height: 150,
-                  decoration: new BoxDecoration(
-                    border: new Border.all(width: 0.5, color: Colors.black, ),
-                    borderRadius: BorderRadius.circular( 4.0 ),
-                  ),
-                  child: this.gerarListView(),
-              ),
+            new FutureBuilder<Widget>(
+              future: this.carregarDadosRegistroDaTarefa(),
+                builder: (context, snapshot) {
+                  if ( snapshot.connectionState == ConnectionState.waiting ) {
+                    return Center( child: CircularProgressIndicator() );
+                  }else if(  snapshot.connectionState == ConnectionState.done  ){
+                    return snapshot.data;
+                  }
+                }
             ),
             new IconButton(
               key: new ValueKey( ListaDeTempoDedicadoTela.KEY_STRING_BOTAO_NOVO ),
@@ -122,27 +122,56 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
     );
   }
 
+  Future<Widget> carregarDadosRegistroDaTarefa() async{
+    return new Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: this.gerarCampoDaTarefa(),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: await this.gerarCampoDaDuracaoTotal(),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            height: 150,
+            decoration: new BoxDecoration(
+              border: new Border.all(width: 0.5, color: Colors.black, ),
+              borderRadius: BorderRadius.circular( 4.0 ),
+            ),
+            child: await this.gerarListView(),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget gerarCampoDaTarefa() {
     return this.campoDescricaoTarefa.widget;
   }
 
-  Widget gerarCampoDaDuracaoTotal() {
+  Future<Widget> gerarCampoDaDuracaoTotal() async{
+    await this.setarTextoCampoDuracaoTotal();
     return this.campoDuracaoTotal.widget;
   }
 
   String getRegistroTempoDedicadoFormatado(TempoDedicado registro){
+    String formatada = "";
     String dataInicio = DataHoraUtil.converterDateTimeParaDataBr( registro.inicio );
     String horaInicio = DataHoraUtil.converterDateTimeParaHoraResumidaBr( registro.inicio );
-    String dataFim = DataHoraUtil.converterDateTimeParaDataBr( registro.fim );
-    String horaFim = DataHoraUtil.converterDateTimeParaHoraResumidaBr( registro.fim );
-    String formatada = "";
-    formatada += "${dataInicio}: ${horaInicio} a ${horaFim}";
+    formatada += "${dataInicio}: ${horaInicio}";
+    if( registro.fim != null) {
+      String dataFim = DataHoraUtil.converterDateTimeParaDataBr(registro.fim);
+      String horaFim = DataHoraUtil.converterDateTimeParaHoraResumidaBr( registro.fim);
+      formatada += " a ${horaFim}";
+    }
     return formatada;
   }
 
-  Widget gerarListView() {
-    List<TempoDedicado> registrosTempo = this.controlador.getTempoDedicado( this.widget.tarefaAtual );
-    int duracao = this.controlador.getTotalGastoNaTarefaEmMinutos( this.widget.tarefaAtual );
+  Future<Widget> gerarListView() async {
+    List<TempoDedicado> registrosTempo = await this.controlador.getTempoDedicadoOrderByInicio( this.widget.tarefaAtual );
     return new ListView.builder(
           scrollDirection: Axis.vertical,
           itemCount: registrosTempo.length,
@@ -150,6 +179,7 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
             TempoDedicado registro = registrosTempo[indice];
             String descricaoRegistro = this.getRegistroTempoDedicadoFormatado( registro );
             String strKeyIconeDelecao = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_DELETAR}${registro.id}";
+            String strKeyIconeEdicao = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_EDITAR}${registro.id}";
             return Container(
               color: ( (indice % 2 == 0) ? Colors.black26 : Colors.black38 ),
               child: Padding(
@@ -161,6 +191,16 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
                       child: new Text(
                         descricaoRegistro,
                         style: Estilos.textStyleListaPaginaInicial,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: new IconButton(
+                        key: new ValueKey( strKeyIconeEdicao ),
+                        icon: new Icon(Icons.edit),
+                        onPressed: () {
+                          this.clicouNoIconeEdicao(registro);
+                        },
                       ),
                     ),
                     Padding(
@@ -185,9 +225,10 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
     this.widget.tarefaAtual = null;
   }
 
-  void clicouNoBotaoNovoRegistro() {
-    this.reiniciarVariaveis();
-    ComunsWidgets.mudarParaTela( new CadastroTempoDedicadoTela( this.widget.tarefaAtual ) );
+  void clicouNoBotaoNovoRegistro() async{
+    ComunsWidgets.mudarParaEdicaoTempoDedicado( this.widget.tarefaAtual ).then((value) {
+      this.reiniciarVariaveis();
+    });
   }
 
   void clicouNoIconeDelecao(TempoDedicado registro) {
@@ -202,9 +243,13 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
     });
   }
 
+  void clicouNoIconeEdicao(TempoDedicado registro) {
+    ComunsWidgets.mudarParaEdicaoTempoDedicado( registro.tarefa, tempo: registro );
+  }
+
   Future<bool> voltarParaPaginaAnterior() {
-    this.reiniciarVariaveis();
-    ComunsWidgets.mudarParaTela( new ListaDeTarefasTela() ).then((value) {
+    ComunsWidgets.mudarParaPaginaInicial().then((value) {
+      this.reiniciarVariaveis();
       return true;
     });
   }

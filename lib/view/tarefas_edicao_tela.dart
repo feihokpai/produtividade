@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:registro_produtividade/control/Controlador.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
@@ -16,8 +16,12 @@ class TarefasEdicaoTela extends StatefulWidget {
   static final String KEY_STRING_CAMPO_NOME = "nameTextField";
   static final String KEY_STRING_CAMPO_DESCRICAO = "descriptionTextField";
 
-  TarefasEdicaoTela();
+  TarefasEdicaoTela( {Tarefa tarefa} ){
+    this.tarefaAtual = tarefa;
+  }
 
+  @deprecated
+  /// Não usar mais. Usar o construtor padrão, em vez dele.
   TarefasEdicaoTela.modoEdicao( Tarefa tarefa ){
     this.tarefaAtual = tarefa;
   }
@@ -74,7 +78,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     Widget item = new Padding( padding: const EdgeInsets.all(8.0) );
     if( this.widget.tarefaAtual != null ) {
       item = new Padding(
-        padding: EdgeInsets.fromLTRB(60, 0, 0, 0),
+        padding: EdgeInsets.fromLTRB(8.0, 0, 0, 0),
         child: new RaisedButton(
           key: new ValueKey(TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR),
           onPressed: this.pressionouDeletar,
@@ -115,20 +119,24 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
                 ),
                 new Row(
                   children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: new RaisedButton(
+                          key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
+                          onPressed: this.pressionouSalvar,
+                          child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
+                          color: Colors.blue,),
+                      ),
+                    ),
+                    Expanded(
                       child: new RaisedButton(
-                        key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
-                        onPressed: this.pressionouSalvar,
-                        child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
+                        key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
+                        onPressed: this.pressionouVoltar,
+                        child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
                         color: Colors.blue,),
                     ),
-                    new RaisedButton(
-                      key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
-                      onPressed: this.pressionouVoltar,
-                      child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
-                      color: Colors.blue,),
-                    this.gerarBotaoDeletar(),
+                    Expanded(child: this.gerarBotaoDeletar()),
                   ],
                 ),
               ],
@@ -156,15 +164,13 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     });
   }
 
-  void pressionouVoltar(){
-    this.resetarVariaveis();
-    ComunsWidgets.mudarParaPaginaInicial();
+  void pressionouVoltar() async{
+    ComunsWidgets.mudarParaPaginaInicial().then( (value) {
+      this.resetarVariaveis();
+    });
   }
 
   void pressionouSalvar(){
-    //##########################################################################
-    print("pressionou salvar");
-    //##########################################################################
     try{
       if( this.globalKey.currentState.validate() ) {
         Tarefa tarefa = this.widget.tarefaAtual ?? new Tarefa("sem nome", "");
@@ -179,8 +185,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   Future<bool> voltarParaPaginaAnterior() {
-    this.resetarVariaveis();
-    ComunsWidgets.mudarParaTela( new ListaDeTarefasTela() ).then((value) {
+    ComunsWidgets.mudarParaPaginaInicial().then( (value) {
+      this.resetarVariaveis();
       return true;
     });
   }

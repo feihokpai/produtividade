@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
-import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 
 class ListaDeTarefasTela extends StatefulWidget {
 
@@ -33,14 +33,20 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     return scaffold1;
   }
 
-  Widget gerarListaViewDasTarefas(){
-    List<Tarefa> tarefas = this.controlador.getListaDeTarefas();
+  Future<Widget> gerarListaViewDasTarefas() async {
+    List<Tarefa> tarefas = await this.controlador.getListaDeTarefas();
     return new ListView.builder(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
+      physics: ScrollPhysics(),
       padding: EdgeInsets.fromLTRB(5, 20, 0, 0),
       itemCount: tarefas.length,
       itemBuilder: (context, indice) {
+        // Este IF está aqui, porque às vezes, a lista não se atualiza corretamente na estimativa de
+        // children. Aí se entrar aqui com um índice maior do que tem, dá erro.
+        if( indice > (tarefas.length-1) ){
+          return null;
+        }
         Tarefa tarefa = tarefas[indice];
         String strKeyLapis = "${ListaDeTarefasTela.KEY_STRING_ICONE_LAPIS}${tarefa.id}";
         String strKeyRelogio = "${ListaDeTarefasTela.KEY_STRING_ICONE_RELOGIO}${tarefa.id}";
@@ -82,37 +88,47 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     );
   }
 
-  Widget gerarConteudoCentral() {
+  Widget gerarConteudoCentral(){
 
     return WillPopScope(
       onWillPop: pedirConfirmacaoAntesDeFechar,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: new Text( "Tarefas em andamento",
-                style: Estilos.textStyleListaTituloDaPagina,
-                key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
-          ),
-          this.gerarListaViewDasTarefas(),
-          new IconButton(
-            key: new ValueKey( ListaDeTarefasTela.KEY_STRING_ICONE_ADD_TAREFA ),
-            icon: new Icon(Icons.add, size:50),
-            onPressed: this.clicouNoIconeAddTarefa,
-          ),
-        ],
+      child: new SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new Text( "Tarefas em andamento",
+                  style: Estilos.textStyleListaTituloDaPagina,
+                  key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
+            ),
+            FutureBuilder<Widget>(
+                future: this.gerarListaViewDasTarefas(),
+                builder: (context, snapshot) {
+                  if ( snapshot.connectionState == ConnectionState.waiting) {
+                    return new CircularProgressIndicator();
+                  }else{
+                    return snapshot.data;
+                  }
+                },
+            ),
+            new IconButton(
+              key: new ValueKey( ListaDeTarefasTela.KEY_STRING_ICONE_ADD_TAREFA ),
+              icon: new Icon(Icons.add, size:50),
+              onPressed: this.clicouNoIconeAddTarefa,
+            ),
+          ],
+        ),
       ),
     );
   }
 
   void clicouNoLapis(Tarefa tarefaParaEditar) {
-    print("Clicou no lápis");
     ComunsWidgets.mudarParaPaginaEdicaoDeTarefas(tarefa: tarefaParaEditar);
   }
 
   void clicouNoRelogio(Tarefa tarefaParaEditar) {
-    ComunsWidgets.mudarParaTela( new ListaDeTempoDedicadoTela( tarefaParaEditar ) );
+    ComunsWidgets.mudarParaListagemTempoDedicado( tarefaParaEditar );
   }
 
   void clicouNoIconeAddTarefa(){
@@ -123,7 +139,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     ComunsWidgets.exibirDialogConfirmacao(this.context,
         "Você deseja sair do aplicativo?", "").then((resposta) {
        if( resposta == 1 ){
-         Navigator.of(this.context).pop(true);
+         SystemNavigator.pop();
          return true;
        }
     });
