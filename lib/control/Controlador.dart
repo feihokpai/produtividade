@@ -1,14 +1,19 @@
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
-import 'package:registro_produtividade/control/TempoDedicadoEntidade.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
+import 'package:registro_produtividade/control/interfaces/ITempoDedicadoPersistencia.dart';
 
 class Controlador{
-  List<Tarefa> tarefas;
-  List<TempoDedicado> registrosTempoDedicado;
+
+  ITarefaPersistencia tarefaDao;
+  ITempoDedicadoPersistencia tempoDedicadoDao;
 
   static Controlador _instance;
 
   Controlador._construtorInterno(){
-
+    this.tarefaDao = Modular.get<ITarefaPersistencia>();
+    this.tempoDedicadoDao = Modular.get<ITempoDedicadoPersistencia>();
   }
 
   factory Controlador( ){
@@ -17,101 +22,52 @@ class Controlador{
     return Controlador._instance;
   }
 
-  List<Tarefa> getListaDeTarefas(){
-    if( this.tarefas == null ){
-      Tarefa t1 = new Tarefa("Passear com a Luna", "Todos os dias pela manhã eu preciso passear com a Luna "
-          "pelas redondezas. Aqui estou adicionando muito mais texto, para ver como vai se comportar os text area "
-          "onde esse texto será exibido. Será que dá Bug? O texto ainda tá curto. Precisa crescer mais, mais e "
-          "mais. Ficando gigante, estoura. Será?");
-      Tarefa t2 = new Tarefa("Estudar React", "Diariamente estudar React Js para me tornar um mestre");
-      t1.id = 1;
-      t2.id = 2;
-      this.tarefas = <Tarefa>[ t1, t2 ];
-    }
-    return tarefas;
+  Future<List<Tarefa>> getListaDeTarefas() async{
+    return this.tarefaDao.getAllTarefa();
   }
 
-  void _criarRegistrosTempoDedicado(){
-    if( this.registrosTempoDedicado == null ){
-      List<Tarefa> tarefas = this.getListaDeTarefas();
-      this.registrosTempoDedicado = new List();
-      DateTime agora = new DateTime.now();
-      if( tarefas.length > 0 ) {
-        TempoDedicado td1 = new TempoDedicado(
-            tarefas[0], inicio: agora.subtract(new Duration(hours: 2)), id: 1);
-        td1.fim = agora.subtract(new Duration(minutes: 50));
-        TempoDedicado td2 = new TempoDedicado(
-            tarefas[0], inicio: agora.subtract(new Duration(hours: 4)), id: 2);
-        td2.fim = agora.subtract(new Duration(hours: 3));
-        TempoDedicado td3 = new TempoDedicado(
-            tarefas[0], inicio: agora.subtract(new Duration(hours: 2)), id: 3);
-        td3.fim = agora.subtract(new Duration(hours: 1));
-        this.registrosTempoDedicado.add( td1 );
-        this.registrosTempoDedicado.add( td2 );
-        this.registrosTempoDedicado.add( td3 );
-      }
-      if( tarefas.length > 1) {
-        TempoDedicado td4 = new TempoDedicado(
-            tarefas[1], inicio: agora.subtract(new Duration(minutes: 55)),
-            id: 4);
-        td4.fim = agora.subtract(new Duration(minutes: 30));
-        this.registrosTempoDedicado.add( td4 );
-      }
-    }
-  }
-
-  void salvarTarefa( Tarefa tarefa ){
-    if( tarefa.id == 0 ) {
-      tarefa.id = this._getProximoIdTarefaDisponivel();
-      this.tarefas.add(tarefa);
+  Future<void> salvarTarefa( Tarefa tarefa ) async {
+    if( tarefa.id == 0) {
+      await this.tarefaDao.cadastrarTarefa(tarefa);
     }else{
-      // Por agora não faz nada.
+      await this.tarefaDao.editarTarefa(tarefa);
     }
-    print( "Quantidade de tarefas depois da inserção: ${tarefas.length}" );
   }
 
-  void deletarTarefa(Tarefa tarefa){
-    this.getListaDeTarefas().removeWhere( (tarefaAtual) => tarefaAtual.id == tarefa.id );
+  Future<void> deletarTarefa(Tarefa tarefa) async {
+    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa );
+    await this.tarefaDao.deletarTarefa(tarefa);
+    tempos.forEach((tempo) => this.deletarRegistroTempoDedicado(tempo) );
   }
 
-  List<TempoDedicado> getAllTempoDedicado(){
-    this._criarRegistrosTempoDedicado();
-    return this.registrosTempoDedicado;
+  Future<List<TempoDedicado>> getAllTempoDedicado(){
+    return this.tempoDedicadoDao.getAllTempoDedicado();
   }
 
-  List<TempoDedicado> getTempoDedicado(Tarefa tarefa){
-    this._criarRegistrosTempoDedicado();
-    List<TempoDedicado> lista = new List();
-    this.registrosTempoDedicado.forEach((tempo) {
-      if( tempo.tarefa.id == tarefa.id ){
-        lista.add( tempo );
-      }
-    });
-    return lista;
-  }
-
-  int _getProximoIdTarefaDisponivel() {
-    int maior = 0;
-    this.getListaDeTarefas().forEach( (tarefa) {
-      if( tarefa.id > maior ){
-        maior = tarefa.id;
-      }
-    });
-    return (maior+1);
+  Future<List<TempoDedicado>> getTempoDedicadoOrderByInicio(Tarefa tarefa) async {
+    return await this.tempoDedicadoDao.getTempoDedicadoOrderByInicio( tarefa );
   }
 
   void deletarRegistroTempoDedicado(TempoDedicado registro) {
-    this.registrosTempoDedicado.removeWhere(( atual) => atual.id == registro.id );
+    this.tempoDedicadoDao.deletarTempo( registro );
   }
 
   /// Retorna o total de tempo gasto numa tarefa em Minutos.
-  int getTotalGastoNaTarefaEmMinutos(Tarefa tarefa){
-    List<TempoDedicado> tempos = this.getTempoDedicado( tarefa );
+  Future<int> getTotalGastoNaTarefaEmMinutos(Tarefa tarefa) async {
+    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa );
     int somatorio = 0;
     tempos.forEach((tempo) { 
       somatorio += tempo.getDuracaoEmMinutos();
     });
     return somatorio;
+  }
+
+  void salvarTempoDedicado(TempoDedicado tempo) {
+    if( tempo.id == 0) {
+      this.tempoDedicadoDao.cadastrarTempo(tempo);
+    }else{
+      this.tempoDedicadoDao.editarTempo(tempo);
+    }
   }
 
 }

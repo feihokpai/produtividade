@@ -1,7 +1,8 @@
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/dominio/EntidadeDominio.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 
-class TempoDedicado{
-  int _id;
+class TempoDedicado extends EntidadeDominio implements Comparable<TempoDedicado>{
   Tarefa _tarefa;
   DateTime _inicio;
   DateTime _fim;
@@ -15,21 +16,12 @@ class TempoDedicado{
     this.id = id;
   }
   ///     Retorna a duração deste registro em minutos. Caso não tenha sido registrado um horário de fim
-  /// retorna -1.
+  /// retorna 0.
   int getDuracaoEmMinutos(){
     if( this.fim != null ){
       return this.fim.difference( this.inicio ).inMinutes;
     }
-    return -1;
-  }
-
-  int get id => this._id;
-
-  void set id(int valor){
-    if( valor < 0 ){
-      throw new Exception("O id de um registro de tempo dedicado não pode ser menor que zero.");
-    }
-    this._id = valor;
+    return 0;
   }
 
   DateTime get inicio => this._inicio;
@@ -47,7 +39,7 @@ class TempoDedicado{
   DateTime get fim => this._fim;
 
   set fim(DateTime valor){
-    if( valor.isBefore( this.inicio ) ){
+    if( valor != null && valor.isBefore( this.inicio ) ){
       throw new Exception("Num registro de tempo dedicado o horário de fim deve ser posterior ao de início.");
     }
     this._fim = valor;
@@ -59,10 +51,24 @@ class TempoDedicado{
     if( valor == null ){
       throw new Exception("Não pode criar um registro de tempo dedicado sem associar a ele uma Tarefa.");
     }
-    if( valor.id == 0 ){
-      throw new Exception("Não pode criar um registro de tempo dedicado sem associar a ele uma Tarefa com id=0.");
-    }
     this._tarefa = valor;
+  }
+
+  @override
+  int compareTo(TempoDedicado other){
+    assert( other != null );
+    if( this == other){
+      return 0;
+    }
+    if( !DataHoraUtil.eDataMesmoDia(this.inicio, other.inicio) ){
+      return this.inicio.isBefore( other.inicio ) ? -1 : 1;
+    }else{
+      if( DataHoraUtil.eMesmoHorarioAteSegundos(this.inicio, other.inicio) ) {
+        return 0;
+      }else{
+        return ( DataHoraUtil.eHorarioAnteriorAteSegundos(this.inicio, other.inicio) ) ? -1 : 1;
+      }
+    }
   }
 
 }

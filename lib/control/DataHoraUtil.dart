@@ -4,6 +4,7 @@ class DataHoraUtil{
 
   static DateFormat formatterDataBrasileira = new DateFormat("dd/MM/yyyy");
   static DateFormat formatterHoraBrasileira = new DateFormat("HH:mm:ss");
+  static DateFormat formatterDataHoraResumidaBrasileira = new DateFormat("dd/MM/yyyy HH:mm");
   static DateFormat formatterHoraResumidaBrasileira = new DateFormat("HH:mm");
   static DateFormat formatterDataHoraBrasileira = new DateFormat("dd/MM/yyyy HH:mm:ss");
   static DateFormat formatterSqllite = new DateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -35,10 +36,23 @@ class DataHoraUtil{
   }
 
   ///     Converte um DateTime para uma string no formato "01/01/2001 09:07:45".
+  @deprecated
   static String converterDateTimeParaDataHoraBr(DateTime dateTime){
     return formatterDataHoraBrasileira.format( dateTime );
   }
 
+  ///     Converte um DateTime para uma string no formato "01/01/2001 09:07:45".
+  static String converterDateTimeParaString(DateTime dateTime, DateFormat formatter){
+    return formatter.format( dateTime );
+  }
+
+  /// [formatter], escolher um dentre os campos estáticos da classe DataHoraUtil
+  static DateTime converterStringDateTime(String dataFormatada, DateFormat formatter){
+    return formatter.parse( dataFormatada );
+  }
+  
+  ///     Converte um DateTime para uma string no formato "01/01/2001 09:07:45".
+  ///
   static String converterDateTimeParaDateStringSqllite( DateTime valor ){
     return formatterSqllite.format( valor );
   }
@@ -55,10 +69,110 @@ class DataHoraUtil{
     return amanhaInicioDia;
   }
 
+  /**     Cria uma DateTime que corresponde ao dia de hoje às 00:00:10. É útil principalmente
+   * para testes.*/
+  static DateTime criarDataHojeInicioDoDia(){
+    DateTime agora = DateTime.now();
+    DateTime hojeInicioDoDia = agora.subtract( new Duration( hours: agora.hour, minutes: agora.minute, seconds: (agora.second-10) ) );
+    return hojeInicioDoDia;
+  }
+
+  /// Cria um DateTime com a data de ontem e com o horário de 23:59.
+  static DateTime criarDataOntemFimDoDia(){
+    DateTime agora = DateTime.now();
+    DateTime ontemMesmoHorarioDeAgora = agora.subtract( new Duration(days: 1) );
+    return DataHoraUtil.criarDataHoraMesmoDiaAs2359( ontemMesmoHorarioDeAgora );
+  }
+
+  static DateTime criarDataHoraMesmoDiaAs2359(DateTime dataHora){
+    return dataHora.add(
+        new Duration(
+            hours: (23-dataHora.hour),
+            minutes: (59-dataHora.minute)
+        )
+    );
+  }
+
+  /// Cria um DateTime com a data de ontem e com o horário de 23:59.
+  static DateTime criarDataHojeFimDoDia(){
+    DateTime agora = DateTime.now();
+    return DataHoraUtil.criarDataHoraMesmoDiaAs2359( agora );
+  }
+
+  ///     Verifica se data1 é uma data de um dia anterior a data2. Ou seja, se data1 for 01/01/2020 23:59
+  /// e data2 for 02/01/2020 00:00, retorna true, porque significa que é uma data de um dia anterior,
+  /// mesmo que a diferença entre elas seja de 1 minuto. Por outro lado, se data1 for 01/01/2020 00:00
+  /// e data2 for 01/01/2020 23:59 retornará false, porque apesar de estarem com 23h59m de diferença,
+  /// ambas as datas estão no mesmo dia.
+  /// TODO Criar teste de unidade para eDataDeDiaAnterior();
+  static bool eDataDeDiaAnterior( DateTime data1, DateTime data2 ){
+    assert( data1 != null && data2 != null );
+    if( data1.year < data2.year ){
+      return true;
+    }
+    if( data1.year == data2.year && data1.month < data2.month ){
+      return true;
+    }
+    if( data1.year == data2.year && data1.month == data2.month && data1.day < data2.day ){
+      return true;
+    }
+    return false;
+  }
+
+  ///    Retorna true se ambos os dateTime tiverem o mesmo dia, mês e ano, independente do horário.
+  // TODO Criar teste de unidade para eDataMesmoDia();
+  static bool eDataMesmoDia( DateTime data1, DateTime data2 ){
+    return (
+        data1.year == data2.year
+        && data1.month == data2.month
+        && data1.day == data2.day);
+  }
+
+  ///    Retorna true se ambos os dateTime tiverem o mesmo horário, considerando
+  /// apenas horas, minutos e segundos. Não considera a data, nem milisegundos.
+  // TODO Criar teste de unidade para eMesmoHorarioAteSegundos();
+  static bool eMesmoHorarioAteSegundos( DateTime data1, DateTime data2 ){
+    return (
+        DataHoraUtil.eMesmoHorarioAteMinutos(data1, data2)
+            && data1.second == data2.second);
+  }
+
+  ///    Retorna true se ambos os dateTime tiverem o mesmo horário, considerando
+  /// apenas horas e minutos apenas. Não considera a data, segundos, nem milisegundos.
+  // TODO Criar teste de unidade para eMesmoHorarioAteSegundos();
+  static bool eMesmoHorarioAteMinutos( DateTime data1, DateTime data2 ){
+    return (
+        data1.hour == data2.hour
+            && data1.minute == data2.minute);
+  }
+
+  // TODO Criar teste de unidade para eHorarioAnteriorAteSegundos();
+  /// Verifica se horario1 tem horário anterior a horario2, considerando somente
+  /// hora, minuto e segundo. Não considera milisegundos, nem a data.
+  static bool eHorarioAnteriorAteSegundos(DateTime horario1, DateTime horario2) {
+    if( horario1.hour != horario2.hour){
+      return horario1.hour < horario2.hour;
+    }else if( horario1.minute != horario2.minute ){
+      return horario1.minute < horario2.minute;
+    }
+    return horario1.second < horario2.second;
+  }
+
   ///     Recebe um Duration e retorna uma string no formato "3 horas e 25 minutos".
   static String criarStringQtdHorasEMinutos( Duration duracao ){
     int horas = duracao.inHours;
     int minutos = duracao.inMinutes - (60*horas);
     return "${horas} horas e ${minutos} minutos";
+  }
+
+  ///     Recebe um Duration e retorna uma string no formato "00:00:00".
+  static String converterDuracaoFormatoCronometro( Duration duracao ){
+    int horas = duracao.inHours;
+    String horaString = (horas >= 10) ? "$horas" : "0$horas";
+    int minutos = duracao.inMinutes - (60*horas);
+    String minutoString = (minutos >= 10) ? "$minutos" : "0$minutos";
+    int segundos = duracao.inSeconds - (60*minutos) - (3600*horas);
+    String segundoString = (segundos >= 10) ? "$segundos" : "0$segundos";
+    return "${horaString}:${minutoString}:${segundoString}";
   }
 }

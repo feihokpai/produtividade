@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
 import 'WidgetTestsUtil.dart';
+import 'WidgetTestsUtilProdutividade.dart';
 
 void main(){
   new TarefasEdicaoTelaTeste("Cadastro/edição de tarefas" ).runAll();
 }
 
-class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
+class TarefasEdicaoTelaTeste extends WidgetTestsUtilProdutividade{
 
   TarefasEdicaoTelaTeste( String nomeTela ): super(nomeTela);
 
@@ -19,12 +20,6 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
     Form formulario = super.tester.widget( find.byType( Form ) ) as Form;
     GlobalKey<FormState> key = formulario.key as GlobalKey<FormState>;
     expect( key.currentState.validate(), passou );
-  }
-
-  Tarefa criarTarefaValida(){
-    Tarefa tarefa = new Tarefa("aaa", "bbb");
-    tarefa.id = 999;
-    return tarefa;
   }
 
   @override
@@ -233,12 +228,14 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
 
     this.testesBotaoDeletar();
 
+    super.executeSeveralOverflowTests( () => new TarefasEdicaoTela() );
+
   }
 
   void testeModoEdicaoPreenchimentoObjetoTarefa() {
     Tarefa tarefaTesteEdicao = new Tarefa("aaa", "bbb");
     tarefaTesteEdicao.id = 999;
-    TarefasEdicaoTela tela = new TarefasEdicaoTela.modoEdicao( tarefaTesteEdicao );
+    TarefasEdicaoTela tela = new TarefasEdicaoTela( tarefa: tarefaTesteEdicao );
     super.criarTeste("Modo edição: o objeto da Tarefa atual é preenchido?", tela, () {
       expect( tela.tarefaAtual , isNotNull);
       expect( tela.tarefaAtual.id , 999 );
@@ -250,7 +247,7 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
   void testeModoEdicaoPreenchimentoNomeDescricao(){
     Tarefa tarefaTesteEdicao = new Tarefa( "aaa", "bbb" );
     tarefaTesteEdicao.id = 999;
-    TarefasEdicaoTela tela = new TarefasEdicaoTela.modoEdicao(tarefaTesteEdicao);
+    TarefasEdicaoTela tela = new TarefasEdicaoTela( tarefa: tarefaTesteEdicao );
     super.criarTeste("Modo edição: os campos são preenchidos?", tela, () {
       String valorCampoNome = super.getValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME );
       expect( valorCampoNome, "aaa" );
@@ -273,7 +270,7 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
   }
 
   void modoEdicaoClicaVoltarResetaVariaveis() {
-    TarefasEdicaoTela telaVoltarClear = new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() );
+    TarefasEdicaoTela telaVoltarClear = new TarefasEdicaoTela( tarefa: this.criarTarefaValida() );
     super.criarTeste("Modo Edição: Botão voltar. Clicando reseta variáveis setadas?", telaVoltarClear, () {
       TextFormField campoNome = super.setValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME , "aaaa");
       TextFormField campoDescricao = super.setValueTextFormFieldByKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_DESCRICAO , "bbbb");
@@ -287,11 +284,11 @@ class TarefasEdicaoTelaTeste extends WidgetTestsUtil{
 
   void testesBotaoDeletar() {
     Finder finderBotaoDeletar;
-    super.criarTeste("Modo Edição: Botão Deletar fica visível?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
+    super.criarTeste("Modo Edição: Botão Deletar fica visível?", new TarefasEdicaoTela( tarefa: this.criarTarefaValida() ), () {
       finderBotaoDeletar = super.findOneByKeyString( TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR );
     });
 
-    super.criarTeste("Modo Edição: Botão Deletar- abre Popup?", new TarefasEdicaoTela.modoEdicao( this.criarTarefaValida() ), () {
+    super.criarTeste("Modo Edição: Botão Deletar- abre Popup?", new TarefasEdicaoTela( tarefa: this.criarTarefaValida() ), () {
       super.tapWidgetWithKeyString( TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR, () {
         Finder finder = find.byType( AlertDialog );
         expect( finder , findsOneWidget );

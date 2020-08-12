@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:registro_produtividade/control/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 
 String getStringComNumeroDeCaracteres(int qtd){
   String texto = "";
@@ -15,12 +15,6 @@ void main(){
     // Ao criar uma nova instância sem passar id, deve atribuir 0 para o id.
     expect( tarefa.id, 0 );
   } );
-
-  test( "Tarefa: (id) setter Impede id <=0" , (){
-    final tarefa = new Tarefa("nome", "descricao");
-    expect( (){ tarefa.id = 0;} , throwsException );
-    expect( (){ tarefa.id = -1;} , throwsException );
-  });
 
   test( "Tarefa: (id) setter Permite id > 0" , (){
     final tarefa = new Tarefa("nome", "descricao");
@@ -104,10 +98,18 @@ void main(){
     expect( (diferenca), 0 );
   } );
 
+  test("Tarefa: (dataHoraCadastro) setter NÃO permite nulo. ", (){
+    expect( () => new Tarefa("aaa", "bb").dataHoraCadastro = null , throwsAssertionError );
+  });
+
   test("Tarefa: (dataHoraConclusao) Construtor cria nulo. ", (){
     final tarefa = new Tarefa("nome", "descricao");
     expect( tarefa.dataHoraConclusao , null );
   } );
+
+  test("Tarefa: (dataHoraConclusao) setter permite nulo. ", (){
+    expect( new Tarefa("aaa", "bb").dataHoraConclusao = null , isNull );
+  });
 
   test("Tarefa: (dataHoraConclusao) setter não permite data futura. ", (){
     final tarefa = new Tarefa("nome", "descricao");

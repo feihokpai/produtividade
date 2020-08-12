@@ -1,13 +1,14 @@
 import 'dart:io';
 
-class Tarefa{
-  int _id;
+import 'package:registro_produtividade/control/dominio/EntidadeDominio.dart';
+
+class Tarefa extends EntidadeDominio{
   String _nome;
   String descricao;
   int _status = Tarefa.ABERTA;
   bool arquivada = false;
   Tarefa _tarefaPai = null;
-  DateTime dataHoraCadastro = null;
+  DateTime _dataHoraCadastro = null;
   DateTime _dataHoraConclusao = null;
 
   static const int ABERTA = 1;
@@ -16,10 +17,17 @@ class Tarefa{
 
   static const int LIMITE_TAMANHO_NOME = 35;
 
-  Tarefa( String nome, this.descricao ){
-    this._id = 0; // Não passa pelo setter, pra evitar erro.
+  Tarefa( String nome, this.descricao, {int id=0} ){
+    this.id = id;
     this.nome = nome;
-    this.dataHoraCadastro = DateTime.now();
+    this._dataHoraCadastro = DateTime.now();
+  }
+
+  DateTime get dataHoraCadastro => this._dataHoraCadastro;
+
+  void set dataHoraCadastro(DateTime dataHoraCadastro){
+    assert( dataHoraCadastro != null, "A data e hora de cadastro não podem ser nulas" );
+    this._dataHoraCadastro = dataHoraCadastro;
   }
 
   int get status => this._status;
@@ -29,15 +37,6 @@ class Tarefa{
       throw new Exception("Tentou passar para uma tarefa um status inválido: ${valor}");
     }
     this._status = valor;
-  }
-
-  int get id => this._id;
-
-  void set id( int valor ){
-    if( valor <= 0 ){
-      throw new Exception("Não pode setar um valor menor ou igual a zero (${valor}) para o id de uma tarefa ");
-    }
-    this._id = valor;
   }
 
   String get nome => _nome;
@@ -71,9 +70,12 @@ class Tarefa{
   DateTime get dataHoraConclusao => this._dataHoraConclusao;
 
   void set dataHoraConclusao(DateTime valor){
-    DateTime agora = DateTime.now();
-    if( (valor.day - agora.day ) > 0 ){
-      throw new Exception( "${valor} é posterior a data de hoje ${agora}. A data de conclusão não pode ser uma data futura" );
+    if( valor != null ) {
+      DateTime agora = DateTime.now();
+      if ((valor.day - agora.day) > 0) {
+        throw new Exception(
+            "${valor} é posterior a data de hoje ${agora}. A data de conclusão não pode ser uma data futura");
+      }
     }
     this._dataHoraConclusao = valor;
   }
@@ -90,6 +92,12 @@ class Tarefa{
   @override
   String toString(){
     return "id(${this.id}): nome(${this.nome}) - descrição: ${this.descricao}";
+  }
+
+  ///     Retorna uma instância da classe Tarefa com o id passado como parâmetro, com um nome qualquer
+  /// e com descrição null.
+  static Tarefa gerarTarefaSomenteComId( int id ){
+    return new Tarefa("nem nome", null, id: id);
   }
 
 
