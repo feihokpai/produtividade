@@ -5,6 +5,8 @@ import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
 class ListaDeTarefasTela extends StatefulWidget {
 
   static String KEY_STRING_ICONE_LAPIS = "lapis";
@@ -33,6 +35,73 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     return scaffold1;
   }
 
+  Future<Widget> gerarLayoutDasTarefas() async {
+    Orientation orientation = MediaQuery.of(context).orientation;
+    int qtdColunas = 1;
+    if( orientation == Orientation.landscape ){
+      qtdColunas = 2;
+    }
+
+    List<Tarefa> tarefas = await this.controlador.getListaDeTarefas();
+    StaggeredGridView grid = new StaggeredGridView.countBuilder(
+      padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+      crossAxisCount: qtdColunas,
+      shrinkWrap: true,
+      physics: ScrollPhysics(),
+      itemCount: tarefas.length,
+      itemBuilder: (BuildContext context, int index){
+        return this.gerarRow( tarefas[index] );
+      },
+      staggeredTileBuilder: (index) => StaggeredTile.fit(1),
+    );
+    return await grid;
+  }
+
+  Widget gerarRow( Tarefa tarefa ){
+    String strKeyLapis = "${ListaDeTarefasTela.KEY_STRING_ICONE_LAPIS}${tarefa.id}";
+    String strKeyRelogio = "${ListaDeTarefasTela.KEY_STRING_ICONE_RELOGIO}${tarefa.id}";
+    return new Row(
+      children:  <Widget>[
+        Expanded(
+          flex: 8,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+            child: new Text(
+              tarefa.nome,
+              style: Estilos.textStyleListaPaginaInicial,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            child: new IconButton(
+              key: new ValueKey( strKeyLapis ),
+              icon: new Icon(Icons.edit),
+              onPressed: () {
+                this.clicouNoLapis(tarefa);
+              },
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+            child: new IconButton(
+              key: new ValueKey( strKeyRelogio ),
+              icon: new Icon(Icons.alarm),
+              onPressed: (){
+                this.clicouNoRelogio(tarefa);
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Future<Widget> gerarListaViewDasTarefas() async {
     List<Tarefa> tarefas = await this.controlador.getListaDeTarefas();
     return new ListView.builder(
@@ -48,40 +117,11 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
           return null;
         }
         Tarefa tarefa = tarefas[indice];
-        String strKeyLapis = "${ListaDeTarefasTela.KEY_STRING_ICONE_LAPIS}${tarefa.id}";
-        String strKeyRelogio = "${ListaDeTarefasTela.KEY_STRING_ICONE_RELOGIO}${tarefa.id}";
         return new SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: new Row(
-                children:  <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
-                    child: new Text(
-                      tarefa.nome,
-                      style: Estilos.textStyleListaPaginaInicial,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    child: new IconButton(
-                      key: new ValueKey( strKeyLapis ),
-                      icon: new Icon(Icons.edit),
-                      onPressed: () {
-                        this.clicouNoLapis(tarefa);
-                      },
-                    ),
-                  ),
-                  new IconButton(
-                    key: new ValueKey( strKeyRelogio ),
-                    icon: new Icon(Icons.alarm),
-                    onPressed: (){
-                      this.clicouNoRelogio(tarefa);
-                    },
-                  ),
-                ],
-              ),
+              child: this.gerarRow( tarefa ),
             )
         );
       },
@@ -103,7 +143,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
                   key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
             ),
             FutureBuilder<Widget>(
-                future: this.gerarListaViewDasTarefas(),
+                future: gerarLayoutDasTarefas(),
                 builder: (context, snapshot) {
                   if ( snapshot.connectionState == ConnectionState.waiting) {
                     return new CircularProgressIndicator();

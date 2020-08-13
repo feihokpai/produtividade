@@ -15,7 +15,7 @@ class Tarefa extends EntidadeDominio{
   static const int CONCLUIDA = 2;
   static List<int> statusValidos = <int> [ ABERTA, CONCLUIDA ];
 
-  static const int LIMITE_TAMANHO_NOME = 35;
+  static const int LIMITE_TAMANHO_NOME = 70;
 
   Tarefa( String nome, this.descricao, {int id=0} ){
     this.id = id;
