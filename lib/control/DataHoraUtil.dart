@@ -9,6 +9,8 @@ class DataHoraUtil{
   static DateFormat formatterDataHoraBrasileira = new DateFormat("dd/MM/yyyy HH:mm:ss");
   static DateFormat formatterSqllite = new DateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
+  static const String CRONOMETRO_ZERADO = "00:00:00";
+
   ///     retorna a data de hoje no formato 01/01/2001.
   static String dataDeHoje(){
     var now = new DateTime.now();

@@ -135,14 +135,34 @@ abstract class WidgetTestsUtil{
     return null;
   }
 
-  Future<Finder> tapWidget( Object criterio, FinderTypes typeFinder, void Function() operation ){
+  Future<Finder> tapWidget( Object criterio, FinderTypes typeFinder, void Function() operation ) async{
     Finder finder = this._getFinderByType(typeFinder, criterio);
-    this.tester.tap( finder ).then( (value) {
-      this.tester.pump().then((value) {
+    await this.tester.tap( finder ).then( (value) async {
+      await this.tester.pump().then((value) {
         operation.call();
         return finder;
       });
     });
+  }
+
+  /// Tap a widget and calls pump with duration of [durationInSeconds] seconds
+  Future<Finder> tapWidgetAndWait( Object criterio, FinderTypes typeFinder, int durationInSeconds, void Function() operation ) async{
+    Finder finder = this._getFinderByType(typeFinder, criterio);
+//    await this.tester.tap( finder ).then( (value) async {
+      await this.tester.tap( finder );
+      await this.tester.pump( new Duration( seconds: durationInSeconds ) );
+      if( operation != null ) {
+        operation.call();
+      }
+
+//      await this.tester.pump( new Duration( seconds: durationInSeconds ) ).then((value) {
+//        if( operation != null ) {
+//          operation.call();
+//        }
+//      });
+
+//    });
+    return await finder;
   }
 
   TextFormField setValueTextFormFieldByKeyString( String stringKey, String newValue ){
@@ -179,12 +199,21 @@ abstract class WidgetTestsUtil{
 
   ///     Execute tester.pumpWidget, creating a Material App folding [widget]. After execute tester.pump()
   /// with duration of [pumpDurationInSeconds] seconds
-  void pumpWidgetAndPumpAgain( StatefulWidget widget, int pumpDurationInSeconds, void Function() executeAfter ){
-    this.tester.pumpWidget( this.makeTestable( widget ) ).then((value) {
-      this.tester.pump( new Duration(seconds: pumpDurationInSeconds) ).then((value) {
+  Future<void> pumpWidgetAndPumpAgain( StatefulWidget widget, int pumpDurationInSeconds, void Function() executeAfter ) async{
+    await this.tester.pumpWidget( this.makeTestable( widget ) ).then((value) async {
+      await this.tester.pump( new Duration(seconds: pumpDurationInSeconds) ).then((value) {
         executeAfter.call();
       });
     });
+  }
+
+  /// This method is only to wait some seconds before finish. Internally don't do nothing more.
+  /// Is very useful in tests where you really have to wait this amount of time in real Time and
+  /// the test Framework can't use Future.delay() ou other similar methods
+  void wait(int durationInSeconds){
+    DateTime begin = DateTime.now();
+    while( DateTime.now().difference( begin ).inSeconds < durationInSeconds){
+    }
   }
 
   void runAll();
