@@ -100,14 +100,14 @@ class Tarefa extends EntidadeDominio{
     return new Tarefa("nem nome", null, id: id);
   }
 
-
-
-  /*
-
+  ///     You consider that a task is equals to other, if the id is different from zero and the both
+  /// "ids" are equals;
   @override
-  bool operator ==(Object outro) {
-    return (outro is Tarefa && outro.id == this.id);
+  bool operator ==(Object other) {
+    return (other is Tarefa
+        && other.id != 0
+        && this.id != 0
+        && other.id == this.id);
   }
 
-  */
 }

@@ -70,4 +70,15 @@ class Controlador{
     }
   }
 
+
+  Future<List<TempoDedicado>> getTempoDedicadoAtivos() async {
+    List<TempoDedicado> todos = await this.getAllTempoDedicado();
+    List<Tarefa> todas = await this.getListaDeTarefas();
+    List<TempoDedicado> filtrados = todos.where((tempo) => tempo.fim == null ).toList();
+    filtrados.forEach((tempo) {
+      tempo.tarefa = todas.where( (tarefa) => tarefa.id == tempo.tarefa.id ).first;
+    });
+    return filtrados;
+  }
+
 }
