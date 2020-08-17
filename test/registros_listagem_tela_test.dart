@@ -36,7 +36,7 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
       super.findOneByKeyString( ComunsWidgets.KEY_STRING_TITULO_PAGINA );
     });
 
-    Tarefa tAtual = this.criarTarefaValida();
+    Tarefa tAtual = this.criarTarefaValida(id: 1);
     ListaDeTempoDedicadoTela telaPreenc = new ListaDeTempoDedicadoTela( tAtual );
     super.criarTeste("Ao entrar na página, o objeto Tarefa Atual é preenchido?", telaPreenc, () {
       expect( telaPreenc.tarefaAtual , isNotNull );
@@ -71,7 +71,7 @@ class ListaDeTempoDedicadoTelaTest extends WidgetTestsUtilProdutividade{
       });
     });
 
-    Tarefa tarefaN2 = this.criarTarefaValida();
+    Tarefa tarefaN2 = this.criarTarefaValida(id: 1);
     ListaDeTempoDedicadoTela telaNovoRegistro2 = new ListaDeTempoDedicadoTela( tarefaN2 );
     super.criarTeste("Botão de Novo Registro. Após redirecionar, repassa a Tarefa pra tela seguinte?", telaNovoRegistro2, () {
       super.tapWidgetWithKeyString( ListaDeTempoDedicadoTela.KEY_STRING_BOTAO_NOVO, () {

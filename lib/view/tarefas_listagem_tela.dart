@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/view/comum/ChronometerField.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
@@ -18,12 +20,44 @@ class ListaDeTarefasTela extends StatefulWidget {
 }
 
 class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
+
+  Map<int, ChronometerField> cronometrosGerados = new Map();
+  List<TempoDedicado> temposAtivos = new List();
+  List<Tarefa> tarefasParaListar = new List();
+  bool recarregarDadosPersistidos = true;
+  ///     This variable is important to show again the last result the screen, while the new data
+  /// don't arrive. In this way we avoid the blink effect in each 1 second.
+  Widget ultimoGridGerado = null;
+  Orientation orientacaoAtual = null;
+  bool mudouOrientacao = false;
   Controlador controlador = new Controlador();
 
   @override
   Widget build(BuildContext context) {
     ComunsWidgets.context = context;
+    this.inicializarVariaveis();
     return this.criarHome();
+  }
+
+
+  @override
+  void dispose() {
+    this.cronometrosGerados.forEach((key, field) {
+      field.cancelTimerIfActivated();
+    });
+    super.dispose();
+  }
+
+  void inicializarVariaveis(){
+
+  }
+  
+  Future<void> inicializarDadosPersistidos() async {
+    if( this.recarregarDadosPersistidos ){
+      this.tarefasParaListar = await this.controlador.getListaDeTarefas();
+      this.temposAtivos = await this.controlador.getTempoDedicadoAtivos();
+      recarregarDadosPersistidos = false;
+    }
   }
 
   Widget criarHome() {
@@ -36,25 +70,52 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   Future<Widget> gerarLayoutDasTarefas() async {
+    await this.inicializarDadosPersistidos();
     Orientation orientation = MediaQuery.of(context).orientation;
+    this.mudouOrientacao = ( orientation != this.orientacaoAtual );
+    if( this.mudouOrientacao ){
+      this.orientacaoAtual = orientation;
+    }
     int qtdColunas = 1;
     if( orientation == Orientation.landscape ){
       qtdColunas = 2;
     }
 
-    List<Tarefa> tarefas = await this.controlador.getListaDeTarefas();
     StaggeredGridView grid = new StaggeredGridView.countBuilder(
       padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+      mainAxisSpacing: 10,
       crossAxisCount: qtdColunas,
       shrinkWrap: true,
       physics: ScrollPhysics(),
-      itemCount: tarefas.length,
+      itemCount: this.tarefasParaListar.length,
       itemBuilder: (BuildContext context, int index){
-        return this.gerarRow( tarefas[index] );
+        return this.gerarRow( this.tarefasParaListar[index] );
       },
       staggeredTileBuilder: (index) => StaggeredTile.fit(1),
     );
     return await grid;
+  }
+
+  FutureBuilder<Widget> createFutureBuilderWidget(Future<Widget> widget){
+    return FutureBuilder<Widget>(
+      future: widget,
+      builder: (context, snapshot) {
+        if( snapshot.connectionState == ConnectionState.done ){
+          this.ultimoGridGerado = snapshot.data;
+          return snapshot.data;
+        }else if ( snapshot.connectionState == ConnectionState.waiting) {
+          if( !mudouOrientacao ) {
+            return ultimoGridGerado ?? new CircularProgressIndicator();
+          }else {
+            return new CircularProgressIndicator();
+          }
+        }else if( snapshot.hasError ){
+          String msgErro = "Erro ocorrido: ${snapshot.error}";
+          print(msgErro);
+          return new Container( child: Text( msgErro, style: Estilos.textStyleListaPaginaInicial, ), );
+        }
+      },
+    );
   }
 
   Widget gerarRow( Tarefa tarefa ){
@@ -66,9 +127,17 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
           flex: 8,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-            child: new Text(
-              tarefa.nome,
-              style: Estilos.textStyleListaPaginaInicial,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 6,
+                  child: new Text(
+                    tarefa.nome,
+                    style: Estilos.textStyleListaPaginaInicial,
+                  ),
+                ),
+                this.generateChronometerWidgetIfActive( tarefa ),
+              ],
             ),
           ),
         ),
@@ -102,32 +171,6 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     );
   }
 
-  Future<Widget> gerarListaViewDasTarefas() async {
-    List<Tarefa> tarefas = await this.controlador.getListaDeTarefas();
-    return new ListView.builder(
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      physics: ScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(5, 20, 0, 0),
-      itemCount: tarefas.length,
-      itemBuilder: (context, indice) {
-        // Este IF está aqui, porque às vezes, a lista não se atualiza corretamente na estimativa de
-        // children. Aí se entrar aqui com um índice maior do que tem, dá erro.
-        if( indice > (tarefas.length-1) ){
-          return null;
-        }
-        Tarefa tarefa = tarefas[indice];
-        return new SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: this.gerarRow( tarefa ),
-            )
-        );
-      },
-    );
-  }
-
   Widget gerarConteudoCentral(){
 
     return WillPopScope(
@@ -142,16 +185,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
                   style: Estilos.textStyleListaTituloDaPagina,
                   key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
             ),
-            FutureBuilder<Widget>(
-                future: gerarLayoutDasTarefas(),
-                builder: (context, snapshot) {
-                  if ( snapshot.connectionState == ConnectionState.waiting) {
-                    return new CircularProgressIndicator();
-                  }else{
-                    return snapshot.data;
-                  }
-                },
-            ),
+            this.createFutureBuilderWidget( this.gerarLayoutDasTarefas() ),
             new IconButton(
               key: new ValueKey( ListaDeTarefasTela.KEY_STRING_ICONE_ADD_TAREFA ),
               icon: new Icon(Icons.add, size:50),
@@ -183,5 +217,33 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
          return true;
        }
     });
+  }
+
+  TempoDedicado _verifyTaskIsActive(Tarefa tarefa){
+    TempoDedicado resultado = null;
+    this.temposAtivos.forEach((tempo) {
+      if( tempo.tarefa.id == tarefa.id ){
+        resultado = tempo;
+      }
+    });
+    return resultado;
+  }
+
+  void _setStateWithEmptyFunction(){
+    this.setState( (){} );
+  }
+
+  Widget generateChronometerWidgetIfActive(Tarefa tarefa){
+    TempoDedicado tempo = this._verifyTaskIsActive( tarefa );
+    if( tempo != null ){
+      ChronometerField field = this.cronometrosGerados[tarefa.id];
+      if( field == null ){
+        field = new ChronometerField("Duração", beginTime: tempo.inicio , functionUpdateUI: _setStateWithEmptyFunction );
+        this.cronometrosGerados[tarefa.id] = field;
+      }
+      return Expanded( flex: 4, child: field.widget);
+    }else{
+      return Expanded( flex: 0,child: new Container());
+    }
   }
 }
