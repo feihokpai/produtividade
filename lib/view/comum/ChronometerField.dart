@@ -42,9 +42,11 @@ class ChronometerField extends CampoDeTextoWidget{
 
   List<DateTimeInterval> get intervals => _intervals;
 
-  void _beginNewInterval( {DateTime beginTime} ){
+  Future<void> _beginNewInterval( {DateTime beginTime} ) async {
     beginTime ??= DateTime.now();
     this.intervals.add( new DateTimeInterval( beginTime, null) );
+    this._printLogIntervalsSituation();
+    await this._createAPeriodicTimer();
   }
 
   void _printLogIntervalsSituation(){
@@ -63,8 +65,6 @@ class ChronometerField extends CampoDeTextoWidget{
   Future<void> start() async {
     if( !this.isActive() ){
       this._beginNewInterval();
-      this._printLogIntervalsSituation();
-      await this._createAPeriodicTimer();
     }
   }
 

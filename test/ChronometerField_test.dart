@@ -51,6 +51,16 @@ class ChronometerFieldTest extends WidgetTestsUtilProdutividade {
           expect(new ChronometerField("aaa", functionUpdateUI: () {}).beginTime, null);
     });
 
+    super.criarTeste("In contructor, if define beginTime, the timer starts?", new FakeScreenTestChronometerField(), () {
+      int minutesPast = 40;
+      int secondsWait = 1;
+      DateTime dateTime = DateTime.now().subtract(new Duration(minutes: minutesPast));
+      ChronometerField field = new ChronometerField("aaa", functionUpdateUI: () {}, beginTime: dateTime );
+      super.wait( secondsWait );
+      expect( field.getLastDuration().inSeconds, secondsWait+(60*minutesPast) );
+      field.pause();
+    });
+
     super.criarTeste(
         "In contructor, if not define Formatter, set the Default Formatter?",
         new FakeScreenTestChronometerField(), () {
@@ -69,6 +79,18 @@ class ChronometerFieldTest extends WidgetTestsUtilProdutividade {
     super.criarTeste("In setter, is allowed beginTime NULL?", new FakeScreenTestChronometerField(), () {
       ChronometerField field = new ChronometerField( "aaa", functionUpdateUI: () {} );
       expect( field.beginTime = null, null);
+    });
+
+    super.criarTeste("In setter, if defines beginTime, the timer starts?", new FakeScreenTestChronometerField(), () {
+      int minutesPast = 40;
+      int secondsWait = 1;
+      DateTime dateTime = DateTime.now().subtract(new Duration(minutes: minutesPast));
+      ChronometerField field = new ChronometerField("aaa", functionUpdateUI: () {} );
+      expect( field.getLastDuration().inSeconds, 0 );
+      field.beginTime = dateTime;
+      wait( secondsWait );
+      expect( field.getLastDuration().inSeconds , secondsWait+(60*minutesPast) );
+      field.pause();
     });
 
     super.criarTeste("The initial value in Field is 00:00:00?",
