@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_modular/flutter_modular_test.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:registro_produtividade/app_module.dart';
-import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
-import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
-import 'package:registro_produtividade/control/interfaces/ITempoDedicadoPersistencia.dart';
-import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
-import 'package:registro_produtividade/model/mocks/TempoDedicadoPersistenciaMock.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
@@ -40,9 +33,9 @@ class ListaDeTarefasTelaTest extends WidgetTestsUtilProdutividade{
 
     controlador = getControlador();
 
-    super.criarTeste( "Foi gerada uma ListView?" , new ListaDeTarefasTela(), () async{
+    super.criarTeste( "Foi gerada uma GridView?" , new ListaDeTarefasTela(), () async{
       super.tester.pump( new Duration( seconds: 1 )).then((value) {
-        Finder finderListView = find.byType(ListView);
+        Finder finderListView = find.byType(StaggeredGridView);
         expect(finderListView, findsOneWidget);
       });
     });
@@ -84,7 +77,7 @@ class ListaDeTarefasTelaTest extends WidgetTestsUtilProdutividade{
       List<Tarefa> tarefas = await controlador.getListaDeTarefas();
       tarefas.clear();
       tarefas.addAll(gerarNTarefas(3));
-      super.tester.pump( new Duration(seconds: 1) ).then((value) {
+      super.pumpWidgetAndPumpAgain(new ListaDeTarefasTela(), 1, () {
         //Teste de encontrar todos os IconButton da tela. São 2(add e menu lateral) + 2 ícones para cada tarefa.
         Finder botoesFinder = find.byType(IconButton);
         expect(botoesFinder, findsNWidgets(2 + (2 * tarefas.length)));
@@ -105,7 +98,7 @@ class ListaDeTarefasTelaTest extends WidgetTestsUtilProdutividade{
       List<Tarefa> tarefas = await controlador.getListaDeTarefas();
       tarefas.clear();
       tarefas.addAll(gerarNTarefas(1));
-      tester.pump( new Duration(seconds: 1) ).then((value) async{
+      super.pumpWidgetAndPumpAgain( new ListaDeTarefasTela(), 1 , () async {
           //__________________________________________________________________________
           // Teste para verificar se foi criado um ícone de lápis.
           String stringKey = "${ListaDeTarefasTela.KEY_STRING_ICONE_LAPIS}${tarefas[0].id}";

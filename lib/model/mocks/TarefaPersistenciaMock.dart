@@ -25,6 +25,10 @@ class TarefaPersistenciaMock extends Mock implements ITarefaPersistencia{
     return TarefaPersistenciaMock.tarefas;
   }
 
+  Future<List<Tarefa>> getTarefasPorId( List<int> ids ) async {
+    return await tarefas.where((tarefa) => ids.contains( tarefa.id )).toList();
+  }
+
   void _salvarOuEditar(Tarefa tarefa){
     if( tarefa.id == 0 ) {
       tarefa.id = this._getProximoIdTarefaDisponivel();

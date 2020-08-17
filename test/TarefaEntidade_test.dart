@@ -125,13 +125,13 @@ void main(){
   } );
 
   test("Tarefa: (tarefaPai) Setter não permite setar a própria tarefa. ", (){
-    final tarefa = new Tarefa("nome", "descricao");
+    final tarefa = new Tarefa("nome", "descricao", id: 1);
     expect( () => tarefa.tarefaPai = tarefa , throwsException );
   } );
 
   test("Tarefa: (tarefaPai) Setter permite setar outra tarefa. ", (){
-    final tarefa = new Tarefa("nome", "descricao");
-    final outra = new Tarefa("nome", "descricao");
+    final tarefa = new Tarefa("nome", "descricao", id: 1);
+    final outra = new Tarefa("nome", "descricao", id: 2);
     expect( tarefa.tarefaPai = outra , outra );
   } );
 
