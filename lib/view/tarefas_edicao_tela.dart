@@ -5,6 +5,7 @@ import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
+import 'package:registro_produtividade/view/tempo_dedicado_listagem.dart';
 
 class TarefasEdicaoTela extends StatefulWidget {
 
@@ -13,6 +14,7 @@ class TarefasEdicaoTela extends StatefulWidget {
   static final String KEY_STRING_BOTAO_SALVAR = "saveButton";
   static final String KEY_STRING_BOTAO_VOLTAR = "backButton";
   static final String KEY_STRING_BOTAO_DELETAR = "deleteButton";
+  static final String KEY_STRING_BOTAO_DETALHES_TEMPOS = "showDetailsButton";
   static final String KEY_STRING_CAMPO_NOME = "nameTextField";
   static final String KEY_STRING_CAMPO_DESCRICAO = "descriptionTextField";
 
@@ -37,6 +39,9 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   CampoDeTextoWidget campoNome;
   CampoDeTextoWidget campoDescricao;
 
+  ListagemTempoDedicadoComponente listagemDeTempo;
+  bool exibirDetalhesDeTempo = false;
+
   @override
   Widget build(BuildContext context) {
     ComunsWidgets.context = context;
@@ -55,6 +60,18 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     this.campoDescricao = new CampoDeTextoWidget("Descrição da tarefa", 6, null );
     this.campoDescricao.setKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_DESCRICAO );
     this._inicializarTarefa();
+    this._inicializarListagemDeTempoDedicado();
+  }
+
+  void _setStateWithEmptyFunction(){
+    this.setState( (){} );
+  }
+
+  void _inicializarListagemDeTempoDedicado(){
+    this.listagemDeTempo = new ListagemTempoDedicadoComponente( this.widget.tarefaAtual, this.context,
+        this._setStateWithEmptyFunction,
+        (){}
+    );
   }
 
   void _inicializarTarefa(){
@@ -142,10 +159,40 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
               ],
             ),
           ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(8.0, 40, 8.0, 0),
+            child: ComunsWidgets.createFutureBuilderWidget( this.listagemDeTempo.gerarCampoDaDuracaoTotal() ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ComunsWidgets.createFutureBuilderWidget( this.exibirBotaoDetalharOuListaDetalhes() ),
+          ),
         ]),
       ),
     );
     //Form formulario = new Form( child: coluna, key: this.globalKey );
+  }
+
+
+  Future<Widget> exibirBotaoDetalharOuListaDetalhes() async {
+    if( !this.exibirDetalhesDeTempo ){
+      return new RaisedButton(
+        key: new ValueKey(TarefasEdicaoTela.KEY_STRING_BOTAO_DETALHES_TEMPOS),
+        onPressed: this.pressionouMostrarDetalhes,
+        child: new Text("Mostrar registros de tempo detalhados",
+            style: Estilos.textStyleBotaoFormulario),
+        color: Colors.blue,
+      );
+
+    }else{
+      return await this.listagemDeTempo.gerarListViewDosTempos();
+    }
+  }
+
+  void pressionouMostrarDetalhes(){
+    this.setState(() {
+      this.exibirDetalhesDeTempo = true;
+    });
   }
 
   void resetarVariaveis() {

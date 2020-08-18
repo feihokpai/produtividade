@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/comum/rotas.dart';
 
 class ComunsWidgets {
@@ -47,6 +48,23 @@ class ComunsWidgets {
     );
     // Retorna por default valor, mas se ela for nula, retorna 0.
     return valor ?? 0;
+  }
+
+  static FutureBuilder<Widget> createFutureBuilderWidget(Future<Widget> widget){
+    return FutureBuilder<Widget>(
+      future: widget,
+      builder: (context, snapshot) {
+        if( snapshot.connectionState == ConnectionState.done ){
+          return snapshot.data;
+        }else if ( snapshot.connectionState == ConnectionState.waiting) {
+          return new CircularProgressIndicator();
+        }else if( snapshot.hasError ){
+          String msgErro = "Erro ocorrido: ${snapshot.error}";
+          print(msgErro);
+          return new Container( child: Text( msgErro, style: Estilos.textStyleListaPaginaInicial, ), );
+        }
+      },
+    );
   }
 
   static Widget gerarItemMenuDrawer(
