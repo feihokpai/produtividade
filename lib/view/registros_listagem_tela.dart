@@ -15,8 +15,6 @@ class ListaDeTempoDedicadoTela extends StatefulWidget {
 
   static final String KEY_STRING_PAINEL_TAREFA = "tarefaPanel";
   static final String KEY_STRING_BOTAO_NOVO = "newButton";
-  static final String KEY_STRING_LISTA_REGISTROS = "listViewRegistros";
-  static final String KEY_STRING_REGISTRO = "listViewRegistros";
   static final String KEY_STRING_ICONE_DELETAR = "deleteIcon";
   static final String KEY_STRING_ICONE_EDITAR = "editIcon";
   static final String KEY_STRING_TOTAL_TEMPO = "sumTime";

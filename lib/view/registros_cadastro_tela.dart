@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
-import 'package:registro_produtividade/control/LabelsApplication.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDataHora.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
-import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 
 import 'package:intl/intl.dart';
 
@@ -28,7 +26,6 @@ class CadastroTempoDedicadoTela extends StatefulWidget {
   TempoDedicado tempoDedicadoAtual;
   // Em alguns casos é útil por questões de testes de widget manter desligado o cronômetro
   bool cronometroLigado;
-  LinguagemLabels labels = LabelsApplication.linguaAtual;
   static DateFormat formatterDataHora = DataHoraUtil.formatterDataHoraBrasileira;
 
   static final String KEY_STRING_CAMPO_HORA_INICIAL = "beginHour";
