@@ -21,14 +21,14 @@ class ListagemTempoDedicadoComponente{
   Tarefa _tarefaAtual = null;
 
   void Function() funcaoAposDeletar;
-  void Function() funcaoParaEditar;
+  void Function(TempoDedicado) funcaoParaEditar;
 
   int _duracaoMinutos = 0;
 
   Controlador controlador = new Controlador();
 
   ListagemTempoDedicadoComponente( Tarefa tarefa, BuildContext context, void Function() funcaoAposDeletar,
-      void Function() funcaoParaEditar)
+      void Function(TempoDedicado) funcaoParaEditar)
       : assert(tarefa != null, "Tentou gerar componente de listagem de tempo dedicado, mas não repassou"
       "nenhuma Tarefa válida.")
   {
@@ -140,8 +140,7 @@ class ListagemTempoDedicadoComponente{
   }
 
   void _clicouNoIconeEdicao(TempoDedicado registro) {
-    this.funcaoParaEditar.call();
+    this.funcaoParaEditar.call( registro );
   }
-
 
 }
