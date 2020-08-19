@@ -176,7 +176,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
   Widget criarHome() {
     Scaffold scaffold1 = new Scaffold(
         appBar: ComunsWidgets.criarBarraSuperior(),
-        backgroundColor: Colors.grey,
+        backgroundColor: Estilos.corDeFundoPrincipal,
         drawer: ComunsWidgets.criarMenuDrawer(),
         body: this.gerarConteudoCentral());
     return scaffold1;
@@ -352,7 +352,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
       return new  RaisedButton(
         key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR ),
         child: new Text("Salvar", style: Estilos.textStyleBotaoFormulario),
-        color: Colors.blue,
+        color: Estilos.corRaisedButton,
         onPressed: this.salvarTempoDedicado,
       );
     }else{
@@ -378,7 +378,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
       return new RaisedButton(
         key: this.criarKey(CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR),
         child: new Text("Encerrar", style: Estilos.textStyleBotaoFormulario),
-        color: Colors.blue,
+        color: Estilos.corRaisedButton,
         onPressed: this.clicouBotaoEncerrar,
       );
     }else{
@@ -391,7 +391,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
       return new RaisedButton(
         key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR ),
         child: new Text("Voltar", style: Estilos.textStyleBotaoFormulario),
-        color: Colors.blue,
+        color: Estilos.corRaisedButton,
         onPressed: this.clicouBotaoVoltar
       );
     }else{
@@ -405,7 +405,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
       return new RaisedButton(
           key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR ),
           child: new Text("Deletar", style: Estilos.textStyleBotaoFormulario),
-          color: Colors.blue,
+          color: Estilos.corRaisedButton,
           onPressed: this.clicouBotaoDeletar
       );
     }else{

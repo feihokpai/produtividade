@@ -18,7 +18,7 @@ class ComunsWidgets {
     AppBar barraSuperior = new AppBar(
         title: new Text("Registro de Produtividade"),
         centerTitle: true,
-        backgroundColor: Colors.blue);
+        backgroundColor: Estilos.corBarraSuperior);
     return barraSuperior;
   }
 
@@ -81,18 +81,18 @@ class ComunsWidgets {
       child: new ListView(
         children: <Widget>[
           DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
+              decoration: BoxDecoration(color: Estilos.corBarraSuperior),
               child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
                       'Registro de Produtividade',
-                      style: TextStyle(color: Colors.white, fontSize: 24),
+                      style: Estilos.textStyleTituloMenuLateral,
                     ),
                     new Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 20)),
                     Text(
                       'Feito por: Amorim Company',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      style: Estilos.textStyleSubtituloMenuLateral,
                       textAlign: TextAlign.left,
                     ),
                   ])),

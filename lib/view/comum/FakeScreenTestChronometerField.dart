@@ -51,7 +51,7 @@ class _FakeScreenTestChronometerFieldState extends State<FakeScreenTestChronomet
   Widget createHome() {
     Scaffold scaffold1 = new Scaffold(
         appBar: ComunsWidgets.criarBarraSuperior(),
-        backgroundColor: Colors.grey,
+        backgroundColor: Estilos.corDeFundoPrincipal,
         drawer: ComunsWidgets.criarMenuDrawer(),
         body: this.generateCentralContent());
     return scaffold1;

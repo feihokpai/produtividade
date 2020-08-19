@@ -63,7 +63,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   Widget criarHome() {
     Scaffold scaffold1 = new Scaffold(
         appBar: ComunsWidgets.criarBarraSuperior(),
-        backgroundColor: Colors.grey,
+        backgroundColor: Estilos.corDeFundoPrincipal,
         drawer: ComunsWidgets.criarMenuDrawer(),
         body: this.gerarConteudoCentral());
     return scaffold1;

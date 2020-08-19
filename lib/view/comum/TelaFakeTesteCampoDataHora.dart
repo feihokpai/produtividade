@@ -33,7 +33,7 @@ class _TelaFakeTesteCampoDataHoraState extends State<TelaFakeTesteCampoDataHora>
   Widget criarHome() {
     Scaffold scaffold1 = new Scaffold(
         appBar: ComunsWidgets.criarBarraSuperior(),
-        backgroundColor: Colors.grey,
+        backgroundColor: Estilos.corDeFundoPrincipal,
         drawer: ComunsWidgets.criarMenuDrawer(),
         body: this.gerarConteudoCentral());
     return scaffold1;

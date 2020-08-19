@@ -119,7 +119,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
           key: new ValueKey(TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR),
           onPressed: this.pressionouDeletar,
           child: new Text("Deletar", style: Estilos.textStyleBotaoFormulario),
-          color: Colors.blue,
+          color: Estilos.corRaisedButton,
         )
       );
     }
@@ -162,7 +162,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
                           key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
                           onPressed: this.pressionouSalvar,
                           child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
-                          color: Colors.blue,),
+                          color: Estilos.corRaisedButton,),
                       ),
                     ),
                     Expanded(
@@ -170,7 +170,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
                         key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
                         onPressed: this.pressionouVoltar,
                         child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
-                        color: Colors.blue,),
+                        color: Estilos.corRaisedButton,),
                     ),
                     Expanded(child: this.gerarBotaoDeletar()),
                   ],
@@ -206,7 +206,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
         onPressed: this.pressionouMostrarDetalhes,
         child: new Text("Mostrar registros de tempo detalhados",
             style: Estilos.textStyleBotaoFormulario),
-        color: Colors.blue,
+        color: Estilos.corRaisedButton,
       );
 
     }else{

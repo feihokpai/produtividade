@@ -86,7 +86,7 @@ class ListagemTempoDedicadoComponente{
         String strKeyIconeDelecao = "${ListagemTempoDedicadoComponente.KEY_STRING_ICONE_DELETAR}${registro.id}";
         String strKeyIconeEdicao = "${ListagemTempoDedicadoComponente.KEY_STRING_ICONE_EDITAR}${registro.id}";
         return Container(
-          color: ( (indice % 2 == 0) ? Colors.black26 : Colors.black38 ),
+          color: ( (indice % 2 == 0) ? Estilos.corListaTipo1 : Estilos.corListaTipo2 ),
           child: Padding(
             padding: const EdgeInsets.all(2.0),
             child: new Row(
