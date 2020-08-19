@@ -1,10 +1,12 @@
 import "package:flutter/material.dart";
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
+import 'package:registro_produtividade/view/tempo_dedicado_edicao.dart';
 import 'package:registro_produtividade/view/tempo_dedicado_listagem.dart';
 
 class TarefasEdicaoTela extends StatefulWidget {
@@ -40,6 +42,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   CampoDeTextoWidget campoDescricao;
 
   ListagemTempoDedicadoComponente listagemDeTempo;
+  TempoDedicadoEdicaoComponente edicaoDeTempo;
   bool exibirDetalhesDeTempo = false;
 
   @override
@@ -59,33 +62,49 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     this.campoNome.setKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME );
     this.campoDescricao = new CampoDeTextoWidget("Descrição da tarefa", 6, null );
     this.campoDescricao.setKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_DESCRICAO );
-    this._inicializarTarefa();
-    this._inicializarListagemDeTempoDedicado();
+    if( this.widget.tarefaAtual != null ) {
+      this._inicializarTarefa();
+      this._inicializarListagemDeTempoDedicado();
+      this._inicializarEdicaoDeTempoDedicado();
+    }
   }
 
   void _setStateWithEmptyFunction(){
     this.setState( (){} );
   }
 
+  void _inicializarEdicaoDeTempoDedicado(){
+    if( this.widget.tarefaAtual == null ) {
+      return;
+    }
+    this.edicaoDeTempo = new TempoDedicadoEdicaoComponente(this.widget.tarefaAtual, context,
+      onChangeDataHoraInicial: this._setStateWithEmptyFunction,
+      onChangeDataHoraFinal: this._setStateWithEmptyFunction,
+    );
+  }
+
+  Future<void> clicouBotaoEditarTempoDedicado( TempoDedicado tempo ) async {
+    int resposta = await this.edicaoDeTempo.exibirDialogConfirmacao( "Registro de Tempo Dedicado", tempo );
+    this._setStateWithEmptyFunction();
+  }
+
   void _inicializarListagemDeTempoDedicado(){
     this.listagemDeTempo = new ListagemTempoDedicadoComponente( this.widget.tarefaAtual, this.context,
         this._setStateWithEmptyFunction,
-        (){}
+        this.clicouBotaoEditarTempoDedicado,
     );
   }
 
   void _inicializarTarefa(){
     Tarefa tarefa = this.widget.tarefaAtual;
-    if( tarefa != null ){
-      this.campoNome.setText( tarefa.nome );
-      this.campoDescricao.setText( tarefa.descricao );
-    }
+    this.campoNome.setText( tarefa.nome );
+    this.campoDescricao.setText( tarefa.descricao );
   }
 
   Widget criarHome() {
     Scaffold scaffold1 = new Scaffold(
         appBar: ComunsWidgets.criarBarraSuperior(),
-        backgroundColor: Colors.grey,
+        backgroundColor: Estilos.corDeFundoPrincipal,
         drawer: ComunsWidgets.criarMenuDrawer(),
         body: this.gerarConteudoCentral());
     return scaffold1;
@@ -159,20 +178,26 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
               ],
             ),
           ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(8.0, 40, 8.0, 0),
-            child: ComunsWidgets.createFutureBuilderWidget( this.listagemDeTempo.gerarCampoDaDuracaoTotal() ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ComunsWidgets.createFutureBuilderWidget( this.exibirBotaoDetalharOuListaDetalhes() ),
-          ),
+          this.gerarAreaDeRegistrosDeTempoOuVazio(),
         ]),
       ),
     );
     //Form formulario = new Form( child: coluna, key: this.globalKey );
   }
 
+  Widget gerarAreaDeRegistrosDeTempoOuVazio(){
+    if( this.widget.tarefaAtual != null ){
+      return Padding(
+        padding: EdgeInsets.fromLTRB(8.0, 40, 8.0, 0),
+        child: new Column( children: [
+          ComunsWidgets.createFutureBuilderWidget( this.listagemDeTempo.gerarCampoDaDuracaoTotal() ),
+          ComunsWidgets.createFutureBuilderWidget( this.exibirBotaoDetalharOuListaDetalhes() ),
+        ],)
+      );
+    }else{
+      return new Container();
+    }
+  }
 
   Future<Widget> exibirBotaoDetalharOuListaDetalhes() async {
     if( !this.exibirDetalhesDeTempo ){
