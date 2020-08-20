@@ -58,8 +58,19 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     if( this.recarregarDadosPersistidos ){
       this.tarefasParaListar = await this.controlador.getListaDeTarefas();
       this.temposAtivos = await this.controlador.getTempoDedicadoAtivos();
+      this.desativarTimersDeCronometrosEncerrados();
       recarregarDadosPersistidos = false;
     }
+  }
+
+  void desativarTimersDeCronometrosEncerrados(){
+    this.cronometrosGerados.removeWhere((idTarefa, chronometerField) {
+      if( this._verifyTaskIsActive( idTarefa ) == null){
+        chronometerField.cancelTimerIfActivated();
+        return true;
+      }
+      return false;
+    });
   }
 
   Widget criarHome() {
@@ -209,16 +220,12 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   Future<void> clicouNoRelogio(Tarefa tarefaParaEditar) async {
     TempoDedicadoEdicaoComponente componente = new TempoDedicadoEdicaoComponente(tarefaParaEditar, context);
-    TempoDedicado tempo = this._verifyTaskIsActive( tarefaParaEditar );
+    TempoDedicado tempo = this._verifyTaskIsActive( tarefaParaEditar.id );
     String titulo = tempo == null ? "Cadastro" : "Edição";
     titulo += " de tempo dedicado";
     int resposta = await componente.exibirDialogConfirmacao(titulo, tempo);
     if( resposta == 1){
       this.recarregarDadosPersistidos=true;
-      TempoDedicado tempo = this._verifyTaskIsActive( tarefaParaEditar );
-      if( tempo == null && this.cronometrosGerados.containsKey( tarefaParaEditar.id )){
-        this.cronometrosGerados[tarefaParaEditar.id].cancelTimerIfActivated();
-      }
       this._setStateWithEmptyFunction();
     }
   }
@@ -237,10 +244,10 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     });
   }
 
-  TempoDedicado _verifyTaskIsActive(Tarefa tarefa){
+  TempoDedicado _verifyTaskIsActive(int idTarefa){
     TempoDedicado resultado = null;
     this.temposAtivos.forEach((tempo) {
-      if( tempo.tarefa.id == tarefa.id ){
+      if( tempo.tarefa.id == idTarefa ){
         resultado = tempo;
       }
     });
@@ -252,7 +259,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   Widget generateChronometerWidgetIfActive(Tarefa tarefa){
-    TempoDedicado tempo = this._verifyTaskIsActive( tarefa );
+    TempoDedicado tempo = this._verifyTaskIsActive( tarefa.id );
     if( tempo != null ){
       ChronometerField field = this.cronometrosGerados[tarefa.id];
       if( field == null ){
