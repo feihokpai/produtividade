@@ -17,6 +17,8 @@ enum _Estado{
 class TempoDedicadoEdicaoComponente{
   _Estado estadoAtual = _Estado.MODO_CADASTRO;
 
+  StateSetter _setStateOfStatefullWidget;
+
   Tarefa tarefaAtual;
   TempoDedicado tempoDedicadoAtual;
   static DateFormat formatterPadrao = DataHoraUtil.formatterDataHoraBrasileira;
@@ -41,8 +43,7 @@ class TempoDedicadoEdicaoComponente{
   static final String KEY_STRING_BOTAO_VOLTAR = "returnButton";
   static final String KEY_STRING_BOTAO_DELETAR = "deleteButton";
 
-  TempoDedicadoEdicaoComponente( Tarefa tarefa, BuildContext context, {TempoDedicado tempoDedicado, DateFormat formatter
-      , void Function() onChangeDataHoraInicial, void Function() onChangeDataHoraFinal} )
+  TempoDedicadoEdicaoComponente( Tarefa tarefa, BuildContext context, {TempoDedicado tempoDedicado, DateFormat formatter} )
   :assert(context != null, "Tentou criar componente de edição de Tempo, mas o contexto está nulo"),
    assert(tarefa != null, "Tentou criar componente de edição de Tempo, mas a Tarefa está nula." ){
     this.context = context;
@@ -64,36 +65,43 @@ class TempoDedicadoEdicaoComponente{
     return new ValueKey<String>( keyString );
   }
 
-  void iniciarCampoDataHoraInicial( ){
+  /// Function used to invoke setState in Statefull Widget where dialog is inside.
+  void _emptySetStateFunction(){
+    if( this._setStateOfStatefullWidget != null ){
+      this._setStateOfStatefullWidget( (){  } );
+    }
+  }
+
+  void _iniciarCampoDataHoraInicial( ){
     DateTime dataInicial = DateTime.now();
     if( this.tempoDedicadoAtual != null ){
       dataInicial = this.tempoDedicadoAtual.inicio;
     }
     String StringKey = TempoDedicadoEdicaoComponente.KEY_STRING_CAMPO_HORA_INICIAL;
-    this.campoDataHoraInicial = new CampoDataHora("Início", this.context, dataMinima: new DateTime(2020),
+    this.campoDataHoraInicial ??= new CampoDataHora("Início", this.context, dataMinima: new DateTime(2020),
         dataMaxima: new DateTime.now(), chave: this._criarKey( StringKey ),
         dateTimeFormatter: this.formatter,
-        onChange: this.onChangeDataHoraInicial,
+        onChange: this._emptySetStateFunction,
         dataInicialSelecionada: dataInicial,
     );
   }
 
-  void iniciarCampoDataHoraFinal( ){
+  void _iniciarCampoDataHoraFinal( ){
     DateTime dataSelecionada = this.tempoDedicadoAtual.fim ?? DateTime.now();
-    this.campoDataHoraFinal = new CampoDataHora("Fim", this.context, dataMaxima: new DateTime.now(),
+    this.campoDataHoraFinal ??= new CampoDataHora("Fim", this.context, dataMaxima: new DateTime.now(),
         dataMinima: this.tempoDedicadoAtual.inicio,
         chave: this._criarKey( TempoDedicadoEdicaoComponente.KEY_STRING_CAMPO_HORA_FINAL ),
         dateTimeFormatter: this.formatter,
-        onChange: this.onChangeDataHoraFinal,
+        onChange: this._emptySetStateFunction,
         dataInicialSelecionada: dataSelecionada,
     );
   }
 
-  Widget criarConteudoDialog( TempoDedicado tempo ){
+  Widget _criarConteudoDialog( TempoDedicado tempo ){
     this.tempoDedicadoAtual = tempo;
-    this.iniciarCampoDataHoraInicial( );
+    this._iniciarCampoDataHoraInicial( );
     if( this.tempoDedicadoAtual != null ){
-      this.iniciarCampoDataHoraFinal();
+      this._iniciarCampoDataHoraFinal();
     }
     return SingleChildScrollView(
       child: new Column(
@@ -103,13 +111,13 @@ class TempoDedicadoEdicaoComponente{
             child: new Text("Preencha a hora em que iniciou a atividade"),
           ),
           this.campoDataHoraInicial.getWidget(),
-          this.campoHoraFinalOuVazio(),
+          this._campoHoraFinalOuVazio(),
         ],
       ),
     );
   }
 
-  Widget campoHoraFinalOuVazio(){
+  Widget _campoHoraFinalOuVazio(){
     if( this.tempoDedicadoAtual == null ){
       return new Container( height: 0);
     }else{
@@ -117,7 +125,7 @@ class TempoDedicadoEdicaoComponente{
     }
   }
 
-  void clicouEmSalvar(){
+  void _clicouEmSalvar(){
     TempoDedicado tempo = this.tempoDedicadoAtual ?? new TempoDedicado( this.tarefaAtual );
     tempo.inicio = this.campoDataHoraInicial.dataSelecionada;
     if( this.campoDataHoraFinal != null ){
@@ -127,36 +135,41 @@ class TempoDedicadoEdicaoComponente{
     Navigator.of(context).pop( 1 );
   }
 
-  void resetarVariaveisDeTempoDedicado(){
+  void _resetarVariaveisDeTempoDedicado(){
     this.tempoDedicadoAtual = null;
     this.campoDataHoraInicial = null;
     this.campoDataHoraFinal = null;
   }
 
   Future<int> exibirDialogConfirmacao( String titulo, TempoDedicado tempo ) async{
-    this.resetarVariaveisDeTempoDedicado();
+    this._resetarVariaveisDeTempoDedicado();
     int valor =  await showDialog(
       context: this.context,
       builder: (BuildContext context) {
-        return new AlertDialog(
-          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-          backgroundColor: Estilos.corDeFundoPrincipal,
-          title: Text( titulo ),
-          content: this.criarConteudoDialog( tempo ),
-          actions: [
-            new  FlatButton(
-              color: Estilos.corRaisedButton,
-              key: new ValueKey( TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR ),
-              child: Text("Salvar", style: Estilos.textStyleBotaoFormulario),
-              onPressed: this.clicouEmSalvar ,
-            ),
-            new  FlatButton(
-              color: Estilos.corRaisedButton,
-              key: new ValueKey( TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR ),
-              child: Text("Voltar", style: Estilos.textStyleBotaoFormulario,),
-              onPressed: () => Navigator.of(context).pop( 2 ),
-            )
-          ],
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState){
+            this._setStateOfStatefullWidget = setState;
+            return new AlertDialog(
+              contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+              backgroundColor: Estilos.corDeFundoPrincipal,
+              title: Text( titulo ),
+              content: this._criarConteudoDialog( tempo ),
+              actions: [
+                new  FlatButton(
+                  color: Estilos.corRaisedButton,
+                  key: new ValueKey( TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR ),
+                  child: Text("Salvar", style: Estilos.textStyleBotaoFormulario),
+                  onPressed: this._clicouEmSalvar,
+                ),
+                new  FlatButton(
+                  color: Estilos.corRaisedButton,
+                  key: new ValueKey( TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR ),
+                  child: Text("Voltar", style: Estilos.textStyleBotaoFormulario,),
+                  onPressed: () => Navigator.of(context).pop( 2 ),
+                )
+              ],
+            );
+          },
         );;
       },
     );

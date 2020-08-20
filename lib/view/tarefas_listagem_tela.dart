@@ -8,6 +8,8 @@ import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:registro_produtividade/view/tempo_dedicado_edicao.dart';
+import 'package:registro_produtividade/view/tempo_dedicado_listagem.dart';
 
 class ListaDeTarefasTela extends StatefulWidget {
 
@@ -94,6 +96,10 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
       staggeredTileBuilder: (index) => StaggeredTile.fit(1),
     );
     return await grid;
+  }
+
+  bool algumTimerAtivo(){
+
   }
 
   FutureBuilder<Widget> createFutureBuilderWidget(Future<Widget> widget){
@@ -201,8 +207,20 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     ComunsWidgets.mudarParaPaginaEdicaoDeTarefas(tarefa: tarefaParaEditar);
   }
 
-  void clicouNoRelogio(Tarefa tarefaParaEditar) {
-    ComunsWidgets.mudarParaListagemTempoDedicado( tarefaParaEditar );
+  Future<void> clicouNoRelogio(Tarefa tarefaParaEditar) async {
+    TempoDedicadoEdicaoComponente componente = new TempoDedicadoEdicaoComponente(tarefaParaEditar, context);
+    TempoDedicado tempo = this._verifyTaskIsActive( tarefaParaEditar );
+    String titulo = tempo == null ? "Cadastro" : "Edição";
+    titulo += " de tempo dedicado";
+    int resposta = await componente.exibirDialogConfirmacao(titulo, tempo);
+    if( resposta == 1){
+      this.recarregarDadosPersistidos=true;
+      TempoDedicado tempo = this._verifyTaskIsActive( tarefaParaEditar );
+      if( tempo == null && this.cronometrosGerados.containsKey( tarefaParaEditar.id )){
+        this.cronometrosGerados[tarefaParaEditar.id].cancelTimerIfActivated();
+      }
+      this._setStateWithEmptyFunction();
+    }
   }
 
   void clicouNoIconeAddTarefa(){

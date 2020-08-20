@@ -77,10 +77,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     if( this.widget.tarefaAtual == null ) {
       return;
     }
-    this.edicaoDeTempo = new TempoDedicadoEdicaoComponente(this.widget.tarefaAtual, context,
-      onChangeDataHoraInicial: this._setStateWithEmptyFunction,
-      onChangeDataHoraFinal: this._setStateWithEmptyFunction,
-    );
+    this.edicaoDeTempo = new TempoDedicadoEdicaoComponente(this.widget.tarefaAtual, context);
   }
 
   Future<void> clicouBotaoEditarTempoDedicado( TempoDedicado tempo ) async {
