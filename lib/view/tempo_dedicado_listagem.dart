@@ -80,6 +80,7 @@ class ListagemTempoDedicadoComponente{
       scrollDirection: Axis.vertical,
       itemCount: registrosTempo.length,
       shrinkWrap: true,
+      physics: ScrollPhysics(),
       itemBuilder: (context, indice) {
         TempoDedicado registro = registrosTempo[indice];
         String descricaoRegistro = this._getRegistroTempoDedicadoFormatado( registro );
