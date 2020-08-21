@@ -108,7 +108,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   bool algumTimerAtivo(){
-
+    return this.temposAtivos.length > 0;
   }
 
   FutureBuilder<Widget> createFutureBuilderWidget(Future<Widget> widget){
@@ -116,7 +116,9 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
       future: widget,
       builder: (context, snapshot) {
         if( snapshot.connectionState == ConnectionState.done ){
-          this.ultimoGridGerado = snapshot.data;
+          if( this.algumTimerAtivo() ) {
+            this.ultimoGridGerado = snapshot.data;
+          }
           return snapshot.data;
         }else if ( snapshot.connectionState == ConnectionState.waiting) {
           if( !mudouOrientacao ) {
@@ -128,6 +130,8 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
           String msgErro = "Erro ocorrido: ${snapshot.error}";
           print(msgErro);
           return new Container( child: Text( msgErro, style: Estilos.textStyleListaPaginaInicial, ), );
+        }else{
+          return Container();
         }
       },
     );
