@@ -11,7 +11,8 @@ import 'package:registro_produtividade/view/comum/estilos.dart';
 
 enum _Estado{
   MODO_CADASTRO, // Exibindo para cadastro de tempo.
-  MODO_EDICAO, // Exibindo para edição de tempo.
+  MODO_EDICAO, // Exibe para edição somente a data e hora de início
+  MODO_EDICAO_COMPLETO, // Exibe além da data/hora de início, a data/hora de fim.
 }
 
 class TempoDedicadoEdicaoComponente{
@@ -56,8 +57,10 @@ class TempoDedicadoEdicaoComponente{
   void _definirEstadoInicial(){
     if( this.tempoDedicadoAtual == null ){
       this.estadoAtual = _Estado.MODO_CADASTRO;
-    }else{
+    }else if( this.tempoDedicadoAtual.fim == null){
       this.estadoAtual = _Estado.MODO_EDICAO;
+    }else{
+      this.estadoAtual = _Estado.MODO_EDICAO_COMPLETO;
     }
   }
 
@@ -97,12 +100,8 @@ class TempoDedicadoEdicaoComponente{
     );
   }
 
-  Widget _criarConteudoDialog( TempoDedicado tempo ){
-    this.tempoDedicadoAtual = tempo;
+  Widget _criarConteudoDialog( ){
     this._iniciarCampoDataHoraInicial( );
-    if( this.tempoDedicadoAtual != null ){
-      this._iniciarCampoDataHoraFinal();
-    }
     return SingleChildScrollView(
       child: new Column(
         children: [
@@ -111,18 +110,31 @@ class TempoDedicadoEdicaoComponente{
             child: new Text("Preencha a hora em que iniciou a atividade"),
           ),
           this.campoDataHoraInicial.getWidget(),
-          this._campoHoraFinalOuVazio(),
+          this._campoHoraFinalBotaoEncerrarOuVazio(),
         ],
       ),
     );
   }
 
-  Widget _campoHoraFinalOuVazio(){
-    if( this.tempoDedicadoAtual == null ){
+  Widget _campoHoraFinalBotaoEncerrarOuVazio(){
+    if( this.estadoAtual == _Estado.MODO_CADASTRO ){
       return new Container( height: 0);
-    }else{
+    }else if( this.estadoAtual == _Estado.MODO_EDICAO ) {
+      return new RaisedButton(
+        key: this._criarKey( TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_ENCERRAR ),
+        child: new Text("Encerrar", style: Estilos.textStyleBotaoFormulario),
+        color: Estilos.corRaisedButton,
+        onPressed: this._clicouEmEncerrar,
+      );
+    }else if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
+      this._iniciarCampoDataHoraFinal();
       return this.campoDataHoraFinal.getWidget();
     }
+  }
+
+  void _clicouEmEncerrar(){
+    this.estadoAtual = _Estado.MODO_EDICAO_COMPLETO;
+    this._emptySetStateFunction();
   }
 
   void _clicouEmSalvar(){
@@ -143,6 +155,8 @@ class TempoDedicadoEdicaoComponente{
 
   Future<int> exibirDialogConfirmacao( String titulo, TempoDedicado tempo ) async{
     this._resetarVariaveisDeTempoDedicado();
+    this.tempoDedicadoAtual = tempo;
+    this._definirEstadoInicial();
     int valor =  await showDialog(
       context: this.context,
       builder: (BuildContext context) {
@@ -153,7 +167,7 @@ class TempoDedicadoEdicaoComponente{
               contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
               backgroundColor: Estilos.corDeFundoPrincipal,
               title: Text( titulo ),
-              content: this._criarConteudoDialog( tempo ),
+              content: this._criarConteudoDialog( ),
               actions: [
                 new  FlatButton(
                   color: Estilos.corRaisedButton,
