@@ -64,12 +64,10 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   void desativarTimersDeCronometrosEncerrados(){
-    this.cronometrosGerados.removeWhere((idTarefa, chronometerField) {
-      if( this._verifyTaskIsActive( idTarefa ) == null){
-        chronometerField.cancelTimerIfActivated();
-        return true;
+    this.tarefasParaListar.forEach((tarefa) {
+      if( this._verifyTaskIsActive( tarefa.id ) == null){
+        this.removeCronometroDaListaECancelaTimer( tarefa );
       }
-      return false;
     });
   }
 
@@ -258,14 +256,42 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     this.setState( (){} );
   }
 
+  void removeCronometroDaListaECancelaTimer(Tarefa tarefa){
+    ChronometerField field = this.getCronometro(tarefa);
+    if( field != null ) {
+      field.cancelTimerIfActivated();
+      this.cronometrosGerados.remove(tarefa.id);
+    }
+  }
+
+  ChronometerField getCronometro(Tarefa tarefa){
+    return this.cronometrosGerados[tarefa.id];
+  }
+
+  ChronometerField retornaCronometroAtualizadoDeletaDesatualizado(Tarefa tarefa, TempoDedicado tempo){
+    ChronometerField field = this.getCronometro(tarefa);
+    if( field == null ){
+      return this.gerarNovoCronometro( tempo );
+    }
+    DateTime inicioCronometro = field.beginTime;
+    DateTime inicioAtualizado = tempo.inicio;
+    if (inicioAtualizado.difference(inicioCronometro).inMinutes > 0) {
+      this.removeCronometroDaListaECancelaTimer( tarefa );
+      field = this.gerarNovoCronometro( tempo );
+    }
+    return field;
+  }
+
+  ChronometerField gerarNovoCronometro( TempoDedicado tempo ){
+    ChronometerField field = new ChronometerField("Duração", beginTime: tempo.inicio , functionUpdateUI: _setStateWithEmptyFunction );
+    this.cronometrosGerados[tempo.tarefa.id] = field;
+    return field;
+  }
+
   Widget generateChronometerWidgetIfActive(Tarefa tarefa){
     TempoDedicado tempo = this._verifyTaskIsActive( tarefa.id );
     if( tempo != null ){
-      ChronometerField field = this.cronometrosGerados[tarefa.id];
-      if( field == null ){
-        field = new ChronometerField("Duração", beginTime: tempo.inicio , functionUpdateUI: _setStateWithEmptyFunction );
-        this.cronometrosGerados[tarefa.id] = field;
-      }
+      ChronometerField field = this.retornaCronometroAtualizadoDeletaDesatualizado(tarefa, tempo);
       return Expanded( flex: 4, child: field.widget);
     }else{
       return Expanded( flex: 0,child: new Container());
