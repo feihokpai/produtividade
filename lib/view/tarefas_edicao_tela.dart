@@ -187,7 +187,6 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
       return Padding(
         padding: EdgeInsets.fromLTRB(8.0, 40, 8.0, 0),
         child: new Column( children: [
-          ComunsWidgets.createFutureBuilderWidget( this.listagemDeTempo.gerarCampoDaDuracaoTotal() ),
           ComunsWidgets.createFutureBuilderWidget( this.exibirBotaoDetalharOuListaDetalhes() ),
         ],)
       );
@@ -205,9 +204,13 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
             style: Estilos.textStyleBotaoFormulario),
         color: Estilos.corRaisedButton,
       );
-
     }else{
-      return await this.listagemDeTempo.gerarListViewDosTempos();
+      return Column(
+        children: [
+          ComunsWidgets.createFutureBuilderWidget( this.listagemDeTempo.gerarCampoDaDuracaoTotal() ),
+          await this.listagemDeTempo.gerarListViewDosTempos(),
+        ],
+      );
     }
   }
 
