@@ -198,14 +198,7 @@ class TempoDedicadoEdicaoComponente{
               backgroundColor: Estilos.corDeFundoPrincipal,
               title: Text( titulo ),
               content: this._criarConteudoDialog( ),
-              actions: [
-                ComunsWidgets.createRaisedButton("Salvar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
-                        () => this._clicouEmSalvar( contextDialogStatefull ) ),
-                ComunsWidgets.createRaisedButton("Voltar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR,
-                        () => this._clicouEmVoltar( contextDialogStatefull ) ),
-                this._gerarBotaoEncerrarOuVazio(),
-                this._gerarBotaoDeletarOuVazio( contextDialogStatefull )
-              ],
+              actions: generateActionButtons(contextDialogStatefull),
             );
           },
         );;
@@ -213,5 +206,33 @@ class TempoDedicadoEdicaoComponente{
     );
     // Retorna por default valor, mas se ela for nula, retorna 0.
     return valor ?? 0;
+  }
+
+  List<Widget> generateActionButtons(BuildContext contextDialogStatefull){
+    return <Widget>[
+      Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(2, 0, 10, 0),
+            child: ComunsWidgets.createRaisedButton("Salvar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
+                    () => this._clicouEmSalvar( contextDialogStatefull ) ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+            child: ComunsWidgets.createRaisedButton("Voltar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR,
+                    () => this._clicouEmVoltar( contextDialogStatefull ) ),
+          ),
+          this._gerarBotaoEncerrarOuVazio(),
+        ],
+      ),
+      Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(2, 0, 10, 0),
+            child: this._gerarBotaoDeletarOuVazio( contextDialogStatefull ),
+          ),
+        ],
+      )
+    ];
   }
 }
