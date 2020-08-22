@@ -98,9 +98,22 @@ class ComunsWidgets {
                   ])),
           ComunsWidgets.gerarItemMenuDrawer("Tarefas abertas", Icons.message, ComunsWidgets.mudarParaPaginaInicial),
           ComunsWidgets.gerarItemMenuDrawer("Criação de Tarefas", Icons.add, ComunsWidgets.mudarParaPaginaEdicaoDeTarefas),
-          ComunsWidgets.gerarItemMenuDrawer("Configurações", Icons.settings, null),
         ],
       ),
+    );
+  }
+
+  static ValueKey<String> createKey(String keyString){
+    return new ValueKey<String>( keyString );
+  }
+
+  static RaisedButton createRaisedButton(String label, String keyString, void Function() onpressed){
+    keyString ??= ( label+(DateTime.now().millisecond.toString()) );
+    return new RaisedButton(
+      key: ComunsWidgets.createKey( keyString ),
+      child: new Text( label, style: Estilos.textStyleBotaoFormulario),
+      color: Estilos.corRaisedButton,
+      onPressed: onpressed,
     );
   }
 
