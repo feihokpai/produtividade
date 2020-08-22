@@ -150,9 +150,12 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
               children: [
                 Expanded(
                   flex: 6,
-                  child: new Text(
-                    tarefa.nome,
-                    style: Estilos.textStyleListaPaginaInicial,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                    child: new Text(
+                      tarefa.nome,
+                      style: Estilos.textStyleListaPaginaInicial,
+                    ),
                   ),
                 ),
                 this.generateChronometerWidgetIfActive( tarefa ),
