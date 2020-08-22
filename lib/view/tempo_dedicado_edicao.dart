@@ -7,6 +7,7 @@ import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDataHora.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
+import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
 enum _Estado{
@@ -110,25 +111,50 @@ class TempoDedicadoEdicaoComponente{
             child: new Text("Preencha a hora em que iniciou a atividade"),
           ),
           this.campoDataHoraInicial.getWidget(),
-          this._campoHoraFinalBotaoEncerrarOuVazio(),
+          this._campoHoraFinalOuVazio(),
         ],
       ),
     );
   }
 
-  Widget _campoHoraFinalBotaoEncerrarOuVazio(){
-    if( this.estadoAtual == _Estado.MODO_CADASTRO ){
+  Widget _campoHoraFinalOuVazio(){
+    if( this.estadoAtual == _Estado.MODO_CADASTRO || this.estadoAtual == _Estado.MODO_EDICAO ){
       return new Container( height: 0);
-    }else if( this.estadoAtual == _Estado.MODO_EDICAO ) {
-      return new RaisedButton(
-        key: this._criarKey( TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_ENCERRAR ),
-        child: new Text("Encerrar", style: Estilos.textStyleBotaoFormulario),
-        color: Estilos.corRaisedButton,
-        onPressed: this._clicouEmEncerrar,
-      );
     }else if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
       this._iniciarCampoDataHoraFinal();
       return this.campoDataHoraFinal.getWidget();
+    }
+  }
+
+  Widget _gerarBotaoEncerrarOuVazio(){
+    if( this.estadoAtual == _Estado.MODO_EDICAO ) {
+      String keyString = TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_ENCERRAR;
+      return ComunsWidgets.createRaisedButton("Encerrar", keyString, this._clicouEmEncerrar );
+    }else{
+      return new Container();
+    }
+  }
+
+  Widget _gerarBotaoDeletarOuVazio( BuildContext contextDialogStatefull ){
+    if( this.estadoAtual == _Estado.MODO_CADASTRO ){
+      return new Container();
+    }else{
+      String keyStringDeletar = TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_DELETAR;
+      Widget botaoDeletar = ComunsWidgets.createRaisedButton("Deletar", keyStringDeletar,
+          () => this._clicouEmDeletar( contextDialogStatefull ) );
+      return botaoDeletar;
+    }
+  }
+
+  Future<void> _clicouEmDeletar( BuildContext contextDialogStatefull ) async {
+    this._checagemAntesDeDeletar();
+    await this.controlador.deletarRegistroTempoDedicado( this.tempoDedicadoAtual );
+    Navigator.of( contextDialogStatefull ).pop( 3 );
+  }
+
+  void _checagemAntesDeDeletar(){
+    if( this.tempoDedicadoAtual == null || this.tempoDedicadoAtual.id == null){
+      throw new Exception("Tentou deletar um registro de tempo, mas nenhum foi setado");
     }
   }
 
@@ -137,14 +163,18 @@ class TempoDedicadoEdicaoComponente{
     this._emptySetStateFunction();
   }
 
-  void _clicouEmSalvar(){
+  Future<void> _clicouEmSalvar(BuildContext contextDialogStatefull) async {
     TempoDedicado tempo = this.tempoDedicadoAtual ?? new TempoDedicado( this.tarefaAtual );
     tempo.inicio = this.campoDataHoraInicial.dataSelecionada;
     if( this.campoDataHoraFinal != null ){
       tempo.fim = this.campoDataHoraFinal.dataSelecionada;
     }
-    this.controlador.salvarTempoDedicado( tempo );
-    Navigator.of(context).pop( 1 );
+    await this.controlador.salvarTempoDedicado( tempo );
+    Navigator.of( contextDialogStatefull ).pop( 1 );
+  }
+
+  void _clicouEmVoltar( BuildContext contextDialogStatefull ){
+    Navigator.of( contextDialogStatefull ).pop( 2 );
   }
 
   void _resetarVariaveisDeTempoDedicado(){
@@ -161,7 +191,7 @@ class TempoDedicadoEdicaoComponente{
       context: this.context,
       builder: (BuildContext context) {
         return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState){
+          builder: (BuildContext contextDialogStatefull, StateSetter setState){
             this._setStateOfStatefullWidget = setState;
             return new AlertDialog(
               contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -169,18 +199,12 @@ class TempoDedicadoEdicaoComponente{
               title: Text( titulo ),
               content: this._criarConteudoDialog( ),
               actions: [
-                new  FlatButton(
-                  color: Estilos.corRaisedButton,
-                  key: new ValueKey( TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR ),
-                  child: Text("Salvar", style: Estilos.textStyleBotaoFormulario),
-                  onPressed: this._clicouEmSalvar,
-                ),
-                new  FlatButton(
-                  color: Estilos.corRaisedButton,
-                  key: new ValueKey( TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR ),
-                  child: Text("Voltar", style: Estilos.textStyleBotaoFormulario,),
-                  onPressed: () => Navigator.of(context).pop( 2 ),
-                )
+                ComunsWidgets.createRaisedButton("Salvar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
+                        () => this._clicouEmSalvar( contextDialogStatefull ) ),
+                ComunsWidgets.createRaisedButton("Voltar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR,
+                        () => this._clicouEmVoltar( contextDialogStatefull ) ),
+                this._gerarBotaoEncerrarOuVazio(),
+                this._gerarBotaoDeletarOuVazio( contextDialogStatefull )
               ],
             );
           },

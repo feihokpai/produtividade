@@ -226,7 +226,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     String titulo = tempo == null ? "Cadastro" : "Edição";
     titulo += " de tempo dedicado";
     int resposta = await componente.exibirDialogConfirmacao(titulo, tempo);
-    if( resposta == 1){
+    if( resposta == 1 || resposta == 3){
       this.recarregarDadosPersistidos=true;
       this._setStateWithEmptyFunction();
     }
