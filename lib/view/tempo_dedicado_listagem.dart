@@ -74,56 +74,79 @@ class ListagemTempoDedicadoComponente{
     return formatada;
   }
 
+  BoxDecoration gerarBoxDecorationDosItensDaLista(int indice, int qtd){
+    int indiceUltimo = qtd-1;
+    BorderRadius borderRadius;
+    if(indice == 0){
+      borderRadius =  BorderRadius.only( topLeft: Radius.circular(4.0), topRight: Radius.circular(4.0) );
+    }else if( indice == indiceUltimo ){
+      borderRadius = BorderRadius.only( bottomLeft: Radius.circular(4.0), bottomRight: Radius.circular(4.0) );
+    }else{
+      borderRadius = BorderRadius.zero;
+    }
+    return new BoxDecoration(
+        color: ( (indice % 2 == 0) ? Estilos.corListaTipo1 : Estilos.corListaTipo2 ),
+        borderRadius: borderRadius
+    );
+  }
+
   Future<Widget> gerarListViewDosTempos() async {
     List<TempoDedicado> registrosTempo = await this.controlador.getTempoDedicadoOrderByInicio( this._tarefaAtual );
-    return new ListView.builder(
-      scrollDirection: Axis.vertical,
-      itemCount: registrosTempo.length,
-      shrinkWrap: true,
-      physics: ScrollPhysics(),
-      itemBuilder: (context, indice) {
-        TempoDedicado registro = registrosTempo[indice];
-        String descricaoRegistro = this._getRegistroTempoDedicadoFormatado( registro );
-        String strKeyIconeDelecao = "${ListagemTempoDedicadoComponente.KEY_STRING_ICONE_DELETAR}${registro.id}";
-        String strKeyIconeEdicao = "${ListagemTempoDedicadoComponente.KEY_STRING_ICONE_EDITAR}${registro.id}";
-        return Container(
-          color: ( (indice % 2 == 0) ? Estilos.corListaTipo1 : Estilos.corListaTipo2 ),
-          child: Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: new Row(
-              children:  <Widget>[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
-                  child: new Text(
-                    descricaoRegistro,
-                    style: Estilos.textStyleListaPaginaInicial,
+    return Container(
+      decoration: new BoxDecoration(
+        border: new Border.all(width: 1.0, color: Colors.black54, style: BorderStyle.solid),//, style: BorderStyle.solid ),
+        borderRadius: BorderRadius.circular( 4.0 ),
+//        borderRadius: BorderRadius.only(topRight:  Radius.circular(40)),
+      ),
+      child: new ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: registrosTempo.length,
+        shrinkWrap: true,
+        physics: ScrollPhysics(),
+        itemBuilder: (context, indice) {
+          TempoDedicado registro = registrosTempo[indice];
+          String descricaoRegistro = this._getRegistroTempoDedicadoFormatado( registro );
+          String strKeyIconeDelecao = "${ListagemTempoDedicadoComponente.KEY_STRING_ICONE_DELETAR}${registro.id}";
+          String strKeyIconeEdicao = "${ListagemTempoDedicadoComponente.KEY_STRING_ICONE_EDITAR}${registro.id}";
+          return Container(
+            decoration: this.gerarBoxDecorationDosItensDaLista(indice, registrosTempo.length),
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: new Row(
+                children:  <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+                    child: new Text(
+                      descricaoRegistro,
+                      style: Estilos.textStyleListaPaginaInicial,
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: new IconButton(
-                    key: new ValueKey( strKeyIconeEdicao ),
-                    icon: new Icon(Icons.edit),
-                    onPressed: () {
-                      this._clicouNoIconeEdicao(registro);
-                    },
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    child: new IconButton(
+                      key: new ValueKey( strKeyIconeEdicao ),
+                      icon: new Icon(Icons.edit),
+                      onPressed: () {
+                        this._clicouNoIconeEdicao(registro);
+                      },
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: new IconButton(
-                    key: new ValueKey( strKeyIconeDelecao ),
-                    icon: new Icon(Icons.delete),
-                    onPressed: () {
-                      this._clicouNoIconeDelecao(registro);
-                    },
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    child: new IconButton(
+                      key: new ValueKey( strKeyIconeDelecao ),
+                      icon: new Icon(Icons.delete),
+                      onPressed: () {
+                        this._clicouNoIconeDelecao(registro);
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 

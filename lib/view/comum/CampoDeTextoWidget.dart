@@ -6,7 +6,7 @@ class CampoDeTextoWidget{
   TextEditingController campoController = new TextEditingController();
   String _labelCampo;
   TextStyle _textStyleLabel = Estilos.textStyleLabelTextFormField;
-  TextStyle _textStyleTexto = Estilos.textStyleListaPaginaInicial;
+  TextStyle _textStyleTexto = Estilos.textStyleTextFormField;
   TextFormField _widget;
   ValueKey<String> _key;
   /// Quantidade de linhas do campo de texto.
@@ -82,7 +82,12 @@ class CampoDeTextoWidget{
             labelText: labelCampo,
             labelStyle: this.textStyleLabel,
             errorMaxLines: this.linhasErro,
-            border: new OutlineInputBorder()
+            filled: true,
+            fillColor: (this.editavel ? Estilos.corTextFieldEditavel : Estilos.corTextFieldNaoEditavel ),
+            border: new OutlineInputBorder( ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(width: (this.editavel ? 3.0 : 1.0), color: Estilos.corBarraSuperior),
+            ),
         ),
         style: this.textStyleTexto,
         controller: this.campoController,

@@ -111,7 +111,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     Widget item = new Padding( padding: const EdgeInsets.all(8.0) );
     if( this.widget.tarefaAtual != null ) {
       item = new Padding(
-        padding: EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+        padding: EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
         child: new RaisedButton(
           key: new ValueKey(TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR),
           onPressed: this.pressionouDeletar,
@@ -208,7 +208,10 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
       return Column(
         children: [
           ComunsWidgets.createFutureBuilderWidget( this.listagemDeTempo.gerarCampoDaDuracaoTotal() ),
-          await this.listagemDeTempo.gerarListViewDosTempos(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 5.0, 0, 0),
+            child: await this.listagemDeTempo.gerarListViewDosTempos(),
+          ),
         ],
       );
     }

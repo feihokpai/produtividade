@@ -81,7 +81,7 @@ class ComunsWidgets {
       child: new ListView(
         children: <Widget>[
           DrawerHeader(
-              decoration: BoxDecoration(color: Estilos.corBarraSuperior),
+              decoration: BoxDecoration(color: Estilos.corMenuLateral),
               child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
