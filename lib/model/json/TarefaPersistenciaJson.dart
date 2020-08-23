@@ -43,6 +43,11 @@ class TarefaPersistenciaJson extends GenericoPersistenciaJson implements ITarefa
     return await super.getAllEntidade<Tarefa>();
   }
 
+  @override
+  Future<List<Tarefa>> getTarefasPorId( List<int> ids ) async {
+    return await super.getEntidadesPorId<Tarefa>( ids );
+  }
+
   void _assertsTarefa(Tarefa tarefa){
     String textoBasico = "Tentou realizar uma operação sobre uma Tarefa, ";
     assert( tarefa != null, "${textoBasico}sem repassar a Tarefa.");

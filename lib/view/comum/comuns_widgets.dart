@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/comum/rotas.dart';
 
 class ComunsWidgets {
@@ -17,7 +18,7 @@ class ComunsWidgets {
     AppBar barraSuperior = new AppBar(
         title: new Text("Registro de Produtividade"),
         centerTitle: true,
-        backgroundColor: Colors.blue);
+        backgroundColor: Estilos.corBarraSuperior);
     return barraSuperior;
   }
 
@@ -49,6 +50,23 @@ class ComunsWidgets {
     return valor ?? 0;
   }
 
+  static FutureBuilder<Widget> createFutureBuilderWidget(Future<Widget> widget){
+    return FutureBuilder<Widget>(
+      future: widget,
+      builder: (context, snapshot) {
+        if( snapshot.connectionState == ConnectionState.done ){
+          return snapshot.data;
+        }else if ( snapshot.connectionState == ConnectionState.waiting) {
+          return new CircularProgressIndicator();
+        }else if( snapshot.hasError ){
+          String msgErro = "Erro ocorrido: ${snapshot.error}";
+          print(msgErro);
+          return new Container( child: Text( msgErro, style: Estilos.textStyleListaPaginaInicial, ), );
+        }
+      },
+    );
+  }
+
   static Widget gerarItemMenuDrawer(
       String titulo, IconData tipoIcone, Function funcao) {
     return new ListTile(
@@ -63,26 +81,39 @@ class ComunsWidgets {
       child: new ListView(
         children: <Widget>[
           DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
+              decoration: BoxDecoration(color: Estilos.corBarraSuperior),
               child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
                       'Registro de Produtividade',
-                      style: TextStyle(color: Colors.white, fontSize: 24),
+                      style: Estilos.textStyleTituloMenuLateral,
                     ),
                     new Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 20)),
                     Text(
                       'Feito por: Amorim Company',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      style: Estilos.textStyleSubtituloMenuLateral,
                       textAlign: TextAlign.left,
                     ),
                   ])),
           ComunsWidgets.gerarItemMenuDrawer("Tarefas abertas", Icons.message, ComunsWidgets.mudarParaPaginaInicial),
           ComunsWidgets.gerarItemMenuDrawer("Criação de Tarefas", Icons.add, ComunsWidgets.mudarParaPaginaEdicaoDeTarefas),
-          ComunsWidgets.gerarItemMenuDrawer("Configurações", Icons.settings, null),
         ],
       ),
+    );
+  }
+
+  static ValueKey<String> createKey(String keyString){
+    return new ValueKey<String>( keyString );
+  }
+
+  static RaisedButton createRaisedButton(String label, String keyString, void Function() onpressed){
+    keyString ??= ( label+(DateTime.now().millisecond.toString()) );
+    return new RaisedButton(
+      key: ComunsWidgets.createKey( keyString ),
+      child: new Text( label, style: Estilos.textStyleBotaoFormulario),
+      color: Estilos.corRaisedButton,
+      onPressed: onpressed,
     );
   }
 

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
-import 'package:registro_produtividade/control/LabelsApplication.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDataHora.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
-import 'package:registro_produtividade/view/registros_listagem_tela.dart';
 
 import 'package:intl/intl.dart';
 
@@ -28,7 +26,6 @@ class CadastroTempoDedicadoTela extends StatefulWidget {
   TempoDedicado tempoDedicadoAtual;
   // Em alguns casos é útil por questões de testes de widget manter desligado o cronômetro
   bool cronometroLigado;
-  LinguagemLabels labels = LabelsApplication.linguaAtual;
   static DateFormat formatterDataHora = DataHoraUtil.formatterDataHoraBrasileira;
 
   static final String KEY_STRING_CAMPO_HORA_INICIAL = "beginHour";
@@ -179,7 +176,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
   Widget criarHome() {
     Scaffold scaffold1 = new Scaffold(
         appBar: ComunsWidgets.criarBarraSuperior(),
-        backgroundColor: Colors.grey,
+        backgroundColor: Estilos.corDeFundoPrincipal,
         drawer: ComunsWidgets.criarMenuDrawer(),
         body: this.gerarConteudoCentral());
     return scaffold1;
@@ -355,7 +352,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
       return new  RaisedButton(
         key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_SALVAR ),
         child: new Text("Salvar", style: Estilos.textStyleBotaoFormulario),
-        color: Colors.blue,
+        color: Estilos.corRaisedButton,
         onPressed: this.salvarTempoDedicado,
       );
     }else{
@@ -381,7 +378,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
       return new RaisedButton(
         key: this.criarKey(CadastroTempoDedicadoTela.KEY_STRING_BOTAO_ENCERRAR),
         child: new Text("Encerrar", style: Estilos.textStyleBotaoFormulario),
-        color: Colors.blue,
+        color: Estilos.corRaisedButton,
         onPressed: this.clicouBotaoEncerrar,
       );
     }else{
@@ -394,7 +391,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
       return new RaisedButton(
         key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_VOLTAR ),
         child: new Text("Voltar", style: Estilos.textStyleBotaoFormulario),
-        color: Colors.blue,
+        color: Estilos.corRaisedButton,
         onPressed: this.clicouBotaoVoltar
       );
     }else{
@@ -408,7 +405,7 @@ class _CadastroTempoDedicadoTelaState extends State<CadastroTempoDedicadoTela> {
       return new RaisedButton(
           key: this.criarKey( CadastroTempoDedicadoTela.KEY_STRING_BOTAO_DELETAR ),
           child: new Text("Deletar", style: Estilos.textStyleBotaoFormulario),
-          color: Colors.blue,
+          color: Estilos.corRaisedButton,
           onPressed: this.clicouBotaoDeletar
       );
     }else{

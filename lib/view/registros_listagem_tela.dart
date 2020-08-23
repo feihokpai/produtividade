@@ -15,8 +15,6 @@ class ListaDeTempoDedicadoTela extends StatefulWidget {
 
   static final String KEY_STRING_PAINEL_TAREFA = "tarefaPanel";
   static final String KEY_STRING_BOTAO_NOVO = "newButton";
-  static final String KEY_STRING_LISTA_REGISTROS = "listViewRegistros";
-  static final String KEY_STRING_REGISTRO = "listViewRegistros";
   static final String KEY_STRING_ICONE_DELETAR = "deleteIcon";
   static final String KEY_STRING_ICONE_EDITAR = "editIcon";
   static final String KEY_STRING_TOTAL_TEMPO = "sumTime";
@@ -81,7 +79,7 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
   Widget criarHome() {
     Scaffold scaffold1 = new Scaffold(
         appBar: ComunsWidgets.criarBarraSuperior(),
-        backgroundColor: Colors.grey,
+        backgroundColor: Estilos.corDeFundoPrincipal,
         drawer: ComunsWidgets.criarMenuDrawer(),
         body: this.gerarConteudoCentral());
     return scaffold1;
@@ -181,7 +179,7 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
             String strKeyIconeDelecao = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_DELETAR}${registro.id}";
             String strKeyIconeEdicao = "${ListaDeTempoDedicadoTela.KEY_STRING_ICONE_EDITAR}${registro.id}";
             return Container(
-              color: ( (indice % 2 == 0) ? Colors.black26 : Colors.black38 ),
+              color: ( (indice % 2 == 0) ? Estilos.corListaTipo1 : Estilos.corListaTipo2 ),
               child: Padding(
                 padding: const EdgeInsets.all(2.0),
                 child: new Row(

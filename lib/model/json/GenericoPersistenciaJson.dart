@@ -98,7 +98,14 @@ abstract class GenericoPersistenciaJson{
 
   Future<List<T>> getAllEntidade<T extends EntidadeDominio>() async {
     await this.transfereDaListaJsonParaListaDeEntidades();
-    return this._converterListEntidadesParaListSubclasse<T>();
+    return this._converterListEntidadesParaListSubclasse<T>( this.entidades );
+  }
+
+  Future<List<T>> getEntidadesPorId<T extends EntidadeDominio>(List<int> ids) async {
+    await this.transfereDaListaJsonParaListaDeEntidades();
+    List<EntidadeDominio> listaFiltrada = new List();
+    listaFiltrada.addAll( this.entidades.where((entidade) =>  ids.contains( entidade.id ) ) );
+    return this._converterListEntidadesParaListSubclasse<T>( listaFiltrada );
   }
 
   Future<void> cadastrarEntidade(EntidadeDominio entidade) async {
@@ -181,9 +188,10 @@ abstract class GenericoPersistenciaJson{
     }
   }
 
-  List<T> _converterListEntidadesParaListSubclasse<T extends EntidadeDominio>( ){
+  /// Recebe uma lista de entidades e devolve a mesma convertida numa lista do tipo T, que é subclasse de EntidadeDominio
+  List<T> _converterListEntidadesParaListSubclasse<T extends EntidadeDominio>( List<EntidadeDominio> listEntidades ){
     List<T> lista = new List();
-    this.entidades.forEach((entidade) {
+    listEntidades.forEach((entidade) {
       T entidadeTipoReal = entidade as T;
       lista.add( entidadeTipoReal );
     });

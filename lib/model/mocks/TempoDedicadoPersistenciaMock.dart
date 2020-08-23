@@ -64,7 +64,7 @@ class TempoDedicadoPersistenciaMock extends Mock implements ITempoDedicadoPersis
     return maior+1;
   }
 
-  void deletarTempo(TempoDedicado tempo){
+  Future<void> deletarTempo(TempoDedicado tempo) async{
     this.registrosTempoDedicado.removeWhere(( atual) => atual.id == tempo.id );
   }
 

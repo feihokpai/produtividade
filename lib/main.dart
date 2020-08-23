@@ -6,6 +6,7 @@ import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/LabelsApplication.dart';
 import 'package:registro_produtividade/model/mocks/TarefaPersistenciaMock.dart';
 import 'package:registro_produtividade/model/mocks/TempoDedicadoPersistenciaMock.dart';
+import 'package:registro_produtividade/view/comum/FakeScreenTestChronometerField.dart';
 import 'package:registro_produtividade/view/comum/TelaFakeTesteCampoDataHora.dart';
 import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
@@ -55,6 +56,15 @@ void main() {
       ],
       supportedLocales: [const Locale('pt', 'BR')],
   );
+  MaterialApp app4 = new MaterialApp(
+    title: "Test Chronometer Field",
+    home: new FakeScreenTestChronometerField(),
+    localizationsDelegates: [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate
+    ],
+    supportedLocales: [const Locale('pt', 'BR')],
+  );
   //__________________________________________
   // Definições da linguagem
 //  LabelsApplication configuracoesLinguagem = new LabelsApplication( LabelsApplication.pt_br );
@@ -65,5 +75,6 @@ void main() {
 //  controlador.tempoDedicadoDao = new TempoDedicadoPersistenciaMock();
   //__________________________________________
   runApp( ModularApp(module: AppModule()) );
+//  runApp(app4);
 }
 
