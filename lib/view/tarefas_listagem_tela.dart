@@ -103,10 +103,8 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   Future<Widget> gerarLayoutDasTarefas() async {
     await this.inicializarDadosPersistidos();
     Orientation orientation = MediaQuery.of(context).orientation;
-    this.mudouOrientacao = ( orientation != this.orientacaoAtual );
-    if( this.mudouOrientacao ){
-      this.orientacaoAtual = orientation;
-    }
+    this.mudouOrientacao = ( this.orientacaoAtual != null && orientation != this.orientacaoAtual );
+    this.orientacaoAtual = orientation;
     int qtdColunas = 1;
     if( orientation == Orientation.landscape ){
       qtdColunas = 2;
