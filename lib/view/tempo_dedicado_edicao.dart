@@ -110,8 +110,14 @@ class TempoDedicadoEdicaoComponente{
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: new Text("Preencha a hora em que iniciou a atividade"),
           ),
-          this.campoDataHoraInicial.getWidget(),
-          this._campoHoraFinalOuVazio(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+            child: this.campoDataHoraInicial.getWidget(),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+            child: this._campoHoraFinalOuVazio(),
+          ),
         ],
       ),
     );
