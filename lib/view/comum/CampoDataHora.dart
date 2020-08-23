@@ -19,7 +19,7 @@ class CampoDataHora extends CampoDeTextoWidget{
   void Function() _onChange;
 
   CampoDataHora(String label, BuildContext context, {ValueKey<String> chave, DateTime dataMaxima, DateTime dataMinima,
-      DateFormat dateTimeFormatter, void Function() onChange})
+      DateFormat dateTimeFormatter, DateTime dataInicialSelecionada, void Function() onChange})
       : assert( context != null ),
         assert( dataMaxima == null || dataMinima == null
             || !(DataHoraUtil.eDataDeDiaAnterior( dataMaxima , dataMinima) )
@@ -30,6 +30,7 @@ class CampoDataHora extends CampoDeTextoWidget{
     this.dataMinima = dataMinima ?? new DateTime( 1980 );
     this.onChange = onChange;
     this.formatter = dateTimeFormatter ?? CampoDataHora.formatterPadrao;
+    this.dataSelecionada = dataInicialSelecionada;
   }
 
   void set onChange(void Function() onChange){
