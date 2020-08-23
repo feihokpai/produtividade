@@ -44,14 +44,34 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   @override
   void dispose() {
-    this.cronometrosGerados.forEach((key, field) {
-      field.cancelTimerIfActivated();
-    });
+    this.cancelAllChronemeters();
     super.dispose();
   }
 
-  void inicializarVariaveis(){
 
+  void cancelAllChronemeters(){
+    this.cronometrosGerados.forEach((key, field) {
+      field.cancelTimerIfActivated();
+    });
+  }
+  
+  void onScreenExit(){
+    this.cancelAllChronemeters();
+    this.resetVariables();
+  }
+
+  void resetVariables(){
+    this.temposAtivos = new List();
+    this.tarefasParaListar = new List();
+    this.cronometrosGerados.clear();
+    this.recarregarDadosPersistidos = true;
+    this.ultimoGridGerado = null;
+    this.orientacaoAtual = null;
+    this.mudouOrientacao = false;
+    this.controlador = new Controlador();
+  }
+
+  void inicializarVariaveis(){
   }
   
   Future<void> inicializarDadosPersistidos() async {
@@ -219,8 +239,9 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     );
   }
 
-  void clicouNoLapis(Tarefa tarefaParaEditar) {
-    ComunsWidgets.mudarParaPaginaEdicaoDeTarefas(tarefa: tarefaParaEditar);
+  Future<void> clicouNoLapis(Tarefa tarefaParaEditar) async {
+    await ComunsWidgets.mudarParaPaginaEdicaoDeTarefas(tarefa: tarefaParaEditar);
+    this.onScreenExit();
   }
 
   Future<void> clicouNoRelogio(Tarefa tarefaParaEditar) async {
@@ -235,8 +256,9 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     }
   }
 
-  void clicouNoIconeAddTarefa(){
-    ComunsWidgets.mudarParaPaginaEdicaoDeTarefas( );
+  Future<void> clicouNoIconeAddTarefa() async {
+    await ComunsWidgets.mudarParaPaginaEdicaoDeTarefas( );
+    this.onScreenExit();
   }
 
   Future<bool> pedirConfirmacaoAntesDeFechar(){
