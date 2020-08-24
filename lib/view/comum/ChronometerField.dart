@@ -34,6 +34,7 @@ class ChronometerField extends CampoDeTextoWidget{
     this._functionUpdateUI = functionUpdateUI;
     this.setText( DataHoraUtil.CRONOMETRO_ZERADO );
     this.beginTime = beginTime;
+    super.enabledBorderWidth = 0.5;
   }
 
   bool isActive(){

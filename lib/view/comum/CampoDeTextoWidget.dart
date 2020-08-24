@@ -15,6 +15,8 @@ class CampoDeTextoWidget{
   int _linhasErro = 2;
   bool editavel = true;
 
+  double _enabledBorderWidth = 1.0;
+
   String Function(String) funcaoValidacao;
 
   CampoDeTextoWidget( String label, int qtdLinhas, String Function(String) validacao, {ValueKey<String> chave, bool editavel=true} ){
@@ -85,7 +87,7 @@ class CampoDeTextoWidget{
             filled: true,
             fillColor: (this.editavel ? Estilos.corTextFieldEditavel : Estilos.corTextFieldNaoEditavel ),
             enabledBorder: new OutlineInputBorder(
-              borderSide: BorderSide(width: 1.0, color: Estilos.corBarraSuperior),
+              borderSide: BorderSide(width: this.enabledBorderWidth, color: Estilos.corBarraSuperior),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(width: (this.editavel ? 3.0 : 1.0), color: Estilos.corBarraSuperior),
@@ -102,6 +104,12 @@ class CampoDeTextoWidget{
 
   Widget getWidget(){
     return this.widget;
+  }
+
+  double get enabledBorderWidth => this._enabledBorderWidth;
+
+  void set enabledBorderWidth(double enabledBorderWidth){
+    this._enabledBorderWidth = enabledBorderWidth;
   }
 
 }
