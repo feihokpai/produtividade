@@ -243,7 +243,8 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   Future<void> clicouNoRelogio(Tarefa tarefaParaEditar) async {
-    TempoDedicadoEdicaoComponente componente = new TempoDedicadoEdicaoComponente(tarefaParaEditar, context);
+    TempoDedicadoEdicaoComponente componente = new TempoDedicadoEdicaoComponente(tarefaParaEditar, context,
+        formatter: DataHoraUtil.formatterDataSemAnoHoraBrasileira);
     TempoDedicado tempo = this._verifyTaskIsActive( tarefaParaEditar.id );
     String titulo = tempo == null ? "Cadastro" : "Edição";
     titulo += " de tempo dedicado";

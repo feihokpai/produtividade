@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:registro_produtividade/control/Controlador.dart';
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
@@ -77,7 +78,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     if( this.widget.tarefaAtual == null ) {
       return;
     }
-    this.edicaoDeTempo = new TempoDedicadoEdicaoComponente(this.widget.tarefaAtual, context);
+    this.edicaoDeTempo = new TempoDedicadoEdicaoComponente(this.widget.tarefaAtual, context,
+      formatter: DataHoraUtil.formatterDataSemAnoHoraBrasileira);
   }
 
   Future<void> clicouBotaoEditarTempoDedicado( TempoDedicado tempo ) async {
