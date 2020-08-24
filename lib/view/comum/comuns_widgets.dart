@@ -29,19 +29,14 @@ class ComunsWidgets {
       context: context,
       builder: (BuildContext context) {
         return new AlertDialog(
+          backgroundColor: Estilos.corDeFundoPrincipal,
           title: Text( titulo ),
           content: Text( descricao ),
           actions: [
-            new  FlatButton(
-              key: new ValueKey( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG ),
-              child: Text("SIM"),
-              onPressed: () => Navigator.of(context).pop( 1 ) ,
-            ),
-            new  FlatButton(
-              key: new ValueKey( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG ),
-              child: Text("NÃO"),
-              onPressed: () => Navigator.of(context).pop( 2 ),
-            )
+            ComunsWidgets.createRaisedButton("SIM", ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG,
+                    () => Navigator.of(context).pop( 1 ) ),
+            ComunsWidgets.createRaisedButton("NÃO", ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG,
+                    () => Navigator.of(context).pop( 2 ) ),
           ],
         );;
       },

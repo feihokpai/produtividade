@@ -84,7 +84,9 @@ class CampoDeTextoWidget{
             errorMaxLines: this.linhasErro,
             filled: true,
             fillColor: (this.editavel ? Estilos.corTextFieldEditavel : Estilos.corTextFieldNaoEditavel ),
-            border: new OutlineInputBorder( ),
+            enabledBorder: new OutlineInputBorder(
+              borderSide: BorderSide(width: 1.0, color: Estilos.corBarraSuperior),
+            ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(width: (this.editavel ? 3.0 : 1.0), color: Estilos.corBarraSuperior),
             ),
