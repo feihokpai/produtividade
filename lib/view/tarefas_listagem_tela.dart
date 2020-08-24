@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
@@ -112,13 +113,16 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
     StaggeredGridView grid = new StaggeredGridView.countBuilder(
       padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-      mainAxisSpacing: 10,
+      mainAxisSpacing: 2,
       crossAxisCount: qtdColunas,
       shrinkWrap: true,
       physics: ScrollPhysics(),
       itemCount: this.tarefasParaListar.length,
       itemBuilder: (BuildContext context, int index){
-        return this.gerarRow( this.tarefasParaListar[index] );
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+          child: this.gerarRow( this.tarefasParaListar[index] ),
+        );
       },
       staggeredTileBuilder: (index) => StaggeredTile.fit(1),
     );
@@ -158,56 +162,66 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   Widget gerarRow( Tarefa tarefa ){
     String strKeyLapis = "${ListaDeTarefasTela.KEY_STRING_ICONE_LAPIS}${tarefa.id}";
     String strKeyRelogio = "${ListaDeTarefasTela.KEY_STRING_ICONE_RELOGIO}${tarefa.id}";
-    return new Row(
-      children:  <Widget>[
-        Expanded(
-          flex: 8,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 6,
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                    child: new Text(
-                      tarefa.nome,
-                      style: Estilos.textStyleListaPaginaInicial,
+    return Container(
+      decoration: new BoxDecoration(
+        color: Estilos.corTextFieldEditavel,
+        border: new Border.all(width: 0.5, color: Estilos.corBarraSuperior/*Colors.black54*/, style: BorderStyle.solid),//, style: BorderStyle.solid ),
+        borderRadius: BorderRadius.circular( 4.0 ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+        child: new Row(
+          children:  <Widget>[
+            Expanded(
+              flex: 10,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 6,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                        child: new Text(
+                          tarefa.nome,
+                          style: Estilos.textStyleListaPaginaInicial,
+                        ),
+                      ),
                     ),
-                  ),
+                    this.generateChronometerWidgetIfActive( tarefa ),
+                  ],
                 ),
-                this.generateChronometerWidgetIfActive( tarefa ),
-              ],
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-            child: new IconButton(
-              key: new ValueKey( strKeyLapis ),
-              icon: new Icon(Icons.edit),
-              onPressed: () {
-                this.clicouNoLapis(tarefa);
-              },
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                child: new IconButton(
+                  key: new ValueKey( strKeyRelogio ),
+                  icon: new Icon(Icons.alarm),
+                  onPressed: (){
+                    this.clicouNoRelogio(tarefa);
+                  },
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-            child: new IconButton(
-              key: new ValueKey( strKeyRelogio ),
-              icon: new Icon(Icons.alarm),
-              onPressed: (){
-                this.clicouNoRelogio(tarefa);
-              },
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                child: new IconButton(
+                  key: new ValueKey( strKeyLapis ),
+                  icon: new Icon(Icons.edit),
+                  onPressed: () {
+                    this.clicouNoLapis(tarefa);
+                  },
+                ),
+              ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -320,7 +334,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     TempoDedicado tempo = this._verifyTaskIsActive( tarefa.id );
     if( tempo != null ){
       ChronometerField field = this.retornaCronometroAtualizadoDeletaDesatualizado(tarefa, tempo);
-      return Expanded( flex: 4, child: field.widget);
+      return new LimitedBox(child: field.widget, maxWidth: 85,);
     }else{
       return Expanded( flex: 0,child: new Container());
     }
