@@ -182,9 +182,12 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
                       flex: 6,
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                        child: new Text(
-                          tarefa.nome,
-                          style: Estilos.textStyleListaPaginaInicial,
+                        child: GestureDetector(
+                          onTap: ()=> this.clicouNoNomeDaTarefa(tarefa),
+                          child: new Text(
+                            tarefa.nome,
+                            style: Estilos.textStyleListaPaginaInicial,
+                          ),
                         ),
                       ),
                     ),
@@ -202,19 +205,6 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
                   icon: new Icon(Icons.alarm),
                   onPressed: (){
                     this.clicouNoRelogio(tarefa);
-                  },
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                child: new IconButton(
-                  key: new ValueKey( strKeyLapis ),
-                  icon: new Icon(Icons.edit),
-                  onPressed: () {
-                    this.clicouNoLapis(tarefa);
                   },
                 ),
               ),
@@ -251,7 +241,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     );
   }
 
-  Future<void> clicouNoLapis(Tarefa tarefaParaEditar) async {
+  Future<void> clicouNoNomeDaTarefa(Tarefa tarefaParaEditar) async {
     await ComunsWidgets.mudarParaPaginaEdicaoDeTarefas(tarefa: tarefaParaEditar);
     this.onScreenExit();
   }
