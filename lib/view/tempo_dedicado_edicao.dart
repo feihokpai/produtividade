@@ -101,23 +101,27 @@ class TempoDedicadoEdicaoComponente{
     );
   }
 
-  Widget _criarConteudoDialog( ){
+  Widget _criarConteudoDialog( BuildContext contextDialogStatefull ){
     this._iniciarCampoDataHoraInicial( );
     return SingleChildScrollView(
       child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-            child: new Text("Preencha a hora em que iniciou a atividade"),
+            child: new Text("Preencha a hora em que iniciou a atividade. Deixe como está"
+                " se vai iniciar a atividade agora."),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            child: this.campoDataHoraInicial.getWidget(),
+            child: SizedBox(child: this.campoDataHoraInicial.getWidget(), width: 240, ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            child: this._campoHoraFinalOuVazio(),
+            child: SizedBox(child: this._campoHoraFinalOuVazio(), width: 240, ),
           ),
+          this.generateSaveAndBackButtons( contextDialogStatefull ),
+          this.generateFinishAndDeleteButtons(contextDialogStatefull),
         ],
       ),
     );
@@ -135,7 +139,10 @@ class TempoDedicadoEdicaoComponente{
   Widget _gerarBotaoEncerrarOuVazio(){
     if( this.estadoAtual == _Estado.MODO_EDICAO ) {
       String keyString = TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_ENCERRAR;
-      return ComunsWidgets.createRaisedButton("Encerrar", keyString, this._clicouEmEncerrar );
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+        child: ComunsWidgets.createRaisedButton("Encerrar", keyString, this._clicouEmEncerrar ),
+      );
     }else{
       return new Container();
     }
@@ -148,7 +155,10 @@ class TempoDedicadoEdicaoComponente{
       String keyStringDeletar = TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_DELETAR;
       Widget botaoDeletar = ComunsWidgets.createRaisedButton("Deletar", keyStringDeletar,
           () => this._clicouEmDeletar( contextDialogStatefull ) );
-      return botaoDeletar;
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+        child: botaoDeletar,
+      );
     }
   }
 
@@ -202,9 +212,7 @@ class TempoDedicadoEdicaoComponente{
             return new AlertDialog(
               contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
               backgroundColor: Estilos.corDeFundoPrincipal,
-              title: Text( titulo ),
-              content: this._criarConteudoDialog( ),
-              actions: generateActionButtons(contextDialogStatefull),
+              content: this._criarConteudoDialog( contextDialogStatefull ),
             );
           },
         );;
@@ -214,31 +222,31 @@ class TempoDedicadoEdicaoComponente{
     return valor ?? 0;
   }
 
-  List<Widget> generateActionButtons(BuildContext contextDialogStatefull){
-    return <Widget>[
-      Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(2, 0, 10, 0),
-            child: ComunsWidgets.createRaisedButton("Salvar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
-                    () => this._clicouEmSalvar( contextDialogStatefull ) ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-            child: ComunsWidgets.createRaisedButton("Voltar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR,
-                    () => this._clicouEmVoltar( contextDialogStatefull ) ),
-          ),
-          this._gerarBotaoEncerrarOuVazio(),
-        ],
-      ),
-      Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(2, 0, 10, 0),
-            child: this._gerarBotaoDeletarOuVazio( contextDialogStatefull ),
-          ),
-        ],
-      )
-    ];
+  Widget generateSaveAndBackButtons(BuildContext contextDialogStatefull){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+          child: ComunsWidgets.createRaisedButton("Salvar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
+                  () => this._clicouEmSalvar( contextDialogStatefull ) ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+          child: ComunsWidgets.createRaisedButton("Voltar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR,
+                  () => this._clicouEmVoltar( contextDialogStatefull ) ),
+        ),
+      ],
+    );
   }
+
+  Widget generateFinishAndDeleteButtons(BuildContext contextDialogStatefull){
+    return Row(
+      children: [
+        this._gerarBotaoEncerrarOuVazio(),
+        this._gerarBotaoDeletarOuVazio( contextDialogStatefull ),
+      ],
+    );
+  }
+
 }
