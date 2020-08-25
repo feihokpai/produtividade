@@ -161,7 +161,6 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   Widget gerarRow( Tarefa tarefa ){
     String strKeyLapis = "${ListaDeTarefasTela.KEY_STRING_ICONE_LAPIS}${tarefa.id}";
-    String strKeyRelogio = "${ListaDeTarefasTela.KEY_STRING_ICONE_RELOGIO}${tarefa.id}";
     return Container(
       decoration: new BoxDecoration(
         color: Estilos.corTextFieldEditavel,
@@ -196,19 +195,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
                 ),
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                child: new IconButton(
-                  key: new ValueKey( strKeyRelogio ),
-                  icon: new Icon(Icons.alarm),
-                  onPressed: (){
-                    this.clicouNoRelogio(tarefa);
-                  },
-                ),
-              ),
-            ),
+            this.generateAlarmIconOrEmpty( tarefa ),
           ],
         ),
       ),
@@ -288,6 +275,27 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     this.setState( (){} );
   }
 
+  Widget generateAlarmIconOrEmpty( Tarefa tarefa ){
+    String strKeyRelogio = "${ListaDeTarefasTela.KEY_STRING_ICONE_RELOGIO}${tarefa.id}";
+    if( this._verifyTaskIsActive( tarefa.id ) == null ){
+      return Expanded(
+        flex: 2,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+          child: new IconButton(
+            key: new ValueKey( strKeyRelogio ),
+            icon: new Icon(Icons.alarm),
+            onPressed: (){
+              this.clicouNoRelogio(tarefa);
+            },
+          ),
+        ),
+      );
+    }else{
+      return new Container();
+    }
+  }
+
   void removeCronometroDaListaECancelaTimer(Tarefa tarefa){
     ChronometerField field = this.getCronometro(tarefa);
     if( field != null ) {
@@ -324,7 +332,17 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     TempoDedicado tempo = this._verifyTaskIsActive( tarefa.id );
     if( tempo != null ){
       ChronometerField field = this.retornaCronometroAtualizadoDeletaDesatualizado(tarefa, tempo);
-      return new LimitedBox(child: field.widget, maxWidth: 85,);
+      return new LimitedBox(
+        child: GestureDetector(
+          onTap: ()=> this.clicouNoRelogio( tarefa ),
+          child: Container(
+              child: AbsorbPointer(
+                  child: field.widget
+              )
+          )
+        ),
+        maxWidth: 85,
+      );
     }else{
       return Expanded( flex: 0,child: new Container());
     }
