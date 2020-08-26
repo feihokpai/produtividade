@@ -26,6 +26,35 @@ class Controlador{
     return this.tarefaDao.getAllTarefa();
   }
 
+  ///     Retorna todas as tarefas cadastradas, ordenadas tendo como prioridade as tarefas que tiveram
+  /// algum tempo registrado mais recentemente.
+  Future<List<Tarefa>> getListaDeTarefasOrderByDataInicio() async{
+    List<Tarefa> tarefas = new List();
+    List<TempoDedicado> tempos = await this.getAllTempoDedicadoOrderByInicio();
+    if( tempos.isEmpty ){
+      tarefas = await this.getListaDeTarefas();
+    }else{
+      List<int> idsTarefasParaAdicionar = new List();
+      tempos.forEach( (tempo) async {
+        int idTarefa = tempo.tarefa.id;
+        if( !idsTarefasParaAdicionar.contains( idTarefa ) ){
+          idsTarefasParaAdicionar.add( idTarefa );
+        }
+      });
+      tarefas = await this._trazerTarefasNaOrdem( idsTarefasParaAdicionar );
+    }
+    return tarefas;
+  }
+
+  Future<List<Tarefa>> _trazerTarefasNaOrdem( List<int> ids ) async{
+    List<Tarefa> tarefas = new List();
+    await ids.forEach((idTarefa) async {
+      Tarefa tarefa = await this.tarefaDao.getTarefa( idTarefa );
+      tarefas.add( tarefa );
+    });
+    return tarefas;
+  }
+
   Future<void> salvarTarefa( Tarefa tarefa ) async {
     if( tarefa.id == 0) {
       await this.tarefaDao.cadastrarTarefa(tarefa);
@@ -40,10 +69,17 @@ class Controlador{
     tempos.forEach((tempo) => this.deletarRegistroTempoDedicado(tempo) );
   }
 
-  Future<List<TempoDedicado>> getAllTempoDedicado(){
-    return this.tempoDedicadoDao.getAllTempoDedicado();
+  Future<List<TempoDedicado>> getAllTempoDedicado() async {
+    return await this.tempoDedicadoDao.getAllTempoDedicado();
   }
 
+  Future<List<TempoDedicado>> getAllTempoDedicadoOrderByInicio() async {
+    List<TempoDedicado> tempos = await this.getAllTempoDedicado();
+    tempos.sort();
+    return tempos.reversed.toList();
+  }
+
+  /// Returna a lista de tempos de uma tarefa, ordenados do mais recente pro mais antigo.
   Future<List<TempoDedicado>> getTempoDedicadoOrderByInicio(Tarefa tarefa) async {
     return await this.tempoDedicadoDao.getTempoDedicadoOrderByInicio( tarefa );
   }
