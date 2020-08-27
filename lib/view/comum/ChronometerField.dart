@@ -25,8 +25,9 @@ class ChronometerField extends CampoDeTextoWidget{
   DateFormat _formatter;
   static DateFormat defaultFormatter = DataHoraUtil.formatterHoraBrasileira;
 
+  bool printLogs = false;
 
-  ChronometerField(String label, {ValueKey<String> key, DateTime beginTime, DateFormat formatter, void Function() functionUpdateUI})
+  ChronometerField(String label, {ValueKey<String> key, DateTime beginTime, DateFormat formatter, void Function() functionUpdateUI, bool printLogs=false})
       : super(label, 1, null, chave: key, editavel: false ){
     assert( functionUpdateUI != null, "Is necessary to define a function to Update UI or the Chronometer Field"
         " will be useless." );
@@ -35,6 +36,7 @@ class ChronometerField extends CampoDeTextoWidget{
     this.setText( DataHoraUtil.CRONOMETRO_ZERADO );
     this.beginTime = beginTime;
     super.enabledBorderWidth = 0.5;
+    this.printLogs = printLogs;
   }
 
   bool isActive(){
@@ -46,7 +48,9 @@ class ChronometerField extends CampoDeTextoWidget{
   Future<void> _beginNewInterval( {DateTime beginTime} ) async {
     beginTime ??= DateTime.now();
     this.intervals.add( new DateTimeInterval( beginTime, null) );
-    this._printLogIntervalsSituation();
+    if( this.printLogs ) {
+      this._printLogIntervalsSituation();
+    }
     await this._createAPeriodicTimer();
   }
 
@@ -72,7 +76,9 @@ class ChronometerField extends CampoDeTextoWidget{
   void pause(){
     this._getLastInterval().endTime = DateTime.now();
     this.cancelTimerIfActivated();
-    this._printLogIntervalsSituation();
+    if( this.printLogs ) {
+      this._printLogIntervalsSituation();
+    }
   }
 
   void reset(){
