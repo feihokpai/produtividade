@@ -111,6 +111,14 @@ class ComunsWidgets {
       onPressed: onpressed,
     );
   }
+  
+  static IconButton createIconButton( IconData iconData, String keyString, void Function() onPressedFunction ){
+    return new IconButton(
+      key: new ValueKey<String>( keyString ),
+      icon: new Icon( iconData ),
+      onPressed: onPressedFunction,
+    );
+  }
 
   static void sairDoAplicativo() {
     print("clicou em sair");

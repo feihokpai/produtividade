@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 class DataHoraUtil{
 
   static DateFormat formatterDataBrasileira = new DateFormat("dd/MM/yyyy");
+  static DateFormat formatterDataResumidaBrasileira = new DateFormat("dd/MM");
   static DateFormat formatterHoraBrasileira = new DateFormat("HH:mm:ss");
   static DateFormat formatterDataHoraResumidaBrasileira = new DateFormat("dd/MM/yyyy HH:mm");
   static DateFormat formatterDataSemAnoHoraBrasileira = new DateFormat("dd/MM - HH:mm:ss");
