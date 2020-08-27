@@ -1,4 +1,5 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
@@ -88,14 +89,25 @@ class Controlador{
     this.tempoDedicadoDao.deletarTempo( registro );
   }
 
-  /// Retorna o total de tempo gasto numa tarefa em Minutos.
-  Future<int> getTotalGastoNaTarefaEmMinutos(Tarefa tarefa) async {
-    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa );
+  int getSomatorioTempoGasto(List<TempoDedicado> tempos){
     int somatorio = 0;
-    tempos.forEach((tempo) { 
+    tempos.forEach((tempo) {
       somatorio += tempo.getDuracaoEmMinutos();
     });
     return somatorio;
+  }
+
+  /// Retorna o total de tempo gasto numa tarefa em Minutos.
+  Future<int> getTotalGastoNaTarefaEmMinutos(Tarefa tarefa) async {
+    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa );
+    return this.getSomatorioTempoGasto( tempos );
+  }
+
+  /// Retorna o total de tempo gasto numa tarefa em Minutos.
+  Future<int> getTotalGastoNaTarefaEmMinutosNoDia(Tarefa tarefa, DateTime data) async {
+    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa );
+    tempos = tempos.where((tempo) => DataHoraUtil.eDataMesmoDia( tempo.inicio , data) ).toList();
+    return this.getSomatorioTempoGasto( tempos );
   }
 
   void salvarTempoDedicado(TempoDedicado tempo) {
