@@ -84,7 +84,9 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
 
   Future<void> clicouBotaoEditarTempoDedicado( TempoDedicado tempo ) async {
     int resposta = await this.edicaoDeTempo.exibirDialogConfirmacao( "Registro de Tempo Dedicado", tempo );
-    this._setStateWithEmptyFunction();
+    if( resposta == 1 || resposta == 3 ){
+      this._setStateWithEmptyFunction();
+    }
   }
 
   void _inicializarListagemDeTempoDedicado(){
@@ -209,7 +211,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     }else{
       return Column(
         children: [
-          ComunsWidgets.createFutureBuilderWidget( this.listagemDeTempo.gerarCampoDaDuracaoTotal() ),
+          await this.listagemDeTempo.gerarCampoDaDuracaoTotal(),
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 5.0, 0, 0),
             child: await this.listagemDeTempo.gerarListViewDosTempos(),
