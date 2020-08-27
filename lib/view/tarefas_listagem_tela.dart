@@ -103,6 +103,9 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   Future<Widget> gerarLayoutDasTarefas() async {
     await this.inicializarDadosPersistidos();
+    if( this.tarefasParaListar.isEmpty ){
+      return new Container();
+    }
     Orientation orientation = MediaQuery.of(context).orientation;
     this.mudouOrientacao = ( this.orientacaoAtual != null && orientation != this.orientacaoAtual );
     this.orientacaoAtual = orientation;
