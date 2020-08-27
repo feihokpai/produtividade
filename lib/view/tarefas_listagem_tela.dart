@@ -86,7 +86,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   void desativarTimersDeCronometrosEncerrados(){
     this.tarefasParaListar.forEach((tarefa) {
-      if( this._verifyTaskIsActive( tarefa.id ) == null){
+      if( this._verifyTaskIsActive( tarefa.id ) != null){
         this.removeCronometroDaListaECancelaTimer( tarefa );
       }
     });
