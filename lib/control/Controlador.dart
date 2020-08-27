@@ -43,6 +43,7 @@ class Controlador{
         }
       });
       tarefas = await this._trazerTarefasNaOrdem( idsTarefasParaAdicionar );
+      this._addRestanteDasTarefas( tarefas );
     }
     return tarefas;
   }
@@ -54,6 +55,16 @@ class Controlador{
       tarefas.add( tarefa );
     });
     return tarefas;
+  }
+
+  /// Add in task list in parameter the tasks inserted in database not yet included in her.
+  Future<void>_addRestanteDasTarefas( List<Tarefa> tarefas ) async{
+    List<Tarefa> todas = await this.getListaDeTarefas();
+    todas.forEach((tarefa) {
+      if( !tarefas.contains( tarefa ) ){
+        tarefas.add( tarefa );
+      }
+    });
   }
 
   Future<void> salvarTarefa( Tarefa tarefa ) async {
