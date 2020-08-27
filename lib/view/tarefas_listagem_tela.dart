@@ -234,6 +234,17 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   Future<void> clicouNoRelogio(Tarefa tarefaParaEditar) async {
+    TempoDedicado tempo = new TempoDedicado( tarefaParaEditar, inicio: DateTime.now() );
+    await this.controlador.salvarTempoDedicado( tempo );
+    this._recarregarDadosDaTela();
+  }
+
+  void _recarregarDadosDaTela(){
+    this.recarregarDadosPersistidos=true;
+    this._setStateWithEmptyFunction();
+  }
+
+  Future<void> _exibirComponenteEdicaoDeTempo( Tarefa tarefaParaEditar ) async {
     TempoDedicadoEdicaoComponente componente = new TempoDedicadoEdicaoComponente(tarefaParaEditar, context,
         formatter: DataHoraUtil.formatterDataSemAnoHoraBrasileira);
     TempoDedicado tempo = this._verifyTaskIsActive( tarefaParaEditar.id );
@@ -241,8 +252,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     titulo += " de tempo dedicado";
     int resposta = await componente.exibirDialogConfirmacao(titulo, tempo);
     if( resposta == 1 || resposta == 3){
-      this.recarregarDadosPersistidos=true;
-      this._setStateWithEmptyFunction();
+      this._recarregarDadosDaTela();
     }
   }
 
@@ -282,13 +292,9 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
         flex: 2,
         child: Padding(
           padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-          child: new IconButton(
-            key: new ValueKey( strKeyRelogio ),
-            icon: new Icon(Icons.alarm),
-            onPressed: (){
-              this.clicouNoRelogio(tarefa);
-            },
-          ),
+          child: ComunsWidgets.createIconButton(Icons.alarm, strKeyRelogio, () {
+            this.clicouNoRelogio(tarefa);
+          }),
         ),
       );
     }else{
@@ -334,7 +340,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
       ChronometerField field = this.retornaCronometroAtualizadoDeletaDesatualizado(tarefa, tempo);
       return new LimitedBox(
         child: GestureDetector(
-          onTap: ()=> this.clicouNoRelogio( tarefa ),
+          onTap: ()=> this._exibirComponenteEdicaoDeTempo( tarefa ),
           child: Container(
               child: AbsorbPointer(
                   child: field.widget
