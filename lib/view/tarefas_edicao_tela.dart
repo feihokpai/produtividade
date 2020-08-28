@@ -4,6 +4,7 @@ import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
+import 'package:registro_produtividade/view/comum/FutureBuilderWithCache.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
@@ -45,6 +46,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   ListagemTempoDedicadoComponente listagemDeTempo;
   TempoDedicadoEdicaoComponente edicaoDeTempo;
   bool exibirDetalhesDeTempo = false;
+
+  FutureBuilderWithCache futureBuilderWithCache = new FutureBuilderWithCache<Widget>( chacheOn: true );
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +195,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
       return Padding(
         padding: EdgeInsets.fromLTRB(8.0, 40, 8.0, 0),
         child: new Column( children: [
-          ComunsWidgets.createFutureBuilderWidget( this.exibirBotaoDetalharOuListaDetalhes() ),
+          this.futureBuilderWithCache.generateFutureBuilder( this.exibirBotaoDetalharOuListaDetalhes() ),
         ],)
       );
     }else{
