@@ -5,6 +5,7 @@ import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
+import 'dart:ui';
 
 import 'comum/CampoDeTextoWidget.dart';
 
@@ -25,10 +26,26 @@ class ListagemTempoDedicadoComponente{
 
   int _duracaoMinutos = 0;
 
+  /// A variable used to invoke setState() in
+  void Function(VoidCallback callback) _externalSetterState;
+
+  ///     To avoid generating a very big screen, only will be showed details of dedicated times about 3 days.
+  /// These ones are the first and second day, and other that the user clicked in total sum field to see more
+  /// details.
+  List<DateTime> _allowedDaysToSeeMoreDetails = new List();
+  int amountDaysDetailedInBeginning;
+  static const int defaultAmountDaysDetailedInBeginning = 1;
+  int maxDaysDetailed;
+  static const int defaultMaxDaysDetailed = 2;
+
   Controlador controlador = new Controlador();
 
   ListagemTempoDedicadoComponente( Tarefa tarefa, BuildContext context, void Function() funcaoAposDeletar,
-      void Function(TempoDedicado) funcaoParaEditar)
+      void Function(TempoDedicado) funcaoParaEditar,
+      {int amountDaysDetailedInBeginning=defaultAmountDaysDetailedInBeginning,
+        int maxDaysDetailed = defaultMaxDaysDetailed,
+        void Function(VoidCallback callback) setterState
+      })
       : assert(tarefa != null, "Tentou gerar componente de listagem de tempo dedicado, mas não repassou"
       "nenhuma Tarefa válida.")
   {
@@ -36,7 +53,15 @@ class ListagemTempoDedicadoComponente{
     this.context = context;
     this.funcaoAposDeletar = funcaoAposDeletar;
     this.funcaoParaEditar = funcaoParaEditar;
+    this.amountDaysDetailedInBeginning = amountDaysDetailedInBeginning;
+    this.maxDaysDetailed = maxDaysDetailed;
+    this._externalSetterState = setterState;
     this._inicializarCampoDuracaoTotal();
+  }
+
+  void _resetVariables(){
+    this._allowedDaysToSeeMoreDetails = new List();
+
   }
 
   void _inicializarCampoDuracaoTotal(){
@@ -102,7 +127,12 @@ class ListagemTempoDedicadoComponente{
 
     return new Padding(
       padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
-      child: fieldDia.getWidget(),
+      child: GestureDetector(
+        onTap: ()=> this.addDayToSeeMoreDetails( tempo.inicio ),
+        child: AbsorbPointer(
+            child: fieldDia.getWidget()
+        )
+      ),
     );
   }
 
@@ -110,13 +140,18 @@ class ListagemTempoDedicadoComponente{
     List<Widget> lista = new List();
     List<TempoDedicado> registrosTempo = await this.controlador.getTempoDedicadoOrderByInicio( this._tarefaAtual );
     int diaAnterior = 0;
+    int qtdDiasJaMostrados = 0;
     for( int i=0; i< registrosTempo.length; i++ ){
       TempoDedicado tempo = registrosTempo[i];
       if( tempo.inicio.day != diaAnterior ){
         Widget field = await this._gerarCampoSomatorioDoDia( tempo );
         lista.add( field );
+        qtdDiasJaMostrados++;
       }
-      lista.add( this.gerarLinhaDeTempo( tempo, i, registrosTempo.length ) );
+      int maxPermitido = ListagemTempoDedicadoComponente.defaultAmountDaysDetailedInBeginning;
+      if( qtdDiasJaMostrados <= maxPermitido || this._isAnAllowedDayToShow( tempo.inicio) ) {
+        lista.add(this.gerarLinhaDeTempo(tempo, i, registrosTempo.length));
+      }
       diaAnterior = tempo.inicio.day;
     }
     return lista;
@@ -186,6 +221,34 @@ class ListagemTempoDedicadoComponente{
 
   void _clicouNoIconeEdicao(TempoDedicado registro) {
     this.funcaoParaEditar.call( registro );
+  }
+
+  bool _isAnAllowedDayToShow(DateTime dateTime){
+    bool isInserted = false;
+    this._allowedDaysToSeeMoreDetails.forEach(( dateTimeAllowed) {
+      if( DataHoraUtil.eDataMesmoDia( dateTime, dateTimeAllowed ) ){
+        isInserted = true;
+        return;
+      }
+    });
+    return isInserted;
+  }
+
+  void _setStateWithEmptyFunction(){
+    if( this._externalSetterState != null ) {
+      this._externalSetterState.call( () {} );
+    }
+  }
+
+  void addDayToSeeMoreDetails( DateTime dateTime ){
+    int maxAllowed = this.maxDaysDetailed - this.amountDaysDetailedInBeginning;
+    if( !this._isAnAllowedDayToShow( dateTime ) ) {
+      this._allowedDaysToSeeMoreDetails.add( dateTime );
+      if( this._allowedDaysToSeeMoreDetails.length > maxAllowed ){
+        this._allowedDaysToSeeMoreDetails.removeAt( 0 );
+      }
+      this._setStateWithEmptyFunction();
+    }
   }
 
 }

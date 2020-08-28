@@ -90,9 +90,10 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   void _inicializarListagemDeTempoDedicado(){
-    this.listagemDeTempo = new ListagemTempoDedicadoComponente( this.widget.tarefaAtual, this.context,
+    this.listagemDeTempo ??= new ListagemTempoDedicadoComponente( this.widget.tarefaAtual, this.context,
         this._setStateWithEmptyFunction,
         this.clicouBotaoEditarTempoDedicado,
+        setterState: this.setState,
     );
   }
 
