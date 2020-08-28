@@ -30,6 +30,9 @@ class TempoDedicadoEdicaoComponente{
   CampoDataHora campoDataHoraInicial;
   ChronometerField campoCronometro;
   CampoDataHora campoDataHoraFinal;
+  ///     Indica se algum valor editável do componente foi alterado neste último uso. Caso seja true,
+  /// será usado para indicar se o registro de tempo deve ser salvo ou não quando o usuário fechar o popup.
+  bool algumValorAlterado = false;
 
   Controlador controlador = new Controlador();
   BuildContext context;
@@ -85,7 +88,10 @@ class TempoDedicadoEdicaoComponente{
     this.campoDataHoraInicial ??= new CampoDataHora("Início", this.context, dataMinima: new DateTime(2020),
         dataMaxima: new DateTime.now(), chave: this._criarKey( StringKey ),
         dateTimeFormatter: this.formatter,
-        onChange: this._emptySetStateFunction,
+        onChange: (){
+          this.algumValorAlterado = true;
+          this._emptySetStateFunction();
+        },
         dataInicialSelecionada: dataInicial,
     );
   }
@@ -96,7 +102,10 @@ class TempoDedicadoEdicaoComponente{
         dataMinima: this.tempoDedicadoAtual.inicio,
         chave: this._criarKey( TempoDedicadoEdicaoComponente.KEY_STRING_CAMPO_HORA_FINAL ),
         dateTimeFormatter: this.formatter,
-        onChange: this._emptySetStateFunction,
+        onChange: (){
+          this.algumValorAlterado = true;
+          this._emptySetStateFunction();
+        },
         dataInicialSelecionada: dataSelecionada,
     );
   }
@@ -120,8 +129,8 @@ class TempoDedicadoEdicaoComponente{
             padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
             child: SizedBox(child: this._campoHoraFinalOuVazio(), width: 240, ),
           ),
-          this.generateSaveAndBackButtons( contextDialogStatefull ),
-          this.generateFinishAndDeleteButtons(contextDialogStatefull),
+//          this._generateSaveAndBackButtons( contextDialogStatefull ),
+          this._generateFinishAndDeleteButtons(contextDialogStatefull),
         ],
       ),
     );
@@ -176,17 +185,27 @@ class TempoDedicadoEdicaoComponente{
 
   void _clicouEmEncerrar(){
     this.estadoAtual = _Estado.MODO_EDICAO_COMPLETO;
+    this.algumValorAlterado = true;
     this._emptySetStateFunction();
   }
 
   Future<void> _clicouEmSalvar(BuildContext contextDialogStatefull) async {
-    TempoDedicado tempo = this.tempoDedicadoAtual ?? new TempoDedicado( this.tarefaAtual );
-    tempo.inicio = this.campoDataHoraInicial.dataSelecionada;
-    if( this.campoDataHoraFinal != null ){
-      tempo.fim = this.campoDataHoraFinal.dataSelecionada;
-    }
-    await this.controlador.salvarTempoDedicado( tempo );
+    await this._saveChangedInformation();
     Navigator.of( contextDialogStatefull ).pop( 1 );
+  }
+
+  /// If some information in popup was changed saves the values.
+  Future<void> _saveChangedInformation() async {
+    if( this.algumValorAlterado ) {
+      TempoDedicado tempo = this.tempoDedicadoAtual ??
+          new TempoDedicado(this.tarefaAtual);
+      tempo.inicio = this.campoDataHoraInicial.dataSelecionada;
+      if (this.campoDataHoraFinal != null) {
+        tempo.fim = this.campoDataHoraFinal.dataSelecionada;
+      }
+      await this.controlador.salvarTempoDedicado(tempo);
+      this._emptySetStateFunction();
+    }
   }
 
   void _clicouEmVoltar( BuildContext contextDialogStatefull ){
@@ -197,6 +216,7 @@ class TempoDedicadoEdicaoComponente{
     this.tempoDedicadoAtual = null;
     this.campoDataHoraInicial = null;
     this.campoDataHoraFinal = null;
+    this.algumValorAlterado = false;
   }
 
   Future<int> exibirDialogConfirmacao( String titulo, TempoDedicado tempo ) async{
@@ -218,35 +238,64 @@ class TempoDedicadoEdicaoComponente{
         );;
       },
     );
+    valor = this._saveTimesIfChangedAndClickedOutside( valor );
     // Retorna por default valor, mas se ela for nula, retorna 0.
     return valor ?? 0;
   }
 
-  Widget generateSaveAndBackButtons(BuildContext contextDialogStatefull){
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-          child: ComunsWidgets.createRaisedButton("Salvar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
-                  () => this._clicouEmSalvar( contextDialogStatefull ) ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-          child: ComunsWidgets.createRaisedButton("Voltar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR,
-                  () => this._clicouEmVoltar( contextDialogStatefull ) ),
-        ),
-      ],
-    );
+  /// If some value in popup was changed, saves the changes and returns 1. If nothing was changed, don't
+  /// save and returns the same value that entered in method.
+  int _saveTimesIfChangedAndClickedOutside( value ){
+    if( value == null && this.algumValorAlterado ){
+      this._saveChangedInformation();
+      return 1;
+    }
+    return value;
   }
 
-  Widget generateFinishAndDeleteButtons(BuildContext contextDialogStatefull){
+//  Widget _generateSaveAndBackButtons(BuildContext contextDialogStatefull){
+//    if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
+//      return Row(
+//        mainAxisAlignment: MainAxisAlignment.start,
+//        children: [
+//          Padding(
+//            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+//            child: ComunsWidgets.createRaisedButton("Salvar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
+//                    () => this._clicouEmSalvar( contextDialogStatefull ) ),
+//          ),
+//          Padding(
+//            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+//            child: ComunsWidgets.createRaisedButton("Sair sem salvar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR,
+//                    () => this._clicouEmVoltar( contextDialogStatefull ) ),
+//          ),
+//        ],
+//      );
+//    }else{
+//      return new Container();
+//    }
+//  }
+
+  Widget _generateFinishAndDeleteButtons(BuildContext contextDialogStatefull){
     return Row(
       children: [
+        this._generateBackButtonOrEmpty( contextDialogStatefull ),
         this._gerarBotaoEncerrarOuVazio(),
         this._gerarBotaoDeletarOuVazio( contextDialogStatefull ),
       ],
     );
+  }
+
+  Widget _generateBackButtonOrEmpty( BuildContext contextDialogStatefull ) {
+    if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+        child: ComunsWidgets.createRaisedButton("Sair sem salvar",
+            TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR,
+                () => this._clicouEmVoltar(contextDialogStatefull)),
+      );
+    }else{
+      return Container();
+    }
   }
 
 }
