@@ -35,6 +35,8 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   bool mudouOrientacao = false;
   Controlador controlador = new Controlador();
 
+  TempoDedicadoEdicaoComponente componenteEdicaoDeTempo;
+
   @override
   Widget build(BuildContext context) {
     ComunsWidgets.context = context;
@@ -98,7 +100,18 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
         backgroundColor: Estilos.corDeFundoPrincipal,
         drawer: ComunsWidgets.criarMenuDrawer(),
         body: this.gerarConteudoCentral());
+    this._alertTheDialogAboutOrientationChanges();
     return scaffold1;
+  }
+
+  void _alertTheDialogAboutOrientationChanges(){
+    if( this.mudouOrientacao ){
+      if( this.componenteEdicaoDeTempo != null ){
+        Future.delayed( new Duration( milliseconds: 500), (){
+          this.componenteEdicaoDeTempo.currentOrientation = this.orientacaoAtual;
+        } );
+      }
+    }
   }
 
   Future<Widget> gerarLayoutDasTarefas() async {
@@ -248,12 +261,12 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   Future<void> _exibirComponenteEdicaoDeTempo( Tarefa tarefaParaEditar ) async {
-    TempoDedicadoEdicaoComponente componente = new TempoDedicadoEdicaoComponente(tarefaParaEditar, context,
+    this.componenteEdicaoDeTempo = new TempoDedicadoEdicaoComponente(tarefaParaEditar, context,
         formatter: DataHoraUtil.formatterDataSemAnoHoraBrasileira);
     TempoDedicado tempo = this._verifyTaskIsActive( tarefaParaEditar.id );
     String titulo = tempo == null ? "Cadastro" : "Edição";
     titulo += " de tempo dedicado";
-    int resposta = await componente.exibirDialogConfirmacao(titulo, tempo);
+    int resposta = await this.componenteEdicaoDeTempo.exibirDialogConfirmacao(titulo, tempo);
     if( resposta == 1 || resposta == 3){
       this._recarregarDadosDaTela();
     }

@@ -19,7 +19,11 @@ enum _Estado{
 class TempoDedicadoEdicaoComponente{
   _Estado estadoAtual = _Estado.MODO_CADASTRO;
 
-  StateSetter _setStateOfStatefullWidget;
+  StatefulBuilder stateFullBuilder;
+  
+  StateSetter _setterStateOfStatefulBuilder;
+  BuildContext _contextOfStatefulBuilder;
+  State<StatefulWidget> _stateOfStatefulBuilder;
 
   Tarefa tarefaAtual;
   TempoDedicado tempoDedicadoAtual;
@@ -36,6 +40,9 @@ class TempoDedicadoEdicaoComponente{
 
   Controlador controlador = new Controlador();
   BuildContext context;
+
+  Orientation _currentOrientation = null;
+  bool orientationChanged = false;
 
   void Function() onChangeDataHoraInicial;
   void Function() onChangeDataHoraFinal;
@@ -56,6 +63,7 @@ class TempoDedicadoEdicaoComponente{
     this.tarefaAtual = tarefa;
     this.tempoDedicadoAtual = tempoDedicado;
     this._definirEstadoInicial();
+    this.stateFullBuilder = this.createStateFullBuilder();
   }
 
   void _definirEstadoInicial(){
@@ -67,6 +75,30 @@ class TempoDedicadoEdicaoComponente{
       this.estadoAtual = _Estado.MODO_EDICAO_COMPLETO;
     }
   }
+  
+  Widget createStateFullBuilder(){
+    return new StatefulBuilder(
+      builder: (BuildContext contextDialogStatefull, StateSetter setState){
+        this._setterStateOfStatefulBuilder = setState;
+        this._contextOfStatefulBuilder = contextDialogStatefull;
+        this._stateOfStatefulBuilder = contextDialogStatefull.findAncestorStateOfType();
+        return new AlertDialog(
+          contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          backgroundColor: Estilos.corDeFundoPrincipal,
+          content: this._criarConteudoDialog( contextDialogStatefull ),
+        );
+      },
+    );
+  }
+
+  Orientation get currentOrientation => this._currentOrientation;
+
+  void set currentOrientation(Orientation currentOrientation){
+    this._currentOrientation = currentOrientation;
+    if(this._stateOfStatefulBuilder != null && this._stateOfStatefulBuilder.mounted ) {
+      this._emptySetStateFunction();
+    }
+  }
 
   ValueKey<String> _criarKey(String keyString){
     return new ValueKey<String>( keyString );
@@ -74,8 +106,12 @@ class TempoDedicadoEdicaoComponente{
 
   /// Function used to invoke setState in Statefull Widget where dialog is inside.
   void _emptySetStateFunction(){
-    if( this._setStateOfStatefullWidget != null ){
-      this._setStateOfStatefullWidget( (){  } );
+    if( this._setterStateOfStatefulBuilder != null ){
+      try {
+        this._setterStateOfStatefulBuilder(() {});
+      }catch( exception ){
+        print("Error ocurred during the call to setState in TempoDedicadoEdicaoComponente: ${exception}");
+      }
     }
   }
 
@@ -110,30 +146,62 @@ class TempoDedicadoEdicaoComponente{
     );
   }
 
+  void _checkOrientation(){
+    Orientation orientation = MediaQuery.of(context).orientation;
+    this.orientationChanged = ( this.currentOrientation != null && orientation != this.currentOrientation );
+    if( this.currentOrientation == null || this.orientationChanged ) {
+      this.currentOrientation = orientation;
+    }
+  }
+
   Widget _criarConteudoDialog( BuildContext contextDialogStatefull ){
     this._iniciarCampoDataHoraInicial( );
-    return SingleChildScrollView(
-      child: new Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-            child: new Text("Preencha a hora em que iniciou a atividade. Deixe como está"
-                " se vai iniciar a atividade agora."),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            child: SizedBox(child: this.campoDataHoraInicial.getWidget(), width: 240, ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            child: SizedBox(child: this._campoHoraFinalOuVazio(), width: 240, ),
-          ),
-//          this._generateSaveAndBackButtons( contextDialogStatefull ),
-          this._generateFinishAndDeleteButtons(contextDialogStatefull),
-        ],
+
+    this._checkOrientation();
+    double tamanhoContainer = this.currentOrientation == Orientation.landscape ? 150 : 220;
+
+    return Container(
+      height: tamanhoContainer,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+              child: new Text("Preencha a hora em que iniciou a atividade. Deixe como está"
+                  " se vai iniciar a atividade agora."),
+            ),
+            this.returnHoursFields(),
+            this._generateFinishAndDeleteButtons(contextDialogStatefull),
+          ],
+        ),
       ),
     );
+  }
+
+  Widget returnHoursFields(){
+    if( this.currentOrientation == Orientation.landscape ){
+      return new Row(
+        children: [
+          SizedBox(child: this.campoDataHoraInicial.getWidget(), width: 240, ),
+          this._campoHoraFinalOuVazio(),
+        ],
+      );
+    }else{
+      return new Container(
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+              child: SizedBox(child: this.campoDataHoraInicial.getWidget(), width: 240, ),
+            ),
+            this._campoHoraFinalOuVazio(),
+          ],
+        ),
+      );
+    }
   }
 
   Widget _campoHoraFinalOuVazio(){
@@ -141,7 +209,7 @@ class TempoDedicadoEdicaoComponente{
       return new Container( height: 0);
     }else if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
       this._iniciarCampoDataHoraFinal();
-      return this.campoDataHoraFinal.getWidget();
+      return SizedBox(child: this.campoDataHoraFinal.getWidget(), width: 240, );
     }
   }
 
@@ -226,16 +294,7 @@ class TempoDedicadoEdicaoComponente{
     int valor =  await showDialog(
       context: this.context,
       builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext contextDialogStatefull, StateSetter setState){
-            this._setStateOfStatefullWidget = setState;
-            return new AlertDialog(
-              contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-              backgroundColor: Estilos.corDeFundoPrincipal,
-              content: this._criarConteudoDialog( contextDialogStatefull ),
-            );
-          },
-        );;
+        return this.stateFullBuilder;
       },
     );
     valor = this._saveTimesIfChangedAndClickedOutside( valor );
@@ -252,28 +311,6 @@ class TempoDedicadoEdicaoComponente{
     }
     return value;
   }
-
-//  Widget _generateSaveAndBackButtons(BuildContext contextDialogStatefull){
-//    if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
-//      return Row(
-//        mainAxisAlignment: MainAxisAlignment.start,
-//        children: [
-//          Padding(
-//            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-//            child: ComunsWidgets.createRaisedButton("Salvar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
-//                    () => this._clicouEmSalvar( contextDialogStatefull ) ),
-//          ),
-//          Padding(
-//            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-//            child: ComunsWidgets.createRaisedButton("Sair sem salvar", TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR,
-//                    () => this._clicouEmVoltar( contextDialogStatefull ) ),
-//          ),
-//        ],
-//      );
-//    }else{
-//      return new Container();
-//    }
-//  }
 
   Widget _generateFinishAndDeleteButtons(BuildContext contextDialogStatefull){
     return Row(
