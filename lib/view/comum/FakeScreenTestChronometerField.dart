@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
+import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
@@ -20,8 +23,11 @@ class _FakeScreenTestChronometerFieldState extends State<FakeScreenTestChronomet
   ChronometerField chronometerField2;
   ChronometerField chronometerField3;
 
+  Timer _timer;
+
   @override
   Widget build(BuildContext context) {
+    TimersProdutividade2.printLogs = true;
     ComunsWidgets.context = context;
     this.initializeFields();
     return this.createHome();
@@ -85,18 +91,28 @@ class _FakeScreenTestChronometerFieldState extends State<FakeScreenTestChronomet
 
   @override
   void dispose() {
-    this.chronometerField.cancelTimerIfActivated();
-    this.chronometerField2.cancelTimerIfActivated();
-    this.chronometerField3.cancelTimerIfActivated();
+    TimersProdutividade2.cancelTimerIfActivated( this.widget );
     super.dispose();
+  }
+
+  void _setStateWithEmptyFunction(){
+    this.setState( () {} );
   }
 
   void clickedStartStop( ChronometerField field ) async{
     bool actived = field.isActive();
     if( !actived ){
       await field.start();
+      TimersProdutividade2.createAPeriodicTimer( this.widget, frequencyInMiliseconds: 1000, operation: this._setStateWithEmptyFunction );
     }else{
       await field.pause();
+      if( !this.existsSomeChronometerActive() ){
+        TimersProdutividade2.cancelTimerIfActivated( this.widget );
+      }
     }
+  }
+
+  bool existsSomeChronometerActive(){
+    return (this.chronometerField.isActive() || this.chronometerField2.isActive() || this.chronometerField3.isActive() );
   }
 }
