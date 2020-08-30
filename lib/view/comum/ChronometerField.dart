@@ -8,13 +8,6 @@ import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 
 class ChronometerField extends CampoDeTextoWidget{
 
-  /// Indicates if the Field is showing and updating the Timer in the screen or not.
-  /// If it is false, the field will not be updated until it to be changed to true.
-//  bool activated = false;
-
-  /// Timer that create periodic calls to calculate the Duration past and invoke the _functionUpdateUI()
-  Timer _timer;
-
   ///     The frequency in miliseconds that this field calls the _functionUpdateUI(), to invoke the
   /// function registered in constructor.
   int updateFrequencyInMilliseconds = 1000;
@@ -42,8 +35,6 @@ class ChronometerField extends CampoDeTextoWidget{
   bool isActive(){
     return this.intervals.isNotEmpty && this.intervals.last.endTime == null;
   }
-
-
   @override
   Widget getWidget() {
     this._updateFieldWithFormatedDuration();
@@ -55,12 +46,13 @@ class ChronometerField extends CampoDeTextoWidget{
   Future<void> _beginNewInterval( {DateTime beginTime} ) async {
     beginTime ??= DateTime.now();
     this.intervals.add( new DateTimeInterval( beginTime, null) );
-    if( this.printLogs ) {
-      this._printLogIntervalsSituation();
-    }
+    this._printLogIntervalsSituation();
   }
 
   void _printLogIntervalsSituation(){
+    if( !this.printLogs ) {
+      return;
+    }
     String text = "Intervals amount: ${intervals.length}";
     if( intervals.isNotEmpty ){
       intervals.forEach((element) {
@@ -81,10 +73,7 @@ class ChronometerField extends CampoDeTextoWidget{
 
   void pause(){
     this._getLastInterval().endTime = DateTime.now();
-    this.cancelTimerIfActivated();
-    if( this.printLogs ) {
-      this._printLogIntervalsSituation();
-    }
+    this._printLogIntervalsSituation();
   }
 
   void reset(){
@@ -111,12 +100,6 @@ class ChronometerField extends CampoDeTextoWidget{
   }
 
   DateFormat get formatter => this._formatter;
-
-  void cancelTimerIfActivated(){
-    if( this._timer != null && this._timer.isActive ){
-      this._timer.cancel();
-    }
-  }
 
   DateTimeInterval _getLastInterval(){
     if( this.intervals == null || this.intervals.isEmpty ){

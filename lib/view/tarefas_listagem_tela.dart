@@ -57,7 +57,6 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   void cancelAllChronemeters(){
     this.cronometrosGerados.forEach((key, field) {
-      field.cancelTimerIfActivated();
     });
   }
   
@@ -311,7 +310,6 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   void removeCronometroDaListaECancelaTimer(Tarefa tarefa){
     ChronometerField field = this.getCronometro(tarefa);
     if( field != null ) {
-      field.cancelTimerIfActivated();
       this.cronometrosGerados.remove(tarefa.id);
     }
   }
