@@ -5,6 +5,7 @@ import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
+import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
@@ -40,7 +41,6 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   @override
   Widget build(BuildContext context) {
     ComunsWidgets.context = context;
-    this.inicializarVariaveis();
     return this.criarHome();
   }
 
@@ -57,7 +57,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   void cancelAllChronemeters(){
     this.cronometrosGerados.forEach((key, field) {
-      field.cancelTimerIfActivated();
+      TimersProdutividade.cancelAllTimers();
     });
   }
   
@@ -77,21 +77,21 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     this.controlador = new Controlador();
   }
 
-  void inicializarVariaveis(){
-  }
-  
   Future<void> inicializarDadosPersistidos() async {
     if( this.recarregarDadosPersistidos ){
       this.tarefasParaListar = await this.controlador.getListaDeTarefasOrderByDataInicio();
       this.temposAtivos = await this.controlador.getTempoDedicadoAtivos();
-      this.desativarTimersDeCronometrosEncerrados();
+      this.desativarCronometrosEncerrados();
       recarregarDadosPersistidos = false;
     }
   }
 
-  void desativarTimersDeCronometrosEncerrados(){
+  void desativarCronometrosEncerrados(){
     this.tarefasParaListar.forEach((tarefa) {
-      this.removeCronometroDaListaECancelaTimer( tarefa );
+      TempoDedicado tempoAtivo = this._verifyTaskIsActive( tarefa.id );
+      if( tempoAtivo == null ) {
+        this.removeCronometroDaListaECancelaTimer(tarefa);
+      }
     });
   }
 
@@ -308,11 +308,25 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     }
   }
 
+  bool thereIsActiveChronometers(){
+    return this.temposAtivos.length > 0;
+  }
+
+  void cancelTimersIfAllChronometersAreInactive(){
+    if( !thereIsActiveChronometers() ){
+      TimersProdutividade.cancelTimerIfActivated( this.widget );
+    }
+  }
+
+  void createNewTimerIfNoneTimerIsActive(){
+    TimersProdutividade.createAPeriodicTimer(this.widget, operation: this._setStateWithEmptyFunction );
+  }
+
   void removeCronometroDaListaECancelaTimer(Tarefa tarefa){
     ChronometerField field = this.getCronometro(tarefa);
     if( field != null ) {
-      field.cancelTimerIfActivated();
       this.cronometrosGerados.remove(tarefa.id);
+      this.cancelTimersIfAllChronometersAreInactive();
     }
   }
 
@@ -337,6 +351,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   ChronometerField gerarNovoCronometro( TempoDedicado tempo ){
     ChronometerField field = new ChronometerField("Duração", beginTime: tempo.inicio , functionUpdateUI: _setStateWithEmptyFunction );
     this.cronometrosGerados[tempo.tarefa.id] = field;
+    this.createNewTimerIfNoneTimerIsActive();
     return field;
   }
 
@@ -349,7 +364,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
           onTap: ()=> this._exibirComponenteEdicaoDeTempo( tarefa ),
           child: Container(
               child: AbsorbPointer(
-                  child: field.widget
+                  child: field.getWidget()
               )
           )
         ),

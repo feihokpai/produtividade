@@ -83,7 +83,7 @@ class ListagemTempoDedicadoComponente{
 
   Future<Widget> gerarCampoDaDuracaoTotal() async{
     await this._setarTextoCampoDuracaoTotal();
-    return this.campoDuracaoTotal.widget;
+    return this.campoDuracaoTotal.getWidget();
   }
 
   String _getRegistroTempoDedicadoFormatado(TempoDedicado registro){
