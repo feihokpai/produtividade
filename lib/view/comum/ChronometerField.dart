@@ -43,6 +43,13 @@ class ChronometerField extends CampoDeTextoWidget{
     return this.intervals.isNotEmpty && this.intervals.last.endTime == null;
   }
 
+
+  @override
+  Widget getWidget() {
+    this._updateFieldWithFormatedDuration();
+    return super.getWidget();
+  }
+
   List<DateTimeInterval> get intervals => _intervals;
 
   Future<void> _beginNewInterval( {DateTime beginTime} ) async {
@@ -51,7 +58,6 @@ class ChronometerField extends CampoDeTextoWidget{
     if( this.printLogs ) {
       this._printLogIntervalsSituation();
     }
-    await this._createAPeriodicTimer();
   }
 
   void _printLogIntervalsSituation(){
@@ -131,13 +137,5 @@ class ChronometerField extends CampoDeTextoWidget{
     super.setText(duracaoFormatoCronometro);
   }
 
-  Future<void> _createAPeriodicTimer() async {
-    this.cancelTimerIfActivated();
-    Duration frequency = new Duration( milliseconds: updateFrequencyInMilliseconds );
-    this._timer = Timer.periodic( frequency, (timer) async {
-      this._updateFieldWithFormatedDuration();
-      this._functionUpdateUI.call();
-    });
-  }
 
 }
