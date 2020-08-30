@@ -9,6 +9,7 @@ import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDataHora.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
+import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
@@ -45,7 +46,7 @@ class TempoDedicadoEdicaoComponente{
 
   Orientation _currentOrientation = null;
   bool _orientationChanged = false;
-  Timer _timer;
+//  Timer _timer;
 
   void Function() onChangeDataHoraInicial;
   void Function() onChangeDataHoraFinal;
@@ -96,21 +97,16 @@ class TempoDedicadoEdicaoComponente{
 
   Orientation get currentOrientation => this._currentOrientation;
 
-  void _createAPeriodicTimer(){
-    this._timer = Timer.periodic( new Duration( seconds: 1 ) , (timer) {
-      this._checkOrientation();
-      this._setStateIfOrientationChanged();
-    });
-  }
-
   void dispose(){
     this._cancelTimerIfActivated();
   }
 
+  void _createTimer(){
+    TimersProdutividade.createAPeriodicTimer(this.stateFullBuilder, operation: this._setStateIfOrientationChanged );
+  }
+
   void _cancelTimerIfActivated(){
-    if( this._timer != null && this._timer.isActive ){
-      this._timer.cancel();
-    }
+    TimersProdutividade.cancelTimerIfActivated( this.stateFullBuilder );
   }
 
   void set currentOrientation(Orientation currentOrientation){
@@ -176,6 +172,7 @@ class TempoDedicadoEdicaoComponente{
   }
 
   void _setStateIfOrientationChanged(){
+    this._checkOrientation();
     if( this._orientationChanged && this._isStateFulBuilderMounted() ) {
         this._emptySetStateFunction();
     }
@@ -317,7 +314,7 @@ class TempoDedicadoEdicaoComponente{
     this._resetarVariaveisDeTempoDedicado();
     this.tempoDedicadoAtual = tempo;
     this._definirEstadoInicial();
-    this._createAPeriodicTimer();
+    this._createTimer();
     int valor =  await showDialog(
       context: this.context,
       builder: (BuildContext context) {
