@@ -147,12 +147,12 @@ class _ListaDeTempoDedicadoTelaState extends State<ListaDeTempoDedicadoTela> {
   }
 
   Widget gerarCampoDaTarefa() {
-    return this.campoDescricaoTarefa.widget;
+    return this.campoDescricaoTarefa.getWidget();
   }
 
   Future<Widget> gerarCampoDaDuracaoTotal() async{
     await this.setarTextoCampoDuracaoTotal();
-    return this.campoDuracaoTotal.widget;
+    return this.campoDuracaoTotal.getWidget();
   }
 
   String getRegistroTempoDedicadoFormatado(TempoDedicado registro){

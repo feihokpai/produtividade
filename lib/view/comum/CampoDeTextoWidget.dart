@@ -73,7 +73,7 @@ class CampoDeTextoWidget{
   String get labelCampo => ( _labelCampo ?? "" );
   void set labelCampo(String valor) => this._labelCampo = valor;
 
-  TextFormField get widget{
+  TextFormField _createWidget(){
     if( this._widget == null ){
       this._widget = new TextFormField(
         key: this._key,
@@ -103,7 +103,7 @@ class CampoDeTextoWidget{
   }
 
   Widget getWidget(){
-    return this.widget;
+    return this._createWidget();
   }
 
   double get enabledBorderWidth => this._enabledBorderWidth;

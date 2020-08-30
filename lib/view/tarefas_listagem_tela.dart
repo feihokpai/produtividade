@@ -349,7 +349,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
           onTap: ()=> this._exibirComponenteEdicaoDeTempo( tarefa ),
           child: Container(
               child: AbsorbPointer(
-                  child: field.widget
+                  child: field.getWidget()
               )
           )
         ),
