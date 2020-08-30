@@ -48,6 +48,9 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   @override
   void dispose() {
     this.cancelAllChronemeters();
+    if( this.componenteEdicaoDeTempo != null ){
+      this.componenteEdicaoDeTempo.dispose();
+    }
     super.dispose();
   }
 
@@ -98,18 +101,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
         backgroundColor: Estilos.corDeFundoPrincipal,
         drawer: ComunsWidgets.criarMenuDrawer(),
         body: this.gerarConteudoCentral());
-    this._alertTheDialogAboutOrientationChanges();
     return scaffold1;
-  }
-
-  void _alertTheDialogAboutOrientationChanges(){
-    if( this.mudouOrientacao ){
-      if( this.componenteEdicaoDeTempo != null ){
-        Future.delayed( new Duration( milliseconds: 500), (){
-          this.componenteEdicaoDeTempo.currentOrientation = this.orientacaoAtual;
-        } );
-      }
-    }
   }
 
   Future<Widget> gerarLayoutDasTarefas() async {

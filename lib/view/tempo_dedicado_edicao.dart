@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
@@ -42,7 +44,8 @@ class TempoDedicadoEdicaoComponente{
   BuildContext context;
 
   Orientation _currentOrientation = null;
-  bool orientationChanged = false;
+  bool _orientationChanged = false;
+  Timer _timer;
 
   void Function() onChangeDataHoraInicial;
   void Function() onChangeDataHoraFinal;
@@ -93,11 +96,25 @@ class TempoDedicadoEdicaoComponente{
 
   Orientation get currentOrientation => this._currentOrientation;
 
+  void _createAPeriodicTimer(){
+    this._timer = Timer.periodic( new Duration( seconds: 1 ) , (timer) {
+      this._checkOrientation();
+      this._setStateIfOrientationChanged();
+    });
+  }
+
+  void dispose(){
+    this._cancelTimerIfActivated();
+  }
+
+  void _cancelTimerIfActivated(){
+    if( this._timer != null && this._timer.isActive ){
+      this._timer.cancel();
+    }
+  }
+
   void set currentOrientation(Orientation currentOrientation){
     this._currentOrientation = currentOrientation;
-    if(this._stateOfStatefulBuilder != null && this._stateOfStatefulBuilder.mounted ) {
-      this._emptySetStateFunction();
-    }
   }
 
   ValueKey<String> _criarKey(String keyString){
@@ -148,16 +165,25 @@ class TempoDedicadoEdicaoComponente{
 
   void _checkOrientation(){
     Orientation orientation = MediaQuery.of(context).orientation;
-    this.orientationChanged = ( this.currentOrientation != null && orientation != this.currentOrientation );
-    if( this.currentOrientation == null || this.orientationChanged ) {
+    this._orientationChanged = ( this.currentOrientation != null && orientation != this.currentOrientation );
+    if( this.currentOrientation == null || this._orientationChanged ) {
       this.currentOrientation = orientation;
+    }
+  }
+
+  bool _isStateFulBuilderMounted(){
+    return (this._stateOfStatefulBuilder != null && this._stateOfStatefulBuilder.mounted );
+  }
+
+  void _setStateIfOrientationChanged(){
+    if( this._orientationChanged && this._isStateFulBuilderMounted() ) {
+        this._emptySetStateFunction();
     }
   }
 
   Widget _criarConteudoDialog( BuildContext contextDialogStatefull ){
     this._iniciarCampoDataHoraInicial( );
 
-    this._checkOrientation();
     double tamanhoContainer = this.currentOrientation == Orientation.landscape ? 150 : 220;
 
     return Container(
@@ -291,6 +317,7 @@ class TempoDedicadoEdicaoComponente{
     this._resetarVariaveisDeTempoDedicado();
     this.tempoDedicadoAtual = tempo;
     this._definirEstadoInicial();
+    this._createAPeriodicTimer();
     int valor =  await showDialog(
       context: this.context,
       builder: (BuildContext context) {
@@ -299,6 +326,7 @@ class TempoDedicadoEdicaoComponente{
     );
     valor = this._saveTimesIfChangedAndClickedOutside( valor );
     // Retorna por default valor, mas se ela for nula, retorna 0.
+    this._cancelTimerIfActivated();
     return valor ?? 0;
   }
 
