@@ -27,7 +27,7 @@ class _FakeScreenTestChronometerFieldState extends State<FakeScreenTestChronomet
 
   @override
   Widget build(BuildContext context) {
-    TimersProdutividade2.printLogs = true;
+    TimersProdutividade.printLogs = true;
     ComunsWidgets.context = context;
     this.initializeFields();
     return this.createHome();
@@ -91,7 +91,7 @@ class _FakeScreenTestChronometerFieldState extends State<FakeScreenTestChronomet
 
   @override
   void dispose() {
-    TimersProdutividade2.cancelTimerIfActivated( this.widget );
+    TimersProdutividade.cancelTimerIfActivated( this.widget );
     super.dispose();
   }
 
@@ -103,11 +103,11 @@ class _FakeScreenTestChronometerFieldState extends State<FakeScreenTestChronomet
     bool actived = field.isActive();
     if( !actived ){
       await field.start();
-      TimersProdutividade2.createAPeriodicTimer( this.widget, frequencyInMiliseconds: 1000, operation: this._setStateWithEmptyFunction );
+      TimersProdutividade.createAPeriodicTimer( this.widget, frequencyInMiliseconds: 1000, operation: this._setStateWithEmptyFunction );
     }else{
       await field.pause();
       if( !this.existsSomeChronometerActive() ){
-        TimersProdutividade2.cancelTimerIfActivated( this.widget );
+        TimersProdutividade.cancelTimerIfActivated( this.widget );
       }
     }
   }

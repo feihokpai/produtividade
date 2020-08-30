@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 /// This class has the objective to have only one active periodic Timer to refresh each screen.
-class TimersProdutividade2{
+class TimersProdutividade{
 //  static Map<Type, _TimerProdutividade> _timers = new Map();
   static Map<Type, Timer> _timers = new Map();
   static Map<Type, int> callsNumber = new Map();
