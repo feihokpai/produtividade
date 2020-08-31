@@ -30,6 +30,12 @@ class ChronometerField extends CampoDeTextoWidget{
     this.beginTime = beginTime;
     super.enabledBorderWidth = 0.5;
     this.printLogs = printLogs;
+    super.setKeyString( key ?? this.createKeyStringUsingTime( ) );
+  }
+
+  String createKeyStringUsingTime(){
+    String agoraFormatado = DataHoraUtil.formatterHoraComMilisegundos.format( DateTime.now() );
+    return "chronometer_${agoraFormatado}";
   }
 
   bool isActive(){
