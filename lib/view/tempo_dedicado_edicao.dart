@@ -119,7 +119,7 @@ class TempoDedicadoEdicaoComponente{
 
   /// Function used to invoke setState in Statefull Widget where dialog is inside.
   void _emptySetStateFunction(){
-    if( this._setterStateOfStatefulBuilder != null ){
+    if( this._setterStateOfStatefulBuilder != null && this._isStateFulBuilderMounted() ){
       try {
         this._setterStateOfStatefulBuilder(() {});
       }catch( exception ){
@@ -173,7 +173,7 @@ class TempoDedicadoEdicaoComponente{
 
   void _setStateIfOrientationChanged(){
     this._checkOrientation();
-    if( this._orientationChanged && this._isStateFulBuilderMounted() ) {
+    if( this._orientationChanged ) {
         this._emptySetStateFunction();
     }
   }
@@ -321,7 +321,7 @@ class TempoDedicadoEdicaoComponente{
         return this.stateFullBuilder;
       },
     );
-    valor = this._saveTimesIfChangedAndClickedOutside( valor );
+    valor = await this._saveTimesIfChangedSomethingUserClickedOutsideAndConfirmYes( valor );
     // Retorna por default valor, mas se ela for nula, retorna 0.
     this._cancelTimerIfActivated();
     return valor ?? 0;
@@ -329,10 +329,13 @@ class TempoDedicadoEdicaoComponente{
 
   /// If some value in popup was changed, saves the changes and returns 1. If nothing was changed, don't
   /// save and returns the same value that entered in method.
-  int _saveTimesIfChangedAndClickedOutside( value ){
+  Future<int> _saveTimesIfChangedSomethingUserClickedOutsideAndConfirmYes( value ) async{
     if( value == null && this.algumValorAlterado ){
-      this._saveChangedInformation();
-      return 1;
+      int resposta = await ComunsWidgets.exibirDialogConfirmacao( this.context, "Você deseja salvar as alterações feitas?", "");
+      if( resposta == 1 ) {
+        await this._saveChangedInformation();
+        return 1;
+      }
     }
     return value;
   }
@@ -340,11 +343,25 @@ class TempoDedicadoEdicaoComponente{
   Widget _generateFinishAndDeleteButtons(BuildContext contextDialogStatefull){
     return Row(
       children: [
-        this._generateBackButtonOrEmpty( contextDialogStatefull ),
+        this._generateSaveButtonOrEmpty(contextDialogStatefull),
         this._gerarBotaoEncerrarOuVazio(),
         this._gerarBotaoDeletarOuVazio( contextDialogStatefull ),
       ],
     );
+  }
+
+  Widget _generateSaveButtonOrEmpty( BuildContext contextDialogStatefull ) {
+    if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+        child: ComunsWidgets.createRaisedButton("salvar",
+            TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
+                () => this._clicouEmSalvar( contextDialogStatefull ),
+        )
+      );
+    }else{
+      return Container();
+    }
   }
 
   Widget _generateBackButtonOrEmpty( BuildContext contextDialogStatefull ) {
