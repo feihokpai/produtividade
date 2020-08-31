@@ -341,7 +341,8 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     }
     DateTime inicioCronometro = field.beginTime;
     DateTime inicioAtualizado = tempo.inicio;
-    if (inicioAtualizado.difference(inicioCronometro).inMinutes > 0) {
+    int diferenca = inicioAtualizado.difference(inicioCronometro).inMinutes;
+    if ( diferenca != 0) {
       this.removeCronometroDaListaECancelaTimer( tarefa );
       field = this.gerarNovoCronometro( tempo );
     }
