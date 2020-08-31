@@ -334,7 +334,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     return this.cronometrosGerados[tarefa.id];
   }
 
-  ChronometerField retornaCronometroAtualizadoDeletaDesatualizado(Tarefa tarefa, TempoDedicado tempo){
+  ChronometerField retornaCronometroAtualizado(Tarefa tarefa, TempoDedicado tempo){
     ChronometerField field = this.getCronometro(tarefa);
     if( field == null ){
       return this.gerarNovoCronometro( tempo );
@@ -343,8 +343,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     DateTime inicioAtualizado = tempo.inicio;
     int diferenca = inicioAtualizado.difference(inicioCronometro).inMinutes;
     if ( diferenca != 0) {
-      this.removeCronometroDaListaECancelaTimer( tarefa );
-      field = this.gerarNovoCronometro( tempo );
+      field.beginTime = tempo.inicio;
     }
     return field;
   }
@@ -359,7 +358,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   Widget generateChronometerWidgetIfActive(Tarefa tarefa){
     TempoDedicado tempo = this._verifyTaskIsActive( tarefa.id );
     if( tempo != null ){
-      ChronometerField field = this.retornaCronometroAtualizadoDeletaDesatualizado(tarefa, tempo);
+      ChronometerField field = this.retornaCronometroAtualizado(tarefa, tempo);
       return new LimitedBox(
         child: GestureDetector(
           onTap: ()=> this._exibirComponenteEdicaoDeTempo( tarefa ),
