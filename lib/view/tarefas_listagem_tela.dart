@@ -5,6 +5,7 @@ import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
+import 'package:registro_produtividade/view/comum/FutureBuilderWithCache.dart';
 import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
@@ -35,6 +36,8 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   Orientation orientacaoAtual = null;
   bool mudouOrientacao = false;
   Controlador controlador = new Controlador();
+
+  FutureBuilderWithCache futureBuilderWithCache = new FutureBuilderWithCache<Widget>( chacheOn: true );
 
   TempoDedicadoEdicaoComponente componenteEdicaoDeTempo;
 
@@ -105,6 +108,18 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   Future<Widget> gerarLayoutDasTarefas() async {
+    try{
+      Future<Widget> futureWidget = this.gerarLayoutDasTarefasSemTryCatch();
+      return futureWidget ?? new Container();
+    }on Exception catch(exception, stackTrace) {
+      String msgErro = "Erro ocorrido: ${exception}";
+      print( msgErro+" - ${stackTrace}" );
+//      this._showSnackBar(msgErro, 5);
+      return new Container();
+    }
+  }
+
+  Future<Widget> gerarLayoutDasTarefasSemTryCatch() async {
     await this.inicializarDadosPersistidos();
     if( this.tarefasParaListar.isEmpty ){
       return new Container();
@@ -139,29 +154,12 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     return this.temposAtivos.length > 0;
   }
 
-  FutureBuilder<Widget> createFutureBuilderWidget(Future<Widget> widget){
-    return FutureBuilder<Widget>(
-      future: widget,
-      builder: (context, snapshot) {
-        if( snapshot.connectionState == ConnectionState.done ){
-          if( this.algumTimerAtivo() ) {
-            this.ultimoGridGerado = snapshot.data;
-          }
-          return snapshot.data;
-        }else if ( snapshot.connectionState == ConnectionState.waiting) {
-          if( !mudouOrientacao ) {
-            return ultimoGridGerado ?? new CircularProgressIndicator();
-          }else {
-            return new CircularProgressIndicator();
-          }
-        }else if( snapshot.hasError ){
-          String msgErro = "Erro ocorrido: ${snapshot.error}";
-          print(msgErro);
-          return new Container( child: Text( msgErro, style: Estilos.textStyleListaPaginaInicial, ), );
-        }else{
-          return Container();
-        }
-      },
+  void _showSnackBar(String msg, int durationInSeconds){
+    Scaffold.of(this.context).showSnackBar(
+        new SnackBar(
+          duration: new Duration( seconds: durationInSeconds ),
+          content: new Text( msg ),
+        )
     );
   }
 
@@ -222,7 +220,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
                   style: Estilos.textStyleListaTituloDaPagina,
                   key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
             ),
-            this.createFutureBuilderWidget( this.gerarLayoutDasTarefas() ),
+            this.futureBuilderWithCache.generateFutureBuilder( this.gerarLayoutDasTarefas() ),
             new IconButton(
               key: new ValueKey( ListaDeTarefasTela.KEY_STRING_ICONE_ADD_TAREFA ),
               icon: new Icon(Icons.add, size:50),
