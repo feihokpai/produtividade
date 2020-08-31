@@ -30,6 +30,12 @@ class ChronometerField extends CampoDeTextoWidget{
     this.beginTime = beginTime;
     super.enabledBorderWidth = 0.5;
     this.printLogs = printLogs;
+    super.setKeyString( key ?? this.createKeyStringUsingTime( ) );
+  }
+
+  String createKeyStringUsingTime(){
+    String agoraFormatado = DataHoraUtil.formatterHoraComMilisegundos.format( DateTime.now() );
+    return "chronometer_${agoraFormatado}";
   }
 
   bool isActive(){
@@ -49,6 +55,12 @@ class ChronometerField extends CampoDeTextoWidget{
     this._printLogIntervalsSituation();
   }
 
+  void _printLog(String msg){
+    if( this.printLogs ) {
+      print(msg);
+    }
+  }
+
   void _printLogIntervalsSituation(){
     if( !this.printLogs ) {
       return;
@@ -62,7 +74,7 @@ class ChronometerField extends CampoDeTextoWidget{
         text += " - [$begin a $end]";
       });
     }
-    print( text );
+    this._printLog( text );
   }
 
   Future<void> start() async {
@@ -117,6 +129,7 @@ class ChronometerField extends CampoDeTextoWidget{
 
   void _updateFieldWithFormatedDuration(){
     String duracaoFormatoCronometro = DataHoraUtil.converterDuracaoFormatoCronometro( this.getLastDuration() );
+    this._printLog("Formated Duration: ${duracaoFormatoCronometro} - key: ${this.key}");
     super.setText(duracaoFormatoCronometro);
   }
 

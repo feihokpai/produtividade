@@ -16,7 +16,9 @@ class FutureBuilderWithCache<T extends Widget>{
     return FutureBuilder<T>(
       future: widget,
       builder: (context, snapshot) {
-        if( snapshot.connectionState == ConnectionState.done ){
+        if( !snapshot.hasData ){
+          return Container();
+        }else if( snapshot.connectionState == ConnectionState.done ){
           if( this.chacheActive ) {
             this.lastValueReturned = snapshot.data;
           }

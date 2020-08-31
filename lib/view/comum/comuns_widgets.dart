@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/comum/rotas.dart';
 
@@ -126,12 +127,18 @@ class ComunsWidgets {
   }
 
   static Future<dynamic> mudarParaPaginaInicial() async{
+    ComunsWidgets.operationsBeforeChangeScreen();
     Navigator.pushNamed(context, Rotas.LISTAGEM_TAREFA ).then((value) {
       return value;
     });
   }
 
+  static void operationsBeforeChangeScreen(){
+    TimersProdutividade.cancelAllTimers();
+  }
+
   static Future<void> mudarParaPaginaEdicaoDeTarefas( {Tarefa tarefa}) {
+    ComunsWidgets.operationsBeforeChangeScreen();
     if( tarefa == null ) {
       Navigator.pushNamed(context, Rotas.CADASTRO_TAREFA );
     }else{
