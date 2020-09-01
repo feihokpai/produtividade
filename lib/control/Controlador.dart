@@ -30,22 +30,26 @@ class Controlador{
   ///     Retorna todas as tarefas cadastradas, ordenadas tendo como prioridade as tarefas que tiveram
   /// algum tempo registrado mais recentemente.
   Future<List<Tarefa>> getListaDeTarefasOrderByDataInicio() async{
-    List<Tarefa> tarefas = new List();
-    List<TempoDedicado> tempos = await this.getAllTempoDedicadoOrderByInicio();
-    if( tempos.isEmpty ){
-      tarefas = await this.getListaDeTarefas();
-    }else{
-      List<int> idsTarefasParaAdicionar = new List();
-      tempos.forEach( (tempo) async {
-        int idTarefa = tempo.tarefa.id;
-        if( !idsTarefasParaAdicionar.contains( idTarefa ) ){
-          idsTarefasParaAdicionar.add( idTarefa );
-        }
-      });
-      tarefas = await this._trazerTarefasNaOrdem( idsTarefasParaAdicionar );
-      this._addRestanteDasTarefas( tarefas );
+    try {
+      List<Tarefa> tarefas = new List();
+      List<TempoDedicado> tempos = await this.getAllTempoDedicadoOrderByInicio();
+      if( tempos.isEmpty ){
+        tarefas = await this.getListaDeTarefas();
+      }else{
+        List<int> idsTarefasParaAdicionar = new List();
+        tempos.forEach( (tempo) async {
+          int idTarefa = tempo.tarefa.id;
+          if( !idsTarefasParaAdicionar.contains( idTarefa ) ){
+            idsTarefasParaAdicionar.add( idTarefa );
+          }
+        });
+        tarefas = await this._trazerTarefasNaOrdem( idsTarefasParaAdicionar );
+        this._addRestanteDasTarefas( tarefas );
+      }
+      return tarefas;
+    }on Exception catch( ex, stack){
+      print( "Erro ao carregar a lista de tarefas: ${ex}" );
     }
-    return tarefas;
   }
 
   Future<List<Tarefa>> _trazerTarefasNaOrdem( List<int> ids ) async{

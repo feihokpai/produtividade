@@ -104,6 +104,20 @@ class DataHoraUtil{
     return DataHoraUtil.criarDataHoraMesmoDiaAs2359( agora );
   }
 
+  /// Cria uma data do mês anterior com o mesmo dia do mês que hoje, com horário 00:00:00.
+  static DateTime criarDataMesAnteriorMesmoDia(DateTime data){
+    if( data.month != DateTime.january ) {
+      return DateTime(data.year, data.month-1, data.day);
+    }else{
+      return DateTime(data.year-1, DateTime.december, data.day);
+    }
+  }
+
+  /// Cria uma data do anos anterior com o mesmo dia e mês que hoje, com horário 00:00:00.
+  static DateTime criarDataAnoAnteriorMesmoDiaEMes(DateTime data){
+    return DateTime(data.year-1, data.month, data.day);
+  }
+
   ///     Verifica se data1 é uma data de um dia anterior a data2. Ou seja, se data1 for 01/01/2020 23:59
   /// e data2 for 02/01/2020 00:00, retorna true, porque significa que é uma data de um dia anterior,
   /// mesmo que a diferença entre elas seja de 1 minuto. Por outro lado, se data1 for 01/01/2020 00:00

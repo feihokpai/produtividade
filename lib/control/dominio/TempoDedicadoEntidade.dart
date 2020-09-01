@@ -30,8 +30,8 @@ class TempoDedicado extends EntidadeDominio implements Comparable<TempoDedicado>
       throw new Exception("Não é permitida uma Data/hora de início de registro nula");
     }
     DateTime agora =  new DateTime.now();
-    if( valor.day > agora.day ){
-      throw new Exception("Não pode criar um registro de tempo dedicado com uma data posterior a de hoje.");
+    if( DataHoraUtil.eDataDeDiaAnterior(agora, valor) ){
+      throw new Exception("Não pode criar um registro de tempo dedicado com uma data posterior a de hoje. Valor: ${valor}");
     }
     this._inicio = valor;
   }
