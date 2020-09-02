@@ -1,10 +1,12 @@
 import "package:flutter/material.dart";
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/DateTimeInterval.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/FutureBuilderWithCache.dart';
+import 'package:registro_produtividade/view/comum/IntervalDatesChoosingComponent.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
@@ -46,6 +48,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   ListagemTempoDedicadoComponente listagemDeTempo;
   TempoDedicadoEdicaoComponente edicaoDeTempo;
   bool exibirDetalhesDeTempo = false;
+
+  IntervalDatesChoosingComponent intervalDateChoosing;
 
   FutureBuilderWithCache futureBuilderWithCache = new FutureBuilderWithCache<Widget>( chacheOn: true );
 
@@ -215,7 +219,17 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     }else{
       return Column(
         children: [
-          await this.listagemDeTempo.gerarCampoDaDuracaoTotal(),
+          Row(
+            children: [
+              Expanded( child: await this.listagemDeTempo.gerarCampoDaDuracaoTotal()),
+              SizedBox(
+                width: 50.0,
+                child: ComunsWidgets.createIconButton(Icons.settings, null, () async {
+                  await this.clickedInSettingsIcon();
+                }),
+              ),
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 5.0, 0, 0),
             child: await this.listagemDeTempo.gerarListViewDosTempos(),
@@ -223,6 +237,15 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
         ],
       );
     }
+  }
+
+  Future<void> clickedInSettingsIcon() async {
+    this.intervalDateChoosing = new IntervalDatesChoosingComponent(
+        this.listagemDeTempo.intervalReport.beginTime,
+        this.listagemDeTempo.intervalReport.endTime, this.context );
+    DateTimeInterval selectedInterval = await this.intervalDateChoosing.showSearchDialog();
+    this.listagemDeTempo.intervalReport = selectedInterval;
+    this._setStateWithEmptyFunction();
   }
 
   void pressionouMostrarDetalhes(){
