@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/DateTimeInterval.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
@@ -29,14 +30,15 @@ class ListagemTempoDedicadoComponente{
   /// A variable used to invoke setState() in
   void Function(VoidCallback callback) _externalSetterState;
 
-  ///     To avoid generating a very big screen, only will be showed details of dedicated times about 3 days.
-  /// These ones are the first and second day, and other that the user clicked in total sum field to see more
+  ///     To avoid generating a very big screen, only will be showed details of dedicated times about some days.
+  /// These ones are the first and others that the user clicked in total sum field to see more
   /// details.
   List<DateTime> _allowedDaysToSeeMoreDetails = new List();
   int amountDaysDetailedInBeginning;
   static const int defaultAmountDaysDetailedInBeginning = 1;
   int maxDaysDetailed;
   static const int defaultMaxDaysDetailed = 2;
+  DateTimeInterval intervalReport;
 
   Controlador controlador = new Controlador();
 
@@ -56,7 +58,14 @@ class ListagemTempoDedicadoComponente{
     this.amountDaysDetailedInBeginning = amountDaysDetailedInBeginning;
     this.maxDaysDetailed = maxDaysDetailed;
     this._externalSetterState = setterState;
+    this._defineDefaultReport();
     this._inicializarCampoDuracaoTotal();
+  }
+
+  void _defineDefaultReport(){
+    DateTime now = DateTime.now();
+    DateTime sevenDaysBefore = now.subtract( new Duration( days: 6 ) );
+    this.intervalReport = new DateTimeInterval( sevenDaysBefore , now );
   }
 
   void _resetVariables(){
@@ -64,14 +73,21 @@ class ListagemTempoDedicadoComponente{
 
   }
 
+  String generateLabelTotalField(){
+    String dataInicial = DataHoraUtil.formatterDataResumidaBrasileira.format( this.intervalReport.beginTime );
+    String dataFinal = DataHoraUtil.formatterDataResumidaBrasileira.format( this.intervalReport.endTime );
+    return "Tempo dedicado na tarefa entre ${dataInicial} e ${dataFinal}";
+  }
+
   void _inicializarCampoDuracaoTotal(){
     Key keyString = new ValueKey( ListagemTempoDedicadoComponente.KEY_STRING_TOTAL_TEMPO );
-    this.campoDuracaoTotal = new CampoDeTextoWidget("Total de tempo dedicado na tarefa", 1, null,
+    String labelCampoTotal = this.generateLabelTotalField();
+    this.campoDuracaoTotal = new CampoDeTextoWidget( labelCampoTotal , 1, null,
         editavel: false, chave: keyString );
   }
 
   Future<void> _setarTextoCampoDuracaoTotal() async {
-    this._duracaoMinutos = await this.controlador.getTotalGastoNaTarefaEmMinutos( this._tarefaAtual );
+    this._duracaoMinutos = await this.controlador.getTotalGastoNaTarefaEmMinutos( this._tarefaAtual, interval: this.intervalReport );
     String duracaoFormatada = DataHoraUtil.criarStringQtdHorasEMinutos( new Duration(minutes: this._duracaoMinutos) );
     if( this._duracaoMinutos == 0 ){
       duracaoFormatada = ListagemTempoDedicadoComponente.TEXTO_SEM_REGISTROS;
@@ -82,8 +98,12 @@ class ListagemTempoDedicadoComponente{
   Future<int> get duracaoMinutos async => await this._duracaoMinutos;
 
   Future<Widget> gerarCampoDaDuracaoTotal() async{
-    await this._setarTextoCampoDuracaoTotal();
-    return this.campoDuracaoTotal.getWidget();
+    try {
+      await this._setarTextoCampoDuracaoTotal();
+      return this.campoDuracaoTotal.getWidget();
+    }catch( ex, stack){
+      print("Erro ao tentar gerar campo de duração total: ${ex} - ${stack}");
+    }
   }
 
   String _getRegistroTempoDedicadoFormatado(TempoDedicado registro){
@@ -138,7 +158,8 @@ class ListagemTempoDedicadoComponente{
 
   Future<List<Widget>> gerarWidgetsDaListagem() async {
     List<Widget> lista = new List();
-    List<TempoDedicado> registrosTempo = await this.controlador.getTempoDedicadoOrderByInicio( this._tarefaAtual );
+    List<TempoDedicado> registrosTempo =
+        await this.controlador.getTempoDedicadoOrderByInicio( this._tarefaAtual, interval: this.intervalReport );
     int diaAnterior = 0;
     int qtdDiasJaMostrados = 0;
     for( int i=0; i< registrosTempo.length; i++ ){

@@ -1,4 +1,5 @@
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/DateTimeInterval.dart';
 import 'package:registro_produtividade/control/dominio/EntidadeDominio.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 
@@ -69,6 +70,12 @@ class TempoDedicado extends EntidadeDominio implements Comparable<TempoDedicado>
         return ( DataHoraUtil.eHorarioAnteriorAteSegundos(this.inicio, other.inicio) ) ? -1 : 1;
       }
     }
+  }
+
+  /// TODO Teste de unidade
+  /// Returns true if the begin of the Dedicated Time is between the [interval] past as parameter
+  bool isBetween(DateTimeInterval interval) {
+    return this.inicio.isAfter( interval.beginTime ) && this.inicio.isBefore( interval.endTime );
   }
 
 }

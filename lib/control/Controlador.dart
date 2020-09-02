@@ -1,5 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/DateTimeInterval.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
@@ -96,8 +97,16 @@ class Controlador{
   }
 
   /// Returna a lista de tempos de uma tarefa, ordenados do mais recente pro mais antigo.
-  Future<List<TempoDedicado>> getTempoDedicadoOrderByInicio(Tarefa tarefa) async {
-    return await this.tempoDedicadoDao.getTempoDedicadoOrderByInicio( tarefa );
+  Future<List<TempoDedicado>> getTempoDedicadoOrderByInicio(Tarefa tarefa, {DateTimeInterval interval}) async {
+    try{
+      List<TempoDedicado> lista = await this.tempoDedicadoDao.getTempoDedicadoOrderByInicio( tarefa );
+      if( interval != null ) {
+        lista.removeWhere((tempo) => !tempo.isBetween(interval));
+      }
+      return lista;
+    }catch(ex){
+      print( "Erro ao tentar listar os registros de tempo dedicado: ${ex}" );
+    }
   }
 
   void deletarRegistroTempoDedicado(TempoDedicado registro) {
@@ -113,8 +122,8 @@ class Controlador{
   }
 
   /// Retorna o total de tempo gasto numa tarefa em Minutos.
-  Future<int> getTotalGastoNaTarefaEmMinutos(Tarefa tarefa) async {
-    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa );
+  Future<int> getTotalGastoNaTarefaEmMinutos(Tarefa tarefa, {DateTimeInterval interval}) async {
+    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa, interval: interval );
     return this.getSomatorioTempoGasto( tempos );
   }
 
