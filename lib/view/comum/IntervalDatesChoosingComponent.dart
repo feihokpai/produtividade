@@ -38,7 +38,8 @@ class IntervalDatesChoosingComponent{
     DateTime sevenDaysBefore = hoje.subtract( new Duration( days: 6 ) );
     DateTime minimalDate = DataHoraUtil.projectBeginDate();
     this.beginDateField ??= new CampoDataHora("Data inicial", context, dataInicialSelecionada: sevenDaysBefore,
-        dataMinima: minimalDate, dataMaxima: hoje,
+        dataMinima: minimalDate, dataMaxima: hoje, dateTimeFormatter: DataHoraUtil.formatterDataBrasileira,
+        showHourPicker: false,
         onChange: (){
           //  this.algumValorAlterado = true;
           this._emptySetStateFunction();
@@ -51,7 +52,8 @@ class IntervalDatesChoosingComponent{
 //    DateTime sevenDaysBefore = hoje.subtract( new Duration( days: 6 ) );
     DateTime minimalDate = DataHoraUtil.projectBeginDate();
     this.endDateField ??= new CampoDataHora("Data final", context, dataInicialSelecionada: hoje,
-        dataMinima: minimalDate, dataMaxima: hoje,
+        dataMinima: minimalDate, dataMaxima: hoje, dateTimeFormatter: DataHoraUtil.formatterDataBrasileira,
+        showHourPicker: false,
         onChange: (){
           //  this.algumValorAlterado = true;
           this._emptySetStateFunction();
