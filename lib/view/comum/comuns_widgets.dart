@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
@@ -104,7 +105,7 @@ class ComunsWidgets {
   }
 
   static RaisedButton createRaisedButton(String label, String keyString, void Function() onpressed){
-    keyString ??= ( label+(DateTime.now().millisecond.toString()) );
+    keyString ??= ( "RaisedButton_"+DataHoraUtil.timestampMili() );
     return new RaisedButton(
       key: ComunsWidgets.createKey( keyString ),
       child: new Text( label, style: Estilos.textStyleBotaoFormulario),
@@ -114,6 +115,7 @@ class ComunsWidgets {
   }
   
   static IconButton createIconButton( IconData iconData, String keyString, void Function() onPressedFunction ){
+    keyString ??= "IconButton_${DataHoraUtil.timestampMili()}";
     return new IconButton(
       key: new ValueKey<String>( keyString ),
       icon: new Icon( iconData ),

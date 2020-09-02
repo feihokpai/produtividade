@@ -201,4 +201,14 @@ class DataHoraUtil{
     String segundoString = (segundos >= 10) ? "$segundos" : "0$segundos";
     return "${horaString}:${minutoString}:${segundoString}";
   }
+
+  /// It Returns a string with current hour in format "HH:mm:ss.SSS", that is, from hours to miliseconds
+  static String timestampMili(){
+    return DataHoraUtil.formatterHoraComMilisegundos.format( DateTime.now() );
+  }
+  
+  /// The beginning date of Produtividade Project.
+  static DateTime projectBeginDate(){
+    return new DateTime( 2020, DateTime.july, 20 );
+  }
 }
