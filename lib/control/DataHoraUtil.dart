@@ -184,6 +184,13 @@ class DataHoraUtil{
     return "${horas} horas e ${minutos} minutos";
   }
 
+  ///     Recebe um Duration e retorna uma string no formato "3h25m".
+  static String criarStringQtdHorasEMinutosAbreviados( Duration duracao ){
+    int horas = duracao.inHours;
+    int minutos = duracao.inMinutes - (60*horas);
+    return "${horas}h${minutos}m";
+  }
+
   ///     Recebe um Duration e retorna uma string no formato "00:00:00".
   static String converterDuracaoFormatoCronometro( Duration duracao ){
     int horas = duracao.inHours;
