@@ -244,8 +244,10 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
         this.listagemDeTempo.intervalReport.beginTime,
         this.listagemDeTempo.intervalReport.endTime, this.context );
     DateTimeInterval selectedInterval = await this.intervalDateChoosing.showSearchDialog();
-    this.listagemDeTempo.intervalReport = selectedInterval;
-    this._setStateWithEmptyFunction();
+    if( selectedInterval != null ) {
+      this.listagemDeTempo.intervalReport = selectedInterval;
+      this._setStateWithEmptyFunction();
+    }
   }
 
   void pressionouMostrarDetalhes(){
