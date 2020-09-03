@@ -35,9 +35,8 @@ class IntervalDatesChoosingComponent{
 
   void initializeBeginDateField( BuildContext context ){
     DateTime hoje = DateTime.now();
-    DateTime sevenDaysBefore = hoje.subtract( new Duration( days: 6 ) );
     DateTime minimalDate = DataHoraUtil.projectBeginDate();
-    this.beginDateField ??= new CampoDataHora("Data inicial", context, dataInicialSelecionada: sevenDaysBefore,
+    this.beginDateField ??= new CampoDataHora("Data inicial", context, dataInicialSelecionada: this.beginDate,
         dataMinima: minimalDate, dataMaxima: hoje, dateTimeFormatter: DataHoraUtil.formatterDataBrasileira,
         showHourPicker: false,
         onChange: (){
@@ -48,10 +47,9 @@ class IntervalDatesChoosingComponent{
   }
 
   void initializeEndDateField( BuildContext context ){
-    DateTime hoje = DateTime.now();    
-//    DateTime sevenDaysBefore = hoje.subtract( new Duration( days: 6 ) );
+    DateTime hoje = DateTime.now();
     DateTime minimalDate = DataHoraUtil.projectBeginDate();
-    this.endDateField ??= new CampoDataHora("Data final", context, dataInicialSelecionada: hoje,
+    this.endDateField ??= new CampoDataHora("Data final", context, dataInicialSelecionada: this.endDate,
         dataMinima: minimalDate, dataMaxima: hoje, dateTimeFormatter: DataHoraUtil.formatterDataBrasileira,
         showHourPicker: false,
         onChange: (){
