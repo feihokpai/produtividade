@@ -88,14 +88,14 @@ class ListagemTempoDedicadoComponente{
 
   Future<void> _setarTextoCampoDuracaoTotal() async {
     this._duracaoMinutos = await this.controlador.getTotalGastoNaTarefaEmMinutos( this._tarefaAtual, interval: this.intervalReport );
-    String duracaoFormatada = DataHoraUtil.criarStringQtdHorasEMinutosAbreviados( new Duration(minutes: this._duracaoMinutos) );
+    String duracaoFormatada = "Total: ${DataHoraUtil.criarStringQtdHorasEMinutosAbreviados( new Duration(minutes: this._duracaoMinutos) )}";
     if( this._duracaoMinutos == 0 ){
       duracaoFormatada = ListagemTempoDedicadoComponente.TEXTO_SEM_REGISTROS;
     }else{
       int quantidadeDeDiasDoRelatorio = this.intervalReport.daysAmount();
       double mediaDiariaEmMinutos = this._duracaoMinutos/quantidadeDeDiasDoRelatorio;
       Duration duracao = new Duration( minutes: mediaDiariaEmMinutos.toInt() );
-      duracaoFormatada += " - Média diária: ${duracao.inHours}h${duracao.inMinutes}m";
+      duracaoFormatada += " - Média diária: ${DataHoraUtil.criarStringQtdHorasEMinutosAbreviados(duracao)}";
     }
     this.campoDuracaoTotal.setText( duracaoFormatada );
   }
