@@ -38,7 +38,7 @@ class ListagemTempoDedicadoComponente{
   static const int defaultAmountDaysDetailedInBeginning = 1;
   int maxDaysDetailed;
   static const int defaultMaxDaysDetailed = 2;
-  DateTimeInterval intervalReport;
+  DateTimeInterval _intervalReport;
 
   Controlador controlador = new Controlador();
 
@@ -66,6 +66,17 @@ class ListagemTempoDedicadoComponente{
     DateTime now = DateTime.now();
     DateTime sevenDaysBefore = now.subtract( new Duration( days: 6 ) );
     this.intervalReport = new DateTimeInterval( sevenDaysBefore , now );
+  }
+
+  DateTimeInterval get intervalReport => this._intervalReport;
+
+  void set intervalReport(DateTimeInterval intervalReport){
+    assert( intervalReport != null );
+    assert( intervalReport.beginTime != null );
+    assert( intervalReport.endTime != null );
+    intervalReport.beginTime = DataHoraUtil.resetHourMantainDate( intervalReport.beginTime );
+    intervalReport.endTime = DataHoraUtil.resetHourMantainDate( intervalReport.endTime );
+    this._intervalReport = intervalReport;
   }
 
   void _resetVariables(){

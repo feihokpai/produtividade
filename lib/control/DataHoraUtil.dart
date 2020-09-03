@@ -211,4 +211,10 @@ class DataHoraUtil{
   static DateTime projectBeginDate(){
     return new DateTime( 2020, DateTime.july, 20 );
   }
+
+  /// It Receives a DateTime complete (ex: 2020-08-28 06:14:01.765435) and returns other with the
+  /// same date but with hour reseted (ex: 2020-08-28 00:00:00.000000)
+  static DateTime resetHourMantainDate(DateTime date){
+    return new DateTime( date.year, date.month, date.day );
+  }
 }
