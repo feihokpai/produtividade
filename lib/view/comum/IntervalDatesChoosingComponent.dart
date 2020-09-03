@@ -41,7 +41,7 @@ class IntervalDatesChoosingComponent{
         dataMinima: minimalDate, dataMaxima: hoje, dateTimeFormatter: DataHoraUtil.formatterDataBrasileira,
         showHourPicker: false,
         onChange: (){
-          //  this.algumValorAlterado = true;
+          this.beginDate = this.beginDateField.dataSelecionada;
           this._emptySetStateFunction();
         }
     );
@@ -55,7 +55,7 @@ class IntervalDatesChoosingComponent{
         dataMinima: minimalDate, dataMaxima: hoje, dateTimeFormatter: DataHoraUtil.formatterDataBrasileira,
         showHourPicker: false,
         onChange: (){
-          //  this.algumValorAlterado = true;
+          this.endDate = this.endDateField.dataSelecionada;
           this._emptySetStateFunction();
         }
     );
@@ -115,9 +115,6 @@ class IntervalDatesChoosingComponent{
 
   /// Returns
   Future<DateTimeInterval> showSearchDialog(  ) async {
-    //#######################################################################
-    print( "entrou em showSearchDialog" );
-    //#######################################################################
     DateTimeInterval valor =  await showDialog<DateTimeInterval>(
       context: this._externalContext,
       builder: (BuildContext context) {
