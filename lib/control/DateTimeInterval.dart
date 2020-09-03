@@ -11,11 +11,11 @@ class DateTimeInterval{
     this._endTime = end;
   }
 
-  /// Return the amount of days between beginDate and endDate. If endDate is null is used Today's date.
+  /// Return the amount of days between beginDate and endDate, including both. If endDate is null is used Today's date.
   int daysAmount(){
     DateTime end = this.endTime ?? DateTime.now();
     DateTime begin = this.beginTime;
-    return end.difference( begin ).inDays;
+    return 1+end.difference( begin ).inDays;
   }
 
   ///     Duration of the difference between beginTime and endTime. If endTime is null, returns the difference
