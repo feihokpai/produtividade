@@ -217,4 +217,9 @@ class DataHoraUtil{
   static DateTime resetHourMantainDate(DateTime date){
     return new DateTime( date.year, date.month, date.day );
   }
+
+  static bool isToday( DateTime date ){
+    DateTime today = DateTime.now();
+    return DataHoraUtil.eDataMesmoDia(date, today);
+  }
 }

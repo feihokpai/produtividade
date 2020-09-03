@@ -186,8 +186,8 @@ class ListagemTempoDedicadoComponente{
         lista.add( field );
         qtdDiasJaMostrados++;
       }
-      int maxPermitido = ListagemTempoDedicadoComponente.defaultAmountDaysDetailedInBeginning;
-      if( qtdDiasJaMostrados <= maxPermitido || this._isAnAllowedDayToShow( tempo.inicio) ) {
+      int qtdPermitidaNoInicio = this.amountDaysDetailedInBeginning;
+      if( qtdDiasJaMostrados <= qtdPermitidaNoInicio || this._isAnAllowedDayToShow( tempo.inicio) ) {
         lista.add(this.gerarLinhaDeTempo(tempo, i, registrosTempo.length));
       }
       diaAnterior = tempo.inicio.day;
@@ -280,13 +280,16 @@ class ListagemTempoDedicadoComponente{
 
   void addDayToSeeMoreDetails( DateTime dateTime ){
     int maxAllowed = this.maxDaysDetailed - this.amountDaysDetailedInBeginning;
+    dateTime = DataHoraUtil.resetHourMantainDate( dateTime );
     if( !this._isAnAllowedDayToShow( dateTime ) ) {
       this._allowedDaysToSeeMoreDetails.add( dateTime );
       if( this._allowedDaysToSeeMoreDetails.length > maxAllowed ){
         this._allowedDaysToSeeMoreDetails.removeAt( 0 );
       }
-      this._setStateWithEmptyFunction();
+    }else{
+      this._allowedDaysToSeeMoreDetails.remove( dateTime );
     }
+    this._setStateWithEmptyFunction();
   }
 
 }
