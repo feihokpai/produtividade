@@ -75,7 +75,11 @@ class TempoDedicado extends EntidadeDominio implements Comparable<TempoDedicado>
   /// TODO Teste de unidade
   /// Returns true if the begin of the Dedicated Time is between the [interval] past as parameter
   bool isBetween(DateTimeInterval interval) {
-    return this.inicio.isAfter( interval.beginTime ) && this.inicio.isBefore( interval.endTime );
+    return (
+        ( this.inicio.isAfter( interval.beginTime )  || DataHoraUtil.eDataMesmoDia(this.inicio, interval.beginTime) )
+        && ( this.inicio.isBefore( interval.endTime ) || DataHoraUtil.eDataMesmoDia(this.inicio, interval.endTime) )
+    );
+
   }
 
 }
