@@ -104,6 +104,7 @@ class ListagemTempoDedicadoComponente{
 
   Future<Widget> gerarCampoDaDuracaoTotal() async{
     try {
+      this._inicializarCampoDuracaoTotal();
       await this._setarTextoCampoDuracaoTotal();
       return this.campoDuracaoTotal.getWidget();
     }catch( ex, stack){

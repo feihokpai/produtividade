@@ -240,9 +240,9 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   Future<void> clickedInSettingsIcon() async {
-    this.intervalDateChoosing = new IntervalDatesChoosingComponent(
-        this.listagemDeTempo.intervalReport.beginTime,
-        this.listagemDeTempo.intervalReport.endTime, this.context );
+    DateTime begin = this.listagemDeTempo.intervalReport.beginTime;
+    DateTime end = this.listagemDeTempo.intervalReport.endTime;
+    this.intervalDateChoosing = new IntervalDatesChoosingComponent( begin, end, this.context );
     DateTimeInterval selectedInterval = await this.intervalDateChoosing.showSearchDialog();
     if( selectedInterval != null ) {
       this.listagemDeTempo.intervalReport = selectedInterval;
