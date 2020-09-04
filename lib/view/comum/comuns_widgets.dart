@@ -95,6 +95,7 @@ class ComunsWidgets {
                   ])),
           ComunsWidgets.gerarItemMenuDrawer("Tarefas abertas", Icons.message, ComunsWidgets.mudarParaPaginaInicial),
           ComunsWidgets.gerarItemMenuDrawer("Criação de Tarefas", Icons.add, ComunsWidgets.mudarParaPaginaEdicaoDeTarefas),
+          ComunsWidgets.gerarItemMenuDrawer("Relatórios", Icons.show_chart, ComunsWidgets.mudarParaPaginaDeRelatorios),
         ],
       ),
     );
@@ -159,5 +160,10 @@ class ComunsWidgets {
     Navigator.pushNamed(context, Rotas.CADASTRO_TEMPO, arguments: argumentos).then((value) {
       return value;
     });
+  }
+
+  static Future<dynamic> mudarParaPaginaDeRelatorios() async{
+    dynamic value = Navigator.pushNamed( context, Rotas.RELATORIOS );
+    return value;
   }
 }

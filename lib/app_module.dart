@@ -12,6 +12,7 @@ import 'package:registro_produtividade/model/json/TempoDedicadoPersistenciaJson.
 import 'package:registro_produtividade/view/comum/rotas.dart';
 import 'package:registro_produtividade/view/registros_cadastro_tela.dart';
 import 'package:registro_produtividade/view/registros_listagem_tela.dart';
+import 'package:registro_produtividade/view/reports_tela.dart';
 import 'package:registro_produtividade/view/tarefas_edicao_tela.dart';
 import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 
@@ -40,6 +41,7 @@ class AppModule extends MainModule {
     Router( Rotas.EDICAO_TAREFA , child: this.edicaoDeTarefas ),
     Router( Rotas.LISTAGEM_TEMPO , child: this.listagemDeTempo ),
     Router( Rotas.CADASTRO_TEMPO , child: this.edicaoDeTempo ),
+    Router( Rotas.RELATORIOS , child: this.geracaoDeRelatorios ),
   ];
 
   // Provide the root widget associated with your module
@@ -90,5 +92,9 @@ class AppModule extends MainModule {
       Tarefa tarefaParaEditar = tarefa as Tarefa;
       return new TarefasEdicaoTela( tarefa: tarefaParaEditar, );
     }
+  }
+
+  Widget geracaoDeRelatorios(BuildContext, ModularArguments argumentos){
+    return new ReportsTela();
   }
 }
