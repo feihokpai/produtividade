@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/DateTimeInterval.dart';
+import 'package:registro_produtividade/view/OverviewReport.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
+import 'package:registro_produtividade/view/comum/FutureBuilderWithCache.dart';
 import 'package:registro_produtividade/view/comum/IntervalDatesChoosingComponent.dart';
+import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
@@ -17,6 +20,10 @@ class ReportsTelaState extends State<ReportsTela> {
   DateTimeInterval intervalReport;
   CampoDeTextoWidget intervalReportField;
   int selectedReport = 1;
+  bool pesquisaAtivada = false;
+  
+  Widget _searchResult = new Container();
+  FutureBuilderWithCache<Widget> futureBuilder = new FutureBuilderWithCache();
 
 
   @override
@@ -73,6 +80,10 @@ class ReportsTelaState extends State<ReportsTela> {
                 padding: const EdgeInsets.all(8.0),
                 child: this.createSearchButton(),
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: futureBuilder.generateFutureBuilder( this._doSearch() ),
+              ),
             ],
           ),
         ),
@@ -97,9 +108,25 @@ class ReportsTelaState extends State<ReportsTela> {
   }
 
   Widget createSearchButton(){
-    return ComunsWidgets.createRaisedButton("Consultar", null, () {
-
+    return ComunsWidgets.createRaisedButton("Consultar", null, () async {
+      this.pesquisaAtivada = true;
+      this._setStateWithEmptyFunction();
     });
+  }
+
+  Future<Widget> _doSearch( ) async {
+    if( !this.pesquisaAtivada ){
+      return new Container();
+    }
+    this.pesquisaAtivada = false;
+    if( this.selectedReport == OVERVIEW_REPORT ){
+      OverviewReport report = new OverviewReport();
+      return await report.generateReport( this.intervalReport );
+    }else if( this.selectedReport == 2 ){
+      return new Container( child: Text("Relatório vazio para testes apenas"),);
+    }
+
+//    this._setStateWithEmptyFunction();
   }
 
   Future<void> showDateChoosingComponent() async {
@@ -143,10 +170,12 @@ class ReportsTelaState extends State<ReportsTela> {
     return new DropdownButton<int>(
         value: this.selectedReport,
         items: <DropdownMenuItem<int>>[
-          new DropdownMenuItem<int>(child: Text("Resumo geral"), value: OVERVIEW_REPORT,)
+          new DropdownMenuItem<int>(child: Text("Resumo geral"), value: OVERVIEW_REPORT,),
+          new DropdownMenuItem<int>(child: Text("Resumo vazio de teste"), value: 2,)
         ],
         onChanged: ( selected ){
           this.selectedReport = selected;
+          this._setStateWithEmptyFunction();
         });
   }
 }
