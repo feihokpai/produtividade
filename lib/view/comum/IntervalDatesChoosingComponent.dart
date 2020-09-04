@@ -98,8 +98,8 @@ class IntervalDatesChoosingComponent{
     return new Row(
       children: [
         SizedBox(
-          width: 100.0,
-          child: ComunsWidgets.createRaisedButton("Consultar", null, () {
+          width: 120.0,
+          child: ComunsWidgets.createRaisedButton("Selecionar", null, () {
             this.clickedSearchButton( context);
           }),
         ),
