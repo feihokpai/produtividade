@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
 class CampoDeTextoWidget{
@@ -23,8 +24,13 @@ class CampoDeTextoWidget{
     this.linhas = qtdLinhas;
     this.labelCampo = label;
     this.funcaoValidacao = validacao;
-    this._key = chave ?? new ValueKey<String>( this.toString() );
+    this._key = chave ?? this._generateKey();
     this.editavel = editavel;
+  }
+
+  ValueKey<String> _generateKey(){
+    String horario = DataHoraUtil.formatterHoraComMilisegundos.format( DateTime.now() );
+    return new ValueKey<String>("textField_${horario}");
   }
 
   void setKeyString(String valor){
