@@ -18,6 +18,9 @@ class OverviewReport{
 
   Future<void> _generateTextFieldFromTask(Tarefa tarefa) async {
     int duracaoEmMinutos = await this.controlador.getTotalGastoNaTarefaEmMinutos(tarefa, interval: interval);
+    if(duracaoEmMinutos == 0){
+      return;
+    }
     String totalDuration = DataHoraUtil.criarStringQtdHorasEMinutosAbreviados( new Duration( minutes: duracaoEmMinutos ) );
     int daysAmount = interval.daysAmount();
     double average = duracaoEmMinutos/daysAmount;
