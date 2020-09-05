@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
@@ -106,7 +107,7 @@ class ComunsWidgets {
   }
 
   static RaisedButton createRaisedButton(String label, String keyString, void Function() onpressed){
-    keyString ??= ( "RaisedButton_"+DataHoraUtil.timestampMili() );
+    keyString ??= "RaisedButton_"+( UniqueKey().toString() )+DataHoraUtil.timestampMili();
     return new RaisedButton(
       key: ComunsWidgets.createKey( keyString ),
       child: new Text( label, style: Estilos.textStyleBotaoFormulario),
