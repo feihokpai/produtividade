@@ -46,7 +46,6 @@ class TempoDedicadoEdicaoComponente{
 
   Orientation _currentOrientation = null;
   bool _orientationChanged = false;
-//  Timer _timer;
 
   void Function() onChangeDataHoraInicial;
   void Function() onChangeDataHoraFinal;
@@ -137,12 +136,22 @@ class TempoDedicadoEdicaoComponente{
     this.campoDataHoraInicial ??= new CampoDataHora("Início", this.context, dataMinima: new DateTime(2020),
         dataMaxima: new DateTime.now(), chave: this._criarKey( StringKey ),
         dateTimeFormatter: this.formatter,
-        onChange: (){
-          this.algumValorAlterado = true;
-          this._emptySetStateFunction();
-        },
+        onChange: this._mudouValorCampoDataHoraInicial,
         dataInicialSelecionada: dataInicial,
     );
+  }
+
+  void _mudouValorCampoDataHoraInicial(){
+    this.algumValorAlterado = true;
+    if( this.campoDataHoraFinal != null ) {
+      this.campoDataHoraFinal.dataMinima = this.campoDataHoraInicial.dataSelecionada;
+      DateTime finalSelecionada = this.campoDataHoraFinal.dataSelecionada;
+      DateTime minima = this.campoDataHoraFinal.dataMinima;
+      if( DataHoraUtil.eDataDeDiaAnterior(finalSelecionada, minima) ){
+        this.campoDataHoraFinal.dataSelecionada = minima.add( new Duration( minutes: 1 ) );
+      }
+    }
+    this._emptySetStateFunction();
   }
 
   void _iniciarCampoDataHoraFinal( ){
