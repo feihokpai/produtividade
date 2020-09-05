@@ -122,11 +122,7 @@ class ReportsTelaState extends State<ReportsTela> {
     if( this.selectedReport == OVERVIEW_REPORT ){
       OverviewReport report = new OverviewReport();
       return await report.generateReport( this.intervalReport );
-    }else if( this.selectedReport == 2 ){
-      return new Container( child: Text("Relatório vazio para testes apenas"),);
     }
-
-//    this._setStateWithEmptyFunction();
   }
 
   Future<void> showDateChoosingComponent() async {
@@ -171,7 +167,6 @@ class ReportsTelaState extends State<ReportsTela> {
         value: this.selectedReport,
         items: <DropdownMenuItem<int>>[
           new DropdownMenuItem<int>(child: Text("Resumo geral"), value: OVERVIEW_REPORT,),
-          new DropdownMenuItem<int>(child: Text("Resumo vazio de teste"), value: 2,)
         ],
         onChanged: ( selected ){
           this.selectedReport = selected;
