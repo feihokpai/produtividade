@@ -14,7 +14,6 @@ class ChronometerField extends CampoDeTextoWidget{
 
   /// DateTime Intervals recorded in this field
   List<DateTimeInterval> _intervals = new List();
-  void Function() _functionUpdateUI;
   DateFormat _formatter;
   static DateFormat defaultFormatter = DataHoraUtil.formatterHoraBrasileira;
 
@@ -22,10 +21,7 @@ class ChronometerField extends CampoDeTextoWidget{
 
   ChronometerField(String label, {ValueKey<String> key, DateTime beginTime, DateFormat formatter, void Function() functionUpdateUI, bool printLogs=false})
       : super(label, 1, null, chave: key, editavel: false ){
-    assert( functionUpdateUI != null, "Is necessary to define a function to Update UI or the Chronometer Field"
-        " will be useless." );
     this._formatter = formatter ?? defaultFormatter;
-    this._functionUpdateUI = functionUpdateUI;
     this.setText( DataHoraUtil.CRONOMETRO_ZERADO );
     this.beginTime = beginTime;
     super.enabledBorderWidth = 0.5;

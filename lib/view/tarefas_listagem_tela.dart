@@ -41,6 +41,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   TempoDedicadoEdicaoComponente componenteEdicaoDeTempo;
 
+  GlobalKey<ScaffoldState> keyScaffold = new GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     ComunsWidgets.context = context;
@@ -100,6 +101,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   Widget criarHome() {
     Scaffold scaffold1 = new Scaffold(
+        key: this.keyScaffold,
         appBar: ComunsWidgets.criarBarraSuperior(),
         backgroundColor: Estilos.corDeFundoPrincipal,
         drawer: ComunsWidgets.criarMenuDrawer(),
@@ -156,7 +158,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   void _showSnackBar(String msg, int durationInSeconds){
-    Scaffold.of(this.context).showSnackBar(
+    this.keyScaffold.currentState.showSnackBar(
         new SnackBar(
           duration: new Duration( seconds: durationInSeconds ),
           content: new Text( msg ),
@@ -246,7 +248,9 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   void _recarregarDadosDaTela(){
     this.recarregarDadosPersistidos=true;
-    this._setStateWithEmptyFunction();
+    if( !this.algumTimerAtivo() ) {
+      this._setStateWithEmptyFunction();
+    }
   }
 
   Future<void> _exibirComponenteEdicaoDeTempo( Tarefa tarefaParaEditar ) async {
@@ -348,7 +352,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   ChronometerField gerarNovoCronometro( TempoDedicado tempo ){
-    ChronometerField field = new ChronometerField("Duração", beginTime: tempo.inicio , functionUpdateUI: _setStateWithEmptyFunction );
+    ChronometerField field = new ChronometerField("Duração", beginTime: tempo.inicio );
     this.cronometrosGerados[tempo.tarefa.id] = field;
     this.createNewTimerIfNoneTimerIsActive();
     return field;
