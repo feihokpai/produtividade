@@ -82,7 +82,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   Future<void> inicializarDadosPersistidos() async {
     if( this.recarregarDadosPersistidos ){
-      this.tarefasParaListar = await this.controlador.getListaDeTarefasOrderByDataInicio();
+      this.tarefasParaListar = await this.controlador.getListaDeTarefasOrdenadasPorDataCriacaoERegistroTempo();
       this.temposAtivos = await this.controlador.getTempoDedicadoAtivos();
       this.desativarCronometrosEncerrados();
       recarregarDadosPersistidos = false;

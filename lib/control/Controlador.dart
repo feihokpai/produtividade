@@ -28,6 +28,32 @@ class Controlador{
     return this.tarefaDao.getAllTarefa();
   }
 
+  Future<List<Tarefa>> getListaDeTarefasJoinTemposDedicados() async{
+    List<Tarefa> tarefas = await this.getListaDeTarefas();
+    List<TempoDedicado> tempos = await this.getAllTempoDedicadoOrderByInicio();
+    tempos.forEach( (tempo) {
+      int idTarefa = tempo.tarefa.id;
+      tarefas.forEach((tarefa) {
+        if( tarefa.id == idTarefa ){
+          tarefa.addTempoDedicado( tempo );
+        }
+      });
+    });
+    return tarefas;
+  }
+
+  ///TODO Teste de unidade
+  Future<List<Tarefa>> getListaDeTarefasOrdenadasPorDataCriacaoERegistroTempo() async{
+    try {
+      List<Tarefa> tarefas = await this.getListaDeTarefasJoinTemposDedicados();
+      tarefas.sort(Tarefa.compareByCreationDateAndTimeRegister);
+      return tarefas.reversed.toList();
+    }catch(ex, stacktrace){
+      print( "Erro ao tentar retornar a lista de tarefas - ${ex} - ${stacktrace}" );
+      throw ex;
+    }
+  }
+
   ///     Retorna todas as tarefas cadastradas, ordenadas tendo como prioridade as tarefas que tiveram
   /// algum tempo registrado mais recentemente.
   Future<List<Tarefa>> getListaDeTarefasOrderByDataInicio() async{
@@ -53,12 +79,13 @@ class Controlador{
     }
   }
 
-  Future<List<Tarefa>> _trazerTarefasNaOrdem( List<int> ids ) async{
+  Future<List<Tarefa>> _trazerTarefasNaOrdem( List<int> listaIds ) async{
     List<Tarefa> tarefas = new List();
-    await ids.forEach((idTarefa) async {
+    for( int i=0; i< listaIds.length; i++ ){
+      int idTarefa = listaIds[i];
       Tarefa tarefa = await this.tarefaDao.getTarefa( idTarefa );
       tarefas.add( tarefa );
-    });
+    }
     return tarefas;
   }
 
