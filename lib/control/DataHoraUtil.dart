@@ -104,6 +104,12 @@ class DataHoraUtil{
     return DataHoraUtil.criarDataHoraMesmoDiaAs2359( agora );
   }
 
+  /// Cria um new DateTime com a mesma data e hora da que foi passada por parãmetro.
+  static DateTime criarDataHoraIgual( DateTime data ){
+    return new DateTime(data.year, data.month, data.day, data.hour, data.minute, data.second,
+        data.millisecond, data.microsecond );
+  }
+
   /// Cria uma data do mês anterior com o mesmo dia do mês que hoje, com horário 00:00:00.
   static DateTime criarDataMesAnteriorMesmoDia(DateTime data){
     if( data.month != DateTime.january ) {

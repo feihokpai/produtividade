@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 
 String getStringComNumeroDeCaracteres(int qtd){
@@ -7,6 +8,11 @@ String getStringComNumeroDeCaracteres(int qtd){
     texto += "a";
   }
   return texto;
+}
+
+Tarefa tarefaValida(){
+  final tarefa = new Tarefa("nome", "descricao", id: 1);
+  return tarefa;
 }
 
 void main(){
@@ -134,5 +140,38 @@ void main(){
     final outra = new Tarefa("nome", "descricao", id: 2);
     expect( tarefa.tarefaPai = outra , outra );
   } );
+
+  test("Tarefa: (temposDedicados) - se settar null - esvazia a lista apenas", (){
+    final tarefa = new Tarefa("nome", "descricao", id: 1);
+    tarefa.temposDedicados = null;
+    expect( tarefa.temposDedicados , isNotNull );
+    expect( tarefa.temposDedicados.length , 0 );
+  });
+
+  test("Tarefa: (compareByCreationDate) - Assertion Error se alguma tarefa for null?", (){
+    expect( () => Tarefa.compareByCreationDate(null, tarefaValida() ), throwsAssertionError );
+    expect( () => Tarefa.compareByCreationDate( tarefaValida(), null ), throwsAssertionError );
+  });
+
+  test("Tarefa: (compareByCreationDate) - Retorna -1 e +1 para Tarefas com data de cadastro antes e depois respectivamente?", (){
+    DateTime agora = DateTime.now();
+    DateTime umMinutoAntes = agora.subtract( new Duration(minutes: 1) );
+    final tarefa = new Tarefa("nome", "descricao", id: 1);
+    final tarefa2 = new Tarefa("nome", "descricao", id: 1);
+    tarefa.dataHoraCadastro = umMinutoAntes;
+    tarefa2.dataHoraCadastro = agora;
+    expect( Tarefa.compareByCreationDate(tarefa, tarefa2), -1 );
+    expect( Tarefa.compareByCreationDate(tarefa2, tarefa), 1 );
+  });
+
+  test("Tarefa: (compareByCreationDate) - Retorna 0 para Tarefas com data de cadastro iguais até segundos?", (){
+    DateTime agora = DateTime.now();
+    DateTime dataHoraIgual = DataHoraUtil.criarDataHoraIgual( agora );
+    final tarefa = new Tarefa("nome", "descricao", id: 1);
+    final tarefa2 = new Tarefa("nome", "descricao", id: 1);
+    tarefa.dataHoraCadastro = agora;
+    tarefa2.dataHoraCadastro = dataHoraIgual;
+    expect( Tarefa.compareByCreationDate(tarefa, tarefa2), 0 );
+  });
 
 }
