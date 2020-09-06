@@ -16,6 +16,9 @@ class FutureBuilderWithCache<T extends Widget>{
     return FutureBuilder<T>(
       future: widget,
       builder: (context, snapshot) {
+        if( this.changedOrientation ){
+          this.lastValueReturned = null;
+        }
         if( !snapshot.hasData ){
           return Container();
         }else if( snapshot.connectionState == ConnectionState.done ){
@@ -24,12 +27,7 @@ class FutureBuilderWithCache<T extends Widget>{
           }
           return snapshot.data;
         }else if ( snapshot.connectionState == ConnectionState.waiting) {
-          if( !this.changedOrientation ) {
-            return this.lastValueReturned ?? new CircularProgressIndicator();
-          }else {
-            this.changedOrientation = false;
-            return new CircularProgressIndicator();
-          }
+          return this.lastValueReturned ?? new CircularProgressIndicator();
         }else if( snapshot.hasError ){
           String msgErro = "Error ocurred: ${snapshot.error}";
           print(msgErro);
