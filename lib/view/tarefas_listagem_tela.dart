@@ -126,6 +126,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     }
     Orientation orientation = MediaQuery.of(context).orientation;
     this.mudouOrientacao = ( this.orientacaoAtual != null && orientation != this.orientacaoAtual );
+    this.futureBuilderWithCache.changedOrientation = this.mudouOrientacao;
     this.orientacaoAtual = orientation;
     int qtdColunas = 1;
     if( orientation == Orientation.landscape ){
