@@ -26,7 +26,9 @@ class ChronometerField extends CampoDeTextoWidget{
     this.beginTime = beginTime;
     super.enabledBorderWidth = 0.5;
     this.printLogs = printLogs;
-    super.setKeyString( key ?? this.createKeyStringUsingTime( ) );
+    if( key == null ) {
+      super.setKeyString( this.createKeyStringUsingTime() );
+    }
   }
 
   String createKeyStringUsingTime(){
