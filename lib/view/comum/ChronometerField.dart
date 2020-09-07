@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
@@ -47,7 +45,7 @@ class ChronometerField extends CampoDeTextoWidget{
 
   List<DateTimeInterval> get intervals => _intervals;
 
-  Future<void> _beginNewInterval( {DateTime beginTime} ) async {
+  void _beginNewInterval( {DateTime beginTime} ){
     beginTime ??= DateTime.now();
     this.intervals.add( new DateTimeInterval( beginTime, null) );
     this._printLogIntervalsSituation();
@@ -75,7 +73,7 @@ class ChronometerField extends CampoDeTextoWidget{
     this._printLog( text );
   }
 
-  Future<void> start() async {
+  void start(){
     if( !this.isActive() ){
       this._beginNewInterval();
     }
