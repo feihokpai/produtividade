@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
@@ -41,13 +39,12 @@ class ChronometerField extends CampoDeTextoWidget{
   }
   @override
   Widget getWidget() {
-    this._updateFieldWithFormatedDuration();
     return super.getWidget();
   }
 
   List<DateTimeInterval> get intervals => _intervals;
 
-  Future<void> _beginNewInterval( {DateTime beginTime} ) async {
+  void _beginNewInterval( {DateTime beginTime} ){
     beginTime ??= DateTime.now();
     this.intervals.add( new DateTimeInterval( beginTime, null) );
     this._printLogIntervalsSituation();
@@ -75,14 +72,16 @@ class ChronometerField extends CampoDeTextoWidget{
     this._printLog( text );
   }
 
-  Future<void> start() async {
+  void start(){
     if( !this.isActive() ){
       this._beginNewInterval();
     }
   }
 
   void pause(){
-    this._getLastInterval().endTime = DateTime.now();
+    if( this.isActive() ) {
+      this._getLastInterval().endTime = DateTime.now();
+    }
     this._printLogIntervalsSituation();
   }
 
@@ -125,7 +124,7 @@ class ChronometerField extends CampoDeTextoWidget{
     return this._getLastInterval().getDuration();
   }
 
-  void _updateFieldWithFormatedDuration(){
+  void updateFieldWithFormatedDuration(){
     String duracaoFormatoCronometro = DataHoraUtil.converterDuracaoFormatoCronometro( this.getLastDuration() );
     this._printLog("Formated Duration: ${duracaoFormatoCronometro} - key: ${this.key}");
     super.setText(duracaoFormatoCronometro);

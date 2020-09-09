@@ -105,7 +105,7 @@ class TempoDedicadoEdicaoComponente{
   }
 
   void _cancelTimerIfActivated(){
-    TimersProdutividade.cancelTimerIfActivated( this.stateFullBuilder );
+    TimersProdutividade.cancelAndRemoveTimer( this.stateFullBuilder );
   }
 
   void set currentOrientation(Orientation currentOrientation){

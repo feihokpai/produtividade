@@ -1,12 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
 import 'package:registro_produtividade/view/comum/FakeScreenTestChronometerField.dart';
-
-import 'package:fake_async/fake_async.dart';
 
 import 'WidgetTestsUtil.dart';
 import 'WidgetTestsUtilProdutividade.dart';
