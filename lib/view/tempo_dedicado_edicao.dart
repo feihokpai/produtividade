@@ -154,10 +154,24 @@ class TempoDedicadoEdicaoComponente{
     this._emptySetStateFunction();
   }
 
+  DateTime _definirDataHoraSelecionadaCampoDataHoraFinal(){
+    if( this.tempoDedicadoAtual.fim != null){
+      return this.tempoDedicadoAtual.fim;
+    }
+    DateTime inicio = this.campoDataHoraInicial.dataSelecionada;
+    DateTime agora = DateTime.now();
+    if( DataHoraUtil.eDataMesmoDia(inicio, agora) ) {
+      return agora;
+    }else{
+      DateTime vinteMinutosDepois = inicio.add( new Duration( minutes: 20 ));
+      return vinteMinutosDepois;
+    }
+  }
+
   void _iniciarCampoDataHoraFinal( ){
-    DateTime dataSelecionada = this.tempoDedicadoAtual.fim ?? DateTime.now();
+    DateTime dataSelecionada = this._definirDataHoraSelecionadaCampoDataHoraFinal();
     this.campoDataHoraFinal ??= new CampoDataHora("Fim", this.context, dataMaxima: new DateTime.now(),
-        dataMinima: this.tempoDedicadoAtual.inicio,
+        dataMinima: this.campoDataHoraInicial.dataSelecionada,
         chave: this._criarKey( TempoDedicadoEdicaoComponente.KEY_STRING_CAMPO_HORA_FINAL ),
         dateTimeFormatter: this.formatter,
         onChange: (){
