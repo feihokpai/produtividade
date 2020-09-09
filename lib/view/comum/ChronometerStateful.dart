@@ -1,4 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
 import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
@@ -11,13 +13,19 @@ class ChronometerStateful extends StatefulWidget {
 
   ChronometerStateful( String label, {ValueKey<String> key, DateTime beginTime, DateFormat formatter,
       bool printLogs=false} ){
-    field = new ChronometerField(label, key: key, beginTime: beginTime, formatter: formatter, printLogs: printLogs);
+    this.field = new ChronometerField(label, key: key, beginTime: beginTime, formatter: formatter, printLogs: printLogs);
   }
 
   @override
   _ChronometerStatefulState createState() {
     this.state = _ChronometerStatefulState();
     return this.state;
+  }
+
+  DateTime get beginTime => this.field.beginTime;
+
+  void set beginTime( DateTime dateTime ){
+    this.field.beginTime = beginTime;
   }
 
   bool isActive() {
@@ -29,30 +37,66 @@ class ChronometerStateful extends StatefulWidget {
     this.state.iniciarTimer();
   }
 
+  /// It pauses the chronometer field and cancels the Timer associated with it.
   void pause(){
     this.field.pause();
-    this.state.cancelarTimer();
+    if( this.state != null ) {
+      this.state.cancelarTimer();
+    }else {
+      TimersProdutividade.cancelAndRemoveTimer(this);
+    }
   }
 
 }
 
 class _ChronometerStatefulState extends State<ChronometerStateful> {
 
+
   @override
   Widget build(BuildContext context) {
-    return this.widget.field.getWidget();
+    this.initVariables();
+    Widget widget = this.widget.field.getWidget();
+    return widget;
+  }
+
+  void initVariables(){
+    if( this.widget.isActive() && !this.isTimerActive() ){
+      this.iniciarTimer();
+    }
+    if( !this.widget.isActive() && this.isTimerActive()){
+      this.cancelarTimer();
+    }
+  }
+
+  void Function(Timer) createFunctionToTimer( final ChronometerStateful chrono, final State<ChronometerStateful> state ){//}void Function( void Function() ) setStateFunction ){
+    return (Timer timer){
+      chrono.field.updateFieldWithFormatedDuration();
+    };
   }
 
   void iniciarTimer(){
-    TimersProdutividade.createAPeriodicTimer( this.widget, operation: this.setStateWithEmptyFunction );
+    Duration frequency = new Duration( milliseconds: 1000 );
+    void Function(Timer) functionTimer = this.createFunctionToTimer( this.widget, this);
+    Timer timer = new Timer.periodic( frequency, functionTimer );
+    TimersProdutividade.setTimerToWidget( this.widget, timer );
   }
 
   void cancelarTimer(){
-    TimersProdutividade.cancelTimerIfActivated( this.widget );
+    TimersProdutividade.cancelAndRemoveTimer(this.widget);
+  }
+
+  bool isTimerActive(){
+    return TimersProdutividade.isTimerActive( this.widget );
+  }
+
+  String _stringIdentifier(){
+    return "ChronometerStateful_${this.widget.hashCode}";
   }
 
   void setStateWithEmptyFunction(){
-    this.setState( () {} );
+    if( super.mounted ) {
+      this.setState(() {});
+    }
   }
 
   @override
@@ -60,4 +104,5 @@ class _ChronometerStatefulState extends State<ChronometerStateful> {
     this.cancelarTimer();
     super.dispose();
   }
+
 }

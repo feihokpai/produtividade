@@ -5,6 +5,7 @@ import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
+import 'package:registro_produtividade/view/comum/ChronometerStateful.dart';
 import 'package:registro_produtividade/view/comum/FutureBuilderWithCache.dart';
 import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
@@ -26,13 +27,10 @@ class ListaDeTarefasTela extends StatefulWidget {
 
 class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
-  Map<int, ChronometerField> cronometrosGerados = new Map();
+  Map<int, ChronometerStateful> cronometrosGerados = new Map();
   List<TempoDedicado> temposAtivos = new List();
   List<Tarefa> tarefasParaListar = new List();
   bool recarregarDadosPersistidos = true;
-  ///     This variable is important to show again the last result the screen, while the new data
-  /// don't arrive. In this way we avoid the blink effect in each 1 second.
-  Widget ultimoGridGerado = null;
   Orientation orientacaoAtual = null;
   bool mudouOrientacao = false;
   Controlador controlador = new Controlador();
@@ -61,21 +59,20 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   void cancelAllChronemeters(){
     this.cronometrosGerados.forEach((key, field) {
-      TimersProdutividade.cancelAllTimers();
+      field.pause();
     });
+    this.cronometrosGerados.clear();
   }
   
   void onScreenExit(){
-    this.cancelAllChronemeters();
     this.resetVariables();
   }
 
   void resetVariables(){
     this.temposAtivos = new List();
     this.tarefasParaListar = new List();
-    this.cronometrosGerados.clear();
+    this.cancelAllChronemeters();
     this.recarregarDadosPersistidos = true;
-    this.ultimoGridGerado = null;
     this.orientacaoAtual = null;
     this.mudouOrientacao = false;
     this.controlador = new Controlador();
@@ -83,9 +80,9 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   Future<void> inicializarDadosPersistidos() async {
     if( this.recarregarDadosPersistidos ){
+      this.cancelAllChronemeters();
       this.tarefasParaListar = await this.controlador.getListaDeTarefasOrdenadasPorDataCriacaoERegistroTempo();
       this.temposAtivos = await this.controlador.getTempoDedicadoAtivos();
-      this.desativarCronometrosEncerrados();
       recarregarDadosPersistidos = false;
     }
   }
@@ -150,7 +147,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
       },
       staggeredTileBuilder: (index) => StaggeredTile.fit(1),
     );
-    return await grid;
+    return grid;
   }
 
   bool algumTimerAtivo(){
@@ -248,9 +245,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
 
   void _recarregarDadosDaTela(){
     this.recarregarDadosPersistidos=true;
-    if( !this.algumTimerAtivo() ) {
-      this._setStateWithEmptyFunction();
-    }
+    this._setStateWithEmptyFunction();
   }
 
   Future<void> _exibirComponenteEdicaoDeTempo( Tarefa tarefaParaEditar ) async {
@@ -315,30 +310,20 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     return this.temposAtivos.length > 0;
   }
 
-  void cancelTimersIfAllChronometersAreInactive(){
-    if( !thereIsActiveChronometers() ){
-      TimersProdutividade.cancelTimerIfActivated( this.widget );
-    }
-  }
-
-  void createNewTimerIfNoneTimerIsActive(){
-    TimersProdutividade.createAPeriodicTimer(this.widget, operation: this._setStateWithEmptyFunction );
-  }
-
   void removeCronometroDaListaECancelaTimer(Tarefa tarefa){
-    ChronometerField field = this.getCronometro(tarefa);
+    ChronometerStateful field = this.getCronometro(tarefa);
     if( field != null ) {
+      field.pause();
       this.cronometrosGerados.remove(tarefa.id);
-      this.cancelTimersIfAllChronometersAreInactive();
     }
   }
 
-  ChronometerField getCronometro(Tarefa tarefa){
+  ChronometerStateful getCronometro(Tarefa tarefa){
     return this.cronometrosGerados[tarefa.id];
   }
 
-  ChronometerField retornaCronometroAtualizado(Tarefa tarefa, TempoDedicado tempo){
-    ChronometerField field = this.getCronometro(tarefa);
+  ChronometerStateful retornaCronometroAtualizado(Tarefa tarefa, TempoDedicado tempo){
+    ChronometerStateful field = this.getCronometro(tarefa);
     if( field == null ){
       return this.gerarNovoCronometro( tempo );
     }
@@ -351,28 +336,28 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     return field;
   }
 
-  ChronometerField gerarNovoCronometro( TempoDedicado tempo ){
-    ChronometerField field = new ChronometerField("Duração", beginTime: tempo.inicio );
+  ChronometerStateful gerarNovoCronometro( TempoDedicado tempo ){
+    ChronometerStateful field = new ChronometerStateful("Duração", beginTime: tempo.inicio );
     this.cronometrosGerados[tempo.tarefa.id] = field;
-    this.createNewTimerIfNoneTimerIsActive();
     return field;
   }
 
   Widget generateChronometerWidgetIfActive(Tarefa tarefa){
     TempoDedicado tempo = this._verifyTaskIsActive( tarefa.id );
     if( tempo != null ){
-      ChronometerField field = this.retornaCronometroAtualizado(tarefa, tempo);
-      return new LimitedBox(
+      ChronometerStateful field = this.retornaCronometroAtualizado(tarefa, tempo);
+      LimitedBox box = new LimitedBox(
         child: GestureDetector(
           onTap: ()=> this._exibirComponenteEdicaoDeTempo( tarefa ),
           child: Container(
               child: AbsorbPointer(
-                  child: field.getWidget()
+                  child: field
               )
           )
         ),
         maxWidth: 85,
       );
+      return box;
     }else{
       return Expanded( flex: 0,child: new Container());
     }

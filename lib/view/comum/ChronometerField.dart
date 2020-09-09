@@ -39,7 +39,6 @@ class ChronometerField extends CampoDeTextoWidget{
   }
   @override
   Widget getWidget() {
-    this._updateFieldWithFormatedDuration();
     return super.getWidget();
   }
 
@@ -80,7 +79,9 @@ class ChronometerField extends CampoDeTextoWidget{
   }
 
   void pause(){
-    this._getLastInterval().endTime = DateTime.now();
+    if( this.isActive() ) {
+      this._getLastInterval().endTime = DateTime.now();
+    }
     this._printLogIntervalsSituation();
   }
 
@@ -123,7 +124,7 @@ class ChronometerField extends CampoDeTextoWidget{
     return this._getLastInterval().getDuration();
   }
 
-  void _updateFieldWithFormatedDuration(){
+  void updateFieldWithFormatedDuration(){
     String duracaoFormatoCronometro = DataHoraUtil.converterDuracaoFormatoCronometro( this.getLastDuration() );
     this._printLog("Formated Duration: ${duracaoFormatoCronometro} - key: ${this.key}");
     super.setText(duracaoFormatoCronometro);

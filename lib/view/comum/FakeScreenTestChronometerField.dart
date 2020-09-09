@@ -90,7 +90,7 @@ class _FakeScreenTestChronometerFieldState extends State<FakeScreenTestChronomet
 
   @override
   void dispose() {
-    TimersProdutividade.cancelTimerIfActivated( this.widget );
+    TimersProdutividade.cancelAndRemoveTimer( this.widget );
     super.dispose();
   }
 
