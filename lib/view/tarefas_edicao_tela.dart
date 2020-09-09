@@ -1,19 +1,28 @@
 import "package:flutter/material.dart";
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/DateTimeInterval.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/FutureBuilderWithCache.dart';
+import 'package:registro_produtividade/view/comum/IntervalDatesChoosingComponent.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
-import 'package:registro_produtividade/view/tarefas_listagem_tela.dart';
 import 'package:registro_produtividade/view/tempo_dedicado_edicao.dart';
 import 'package:registro_produtividade/view/tempo_dedicado_listagem.dart';
+
+enum _Estado{
+  CADASTRO,
+  RELATORIO_VISIVEL,
+  EDICAO_VISIVEL,
+}
+
 
 class TarefasEdicaoTela extends StatefulWidget {
 
   Tarefa tarefaAtual;
+  _Estado estadoAtual;
 
   static final String KEY_STRING_BOTAO_SALVAR = "saveButton";
   static final String KEY_STRING_BOTAO_VOLTAR = "backButton";
@@ -24,6 +33,7 @@ class TarefasEdicaoTela extends StatefulWidget {
 
   TarefasEdicaoTela( {Tarefa tarefa} ){
     this.tarefaAtual = tarefa;
+    this.defineInitialState();
   }
 
   @deprecated
@@ -34,6 +44,14 @@ class TarefasEdicaoTela extends StatefulWidget {
 
   @override
   _TarefasEdicaoTelaState createState() => _TarefasEdicaoTelaState();
+
+  void defineInitialState() {
+    if( this.tarefaAtual == null ){
+      this.estadoAtual = _Estado.CADASTRO;
+    }else{
+      this.estadoAtual = _Estado.RELATORIO_VISIVEL;
+    }
+  }
 }
 
 class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
@@ -45,7 +63,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
 
   ListagemTempoDedicadoComponente listagemDeTempo;
   TempoDedicadoEdicaoComponente edicaoDeTempo;
-  bool exibirDetalhesDeTempo = false;
+
+  IntervalDatesChoosingComponent intervalDateChoosing;
 
   FutureBuilderWithCache futureBuilderWithCache = new FutureBuilderWithCache<Widget>( chacheOn: true );
 
@@ -62,12 +81,17 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   void InicializarVariaveis(){
-    this.campoNome = new CampoDeTextoWidget("Nome da Tarefa", 1, this.validarCampoNome );
-    this.campoNome.setKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME );
-    this.campoDescricao = new CampoDeTextoWidget("Descrição da tarefa", 6, null );
-    this.campoDescricao.setKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_DESCRICAO );
-    if( this.widget.tarefaAtual != null ) {
+    if( this.campoNome == null){
+      this.campoNome = new CampoDeTextoWidget("Nome da Tarefa", 1, this.validarCampoNome );
+      this.campoNome.setKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME );
+    }
+    if( this.campoDescricao == null ){
+      this.campoDescricao = new CampoDeTextoWidget("Descrição da tarefa", 6, null );
+      this.campoDescricao.setKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_DESCRICAO );
+    }
+    if( this.widget.estadoAtual == _Estado.EDICAO_VISIVEL ) {
       this._inicializarTarefa();
+    }else if( this.widget.estadoAtual == _Estado.RELATORIO_VISIVEL ) {
       this._inicializarListagemDeTempoDedicado();
       this._inicializarEdicaoDeTempoDedicado();
     }
@@ -78,9 +102,6 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   void _inicializarEdicaoDeTempoDedicado(){
-    if( this.widget.tarefaAtual == null ) {
-      return;
-    }
     this.edicaoDeTempo = new TempoDedicadoEdicaoComponente(this.widget.tarefaAtual, context,
       formatter: DataHoraUtil.formatterDataSemAnoHoraBrasileira);
   }
@@ -132,7 +153,6 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   Widget gerarConteudoCentral() {
-    String tituloInicial = (this.widget.tarefaAtual == null) ? "Cadastro de uma nova Tarefa" : "Edição de uma Tarefa";
     return new WillPopScope(
       onWillPop: this.voltarParaPaginaAnterior,
       child: new SingleChildScrollView(
@@ -141,53 +161,103 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
             children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: new Text( tituloInicial,
-                style: Estilos.textStyleListaTituloDaPagina,
-                key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
+            child: this._gerarTituloDaPagina()
           ),
-          new Form(
-            key: this.globalKey,
-            child: new Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: this.campoNome.getWidget(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: this.campoDescricao.getWidget(),
-                ),
-                new Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: new RaisedButton(
-                          key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
-                          onPressed: this.pressionouSalvar,
-                          child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
-                          color: Estilos.corRaisedButton,),
-                      ),
-                    ),
-                    Expanded(
-                      child: new RaisedButton(
-                        key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
-                        onPressed: this.pressionouVoltar,
-                        child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
-                        color: Estilos.corRaisedButton,),
-                    ),
-                    Expanded(child: this.gerarBotaoDeletar()),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          this._gerarFormularioEdicaoDaTarefaOuBotaoEditar(),
           this.gerarAreaDeRegistrosDeTempoOuVazio(),
         ]),
       ),
     );
     //Form formulario = new Form( child: coluna, key: this.globalKey );
+  }
+
+  Widget _gerarTituloDaPagina(){
+    String titulo = "";
+    if( this.widget.estadoAtual == _Estado.CADASTRO){
+      titulo = "Cadastro de uma nova Tarefa";
+    }else if( this.widget.estadoAtual == _Estado.EDICAO_VISIVEL ){
+      titulo =  "Edição de uma Tarefa";
+    }else if( this.widget.estadoAtual == _Estado.RELATORIO_VISIVEL ){
+      titulo =  "Relatórios da Tarefa";
+    }
+    return new Text( titulo,
+        style: Estilos.textStyleListaTituloDaPagina,
+        key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) );
+  }
+  
+  Widget _gerarFormularioEdicaoDaTarefaOuBotaoEditar(){
+    if( this.widget.estadoAtual == _Estado.EDICAO_VISIVEL || this.widget.estadoAtual == _Estado.CADASTRO ){
+      return this._gerarFormularioEdicaoDaTarefa();
+    }else if( this.widget.estadoAtual == _Estado.RELATORIO_VISIVEL ){
+      return this._gerarBotoesEditarTarefaEVoltar();
+    }
+  }
+
+  Widget _gerarBotoesEditarTarefaEVoltar(){
+    return Row(
+      children: [
+        SizedBox(
+          width: 220,
+          child: Padding(
+            padding: const EdgeInsets.only( left: 8.0 ),
+            child: ComunsWidgets.createRaisedButton("Editar cadastro da tarefa", null, () {
+              this.widget.estadoAtual = _Estado.EDICAO_VISIVEL;
+              this._setStateWithEmptyFunction();
+            }),
+          ),
+        ),
+        SizedBox(
+          width: 120,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: ComunsWidgets.createRaisedButton("Voltar", null, () async {
+              await this.pressionouVoltar();
+            }),
+          )
+        ),
+      ],
+    );
+  }
+
+  Widget _gerarFormularioEdicaoDaTarefa(){
+    return new Form(
+      key: this.globalKey,
+      child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: this.campoNome.getWidget(),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: this.campoDescricao.getWidget(),
+          ),
+          new Row(
+            children: <Widget>[
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: new RaisedButton(
+                    key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
+                    onPressed: this.pressionouSalvar,
+                    child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
+                    color: Estilos.corRaisedButton,),
+                ),
+              ),
+              Expanded(
+                child: new RaisedButton(
+                  key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
+                  onPressed: this.pressionouVoltar,
+                  child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
+                  color: Estilos.corRaisedButton,),
+              ),
+              Expanded(child: this.gerarBotaoDeletar()),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Widget gerarAreaDeRegistrosDeTempoOuVazio(){
@@ -204,7 +274,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   Future<Widget> exibirBotaoDetalharOuListaDetalhes() async {
-    if( !this.exibirDetalhesDeTempo ){
+    if( this.widget.estadoAtual == _Estado.EDICAO_VISIVEL ){
       return new RaisedButton(
         key: new ValueKey(TarefasEdicaoTela.KEY_STRING_BOTAO_DETALHES_TEMPOS),
         onPressed: this.pressionouMostrarDetalhes,
@@ -212,22 +282,45 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
             style: Estilos.textStyleBotaoFormulario),
         color: Estilos.corRaisedButton,
       );
-    }else{
+    }else if(  this.widget.estadoAtual == _Estado.RELATORIO_VISIVEL  ){
       return Column(
         children: [
-          await this.listagemDeTempo.gerarCampoDaDuracaoTotal(),
+          Row(
+            children: [
+              Expanded( child: await this.listagemDeTempo.gerarCampoDaDuracaoTotal()),
+              SizedBox(
+                width: 50.0,
+                child: ComunsWidgets.createIconButton(Icons.settings, null, () async {
+                  await this.clickedInSettingsIcon();
+                }),
+              ),
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 5.0, 0, 0),
             child: await this.listagemDeTempo.gerarListViewDosTempos(),
           ),
         ],
       );
+    }else{
+      return new Container();
+    }
+  }
+
+  Future<void> clickedInSettingsIcon() async {
+    DateTime begin = this.listagemDeTempo.intervalReport.beginTime;
+    DateTime end = this.listagemDeTempo.intervalReport.endTime;
+    this.intervalDateChoosing = new IntervalDatesChoosingComponent( begin, end, this.context );
+    DateTimeInterval selectedInterval = await this.intervalDateChoosing.showSearchDialog();
+    if( selectedInterval != null ) {
+      this.listagemDeTempo.intervalReport = selectedInterval;
+      this._setStateWithEmptyFunction();
     }
   }
 
   void pressionouMostrarDetalhes(){
     this.setState(() {
-      this.exibirDetalhesDeTempo = true;
+      this.widget.estadoAtual = _Estado.RELATORIO_VISIVEL;
     });
   }
 
@@ -247,10 +340,9 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     });
   }
 
-  void pressionouVoltar() async{
-    ComunsWidgets.mudarParaPaginaInicial().then( (value) {
-      this.resetarVariaveis();
-    });
+  Future<void> pressionouVoltar() async{
+    await ComunsWidgets.mudarParaPaginaInicial();
+    this.resetarVariaveis();
   }
 
   void pressionouSalvar(){

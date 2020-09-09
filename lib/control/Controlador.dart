@@ -1,5 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/DateTimeInterval.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
@@ -27,33 +28,64 @@ class Controlador{
     return this.tarefaDao.getAllTarefa();
   }
 
-  ///     Retorna todas as tarefas cadastradas, ordenadas tendo como prioridade as tarefas que tiveram
-  /// algum tempo registrado mais recentemente.
-  Future<List<Tarefa>> getListaDeTarefasOrderByDataInicio() async{
-    List<Tarefa> tarefas = new List();
+  Future<List<Tarefa>> getListaDeTarefasJoinTemposDedicados() async{
+    List<Tarefa> tarefas = await this.getListaDeTarefas();
     List<TempoDedicado> tempos = await this.getAllTempoDedicadoOrderByInicio();
-    if( tempos.isEmpty ){
-      tarefas = await this.getListaDeTarefas();
-    }else{
-      List<int> idsTarefasParaAdicionar = new List();
-      tempos.forEach( (tempo) async {
-        int idTarefa = tempo.tarefa.id;
-        if( !idsTarefasParaAdicionar.contains( idTarefa ) ){
-          idsTarefasParaAdicionar.add( idTarefa );
+    tempos.forEach( (tempo) {
+      int idTarefa = tempo.tarefa.id;
+      tarefas.forEach((tarefa) {
+        if( tarefa.id == idTarefa ){
+          tarefa.addTempoDedicado( tempo );
         }
       });
-      tarefas = await this._trazerTarefasNaOrdem( idsTarefasParaAdicionar );
-      this._addRestanteDasTarefas( tarefas );
-    }
+    });
     return tarefas;
   }
 
-  Future<List<Tarefa>> _trazerTarefasNaOrdem( List<int> ids ) async{
+  ///TODO Teste de unidade
+  Future<List<Tarefa>> getListaDeTarefasOrdenadasPorDataCriacaoERegistroTempo() async{
+    try {
+      List<Tarefa> tarefas = await this.getListaDeTarefasJoinTemposDedicados();
+      tarefas.sort(Tarefa.compareByCreationDateAndTimeRegister);
+      return tarefas.reversed.toList();
+    }catch(ex, stacktrace){
+      print( "Erro ao tentar retornar a lista de tarefas - ${ex} - ${stacktrace}" );
+      throw ex;
+    }
+  }
+
+  ///     Retorna todas as tarefas cadastradas, ordenadas tendo como prioridade as tarefas que tiveram
+  /// algum tempo registrado mais recentemente.
+  Future<List<Tarefa>> getListaDeTarefasOrderByDataInicio() async{
+    try {
+      List<Tarefa> tarefas = new List();
+      List<TempoDedicado> tempos = await this.getAllTempoDedicadoOrderByInicio();
+      if( tempos.isEmpty ){
+        tarefas = await this.getListaDeTarefas();
+      }else{
+        List<int> idsTarefasParaAdicionar = new List();
+        tempos.forEach( (tempo) async {
+          int idTarefa = tempo.tarefa.id;
+          if( !idsTarefasParaAdicionar.contains( idTarefa ) ){
+            idsTarefasParaAdicionar.add( idTarefa );
+          }
+        });
+        tarefas = await this._trazerTarefasNaOrdem( idsTarefasParaAdicionar );
+        this._addRestanteDasTarefas( tarefas );
+      }
+      return tarefas;
+    }on Exception catch( ex, stack){
+      print( "Erro ao carregar a lista de tarefas: ${ex}" );
+    }
+  }
+
+  Future<List<Tarefa>> _trazerTarefasNaOrdem( List<int> listaIds ) async{
     List<Tarefa> tarefas = new List();
-    await ids.forEach((idTarefa) async {
+    for( int i=0; i< listaIds.length; i++ ){
+      int idTarefa = listaIds[i];
       Tarefa tarefa = await this.tarefaDao.getTarefa( idTarefa );
       tarefas.add( tarefa );
-    });
+    }
     return tarefas;
   }
 
@@ -92,8 +124,16 @@ class Controlador{
   }
 
   /// Returna a lista de tempos de uma tarefa, ordenados do mais recente pro mais antigo.
-  Future<List<TempoDedicado>> getTempoDedicadoOrderByInicio(Tarefa tarefa) async {
-    return await this.tempoDedicadoDao.getTempoDedicadoOrderByInicio( tarefa );
+  Future<List<TempoDedicado>> getTempoDedicadoOrderByInicio(Tarefa tarefa, {DateTimeInterval interval}) async {
+    try{
+      List<TempoDedicado> lista = await this.tempoDedicadoDao.getTempoDedicadoOrderByInicio( tarefa );
+      if( interval != null ) {
+        lista.removeWhere((tempo) => !tempo.isBetween(interval));
+      }
+      return lista;
+    }catch(ex){
+      print( "Erro ao tentar listar os registros de tempo dedicado: ${ex}" );
+    }
   }
 
   void deletarRegistroTempoDedicado(TempoDedicado registro) {
@@ -109,8 +149,8 @@ class Controlador{
   }
 
   /// Retorna o total de tempo gasto numa tarefa em Minutos.
-  Future<int> getTotalGastoNaTarefaEmMinutos(Tarefa tarefa) async {
-    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa );
+  Future<int> getTotalGastoNaTarefaEmMinutos(Tarefa tarefa, {DateTimeInterval interval}) async {
+    List<TempoDedicado> tempos = await this.getTempoDedicadoOrderByInicio( tarefa, interval: interval );
     return this.getSomatorioTempoGasto( tempos );
   }
 

@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
@@ -94,6 +96,7 @@ class ComunsWidgets {
                   ])),
           ComunsWidgets.gerarItemMenuDrawer("Tarefas abertas", Icons.message, ComunsWidgets.mudarParaPaginaInicial),
           ComunsWidgets.gerarItemMenuDrawer("Criação de Tarefas", Icons.add, ComunsWidgets.mudarParaPaginaEdicaoDeTarefas),
+          ComunsWidgets.gerarItemMenuDrawer("Relatórios", Icons.show_chart, ComunsWidgets.mudarParaPaginaDeRelatorios),
         ],
       ),
     );
@@ -104,7 +107,7 @@ class ComunsWidgets {
   }
 
   static RaisedButton createRaisedButton(String label, String keyString, void Function() onpressed){
-    keyString ??= ( label+(DateTime.now().millisecond.toString()) );
+    keyString ??= "RaisedButton_"+( UniqueKey().toString() )+DataHoraUtil.timestampMili();
     return new RaisedButton(
       key: ComunsWidgets.createKey( keyString ),
       child: new Text( label, style: Estilos.textStyleBotaoFormulario),
@@ -114,6 +117,7 @@ class ComunsWidgets {
   }
   
   static IconButton createIconButton( IconData iconData, String keyString, void Function() onPressedFunction ){
+    keyString ??= "IconButton_${DataHoraUtil.timestampMili()}";
     return new IconButton(
       key: new ValueKey<String>( keyString ),
       icon: new Icon( iconData ),
@@ -157,5 +161,10 @@ class ComunsWidgets {
     Navigator.pushNamed(context, Rotas.CADASTRO_TEMPO, arguments: argumentos).then((value) {
       return value;
     });
+  }
+
+  static Future<dynamic> mudarParaPaginaDeRelatorios() async{
+    dynamic value = Navigator.pushNamed( context, Rotas.RELATORIOS );
+    return value;
   }
 }

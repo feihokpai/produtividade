@@ -11,6 +11,8 @@ class CampoDataHora extends CampoDeTextoWidget{
   DateTime _dataSelecionada;
   DateFormat formatter;
   static DateFormat formatterPadrao = DataHoraUtil.formatterDataHoraResumidaBrasileira;
+  bool _showDatePicker = true;
+  bool _showHourPicker = true;
 
   static String PREFIXO_KEY_STRING_ICONE_DATE_PICKER = "datePicker_";
   static String PREFIXO_KEY_STRING_ICONE_TIME_PICKER = "timePicker_";
@@ -19,7 +21,8 @@ class CampoDataHora extends CampoDeTextoWidget{
   void Function() _onChange;
 
   CampoDataHora(String label, BuildContext context, {ValueKey<String> chave, DateTime dataMaxima, DateTime dataMinima,
-      DateFormat dateTimeFormatter, DateTime dataInicialSelecionada, void Function() onChange})
+    DateFormat dateTimeFormatter, DateTime dataInicialSelecionada, bool showHourPicker=true,
+    bool showDatePicker=true, void Function() onChange})
       : assert( context != null ),
         assert( dataMaxima == null || dataMinima == null
             || !(DataHoraUtil.eDataDeDiaAnterior( dataMaxima , dataMinima) )
@@ -31,6 +34,8 @@ class CampoDataHora extends CampoDeTextoWidget{
     this.onChange = onChange;
     this.formatter = dateTimeFormatter ?? CampoDataHora.formatterPadrao;
     this.dataSelecionada = dataInicialSelecionada;
+    _showDatePicker = showDatePicker;
+    _showHourPicker = showHourPicker;
   }
 
   void set onChange(void Function() onChange){
@@ -102,32 +107,47 @@ class CampoDataHora extends CampoDeTextoWidget{
 
   @override
   Widget getWidget(){
-    ValueKey chave = super.key as ValueKey;
-    String keyCalendario = "${CampoDataHora.PREFIXO_KEY_STRING_ICONE_DATE_PICKER}${chave.value}";
-    String keyRelogio = "${CampoDataHora.PREFIXO_KEY_STRING_ICONE_TIME_PICKER}${chave.value}";
     return new Row(
       children: <Widget>[
         Expanded(
             flex: 3,
             child: super.getWidget()
         ),
-        Expanded(
-          flex: 1,
-          child: new IconButton(
-            key: new ValueKey( keyCalendario ),
-            icon: new Icon( Icons.date_range ),
-            onPressed: this.exibirCalendario,
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: new IconButton(
-            key: new ValueKey( keyRelogio ),
-            icon: new Icon( Icons.alarm ),
-            onPressed: this.exibirRelogio,
-          ),
-        )
+        this.showDatePickerOrEmpty(),
+        this.showTimePickerOrEmpty(),
       ],
     );
+  }
+
+  Widget showDatePickerOrEmpty(){
+    if( !this._showDatePicker ){
+      return new Container();
+    }else{
+      String keyCalendario = "${CampoDataHora.PREFIXO_KEY_STRING_ICONE_DATE_PICKER}${super.key.value}";
+      return Expanded(
+        flex: 1,
+        child: new IconButton(
+          key: new ValueKey( keyCalendario ),
+          icon: new Icon( Icons.date_range ),
+          onPressed: this.exibirCalendario,
+        ),
+      );
+    }
+  }
+
+  Widget showTimePickerOrEmpty(){
+    String keyRelogio = "${CampoDataHora.PREFIXO_KEY_STRING_ICONE_TIME_PICKER}${super.key.value}";
+    if( !this._showHourPicker ){
+      return new Container();
+    }else{
+      return new Expanded(
+        flex: 1,
+        child: new IconButton(
+          key: new ValueKey( keyRelogio ),
+          icon: new Icon( Icons.alarm ),
+          onPressed: this.exibirRelogio,
+        ),
+      );
+    }
   }
 }

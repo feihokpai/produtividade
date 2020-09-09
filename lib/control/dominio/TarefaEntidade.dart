@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/EntidadeDominio.dart';
+import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 
 class Tarefa extends EntidadeDominio{
   String _nome;
@@ -10,6 +12,7 @@ class Tarefa extends EntidadeDominio{
   Tarefa _tarefaPai = null;
   DateTime _dataHoraCadastro = null;
   DateTime _dataHoraConclusao = null;
+  List<TempoDedicado> _temposDedicados = new List();
 
   static const int ABERTA = 1;
   static const int CONCLUIDA = 2;
@@ -94,6 +97,55 @@ class Tarefa extends EntidadeDominio{
     return "id(${this.id}): nome(${this.nome}) - descrição: ${this.descricao}";
   }
 
+  static void _assertsCompareByCreationDate(Tarefa tarefa1, Tarefa tarefa2){
+    String msg = "Tentou comparar as datas de criação de duas tarefas, mas não foi possível porque ";
+    String msgTarefaNull = msg+"alguma das tarefas foi passada como null. ${tarefa1} e ${tarefa2}";
+    assert(tarefa1 != null && tarefa2 != null, msgTarefaNull );
+
+    String msgDataCadastroNull = msg+"alguma das tarefas foi passada sem data de cadastro."
+        " Valores: ${tarefa1.dataHoraCadastro} e ${tarefa2.dataHoraCadastro}";
+    assert(tarefa1.dataHoraCadastro != null && tarefa2.dataHoraCadastro != null, msgDataCadastroNull );
+  }
+
+  /// Receives 2 Tarefa objects and returns:
+  /// -1: if tarefa1 was created before tarefa2
+  /// 0: if tarefa1 was created in same moment to tarefa2
+  /// 1: if tarefa1 was created after tarefa2
+  /// UPDATED TEST - 06/09/2020
+  static int compareByCreationDate(Tarefa tarefa1, Tarefa tarefa2){
+    Tarefa._assertsCompareByCreationDate(tarefa1, tarefa2);
+    DateTime data1 = tarefa1.dataHoraCadastro;
+    DateTime data2 = tarefa2.dataHoraCadastro;
+    return data1.compareTo( data2 );
+  }
+
+  /// TODO Teste de unidade
+  static int compareByCreationDateAndTimeRegister(Tarefa tarefa1, Tarefa tarefa2){
+    DateTime data1 = tarefa1.getRegistroMaisrecente();
+    DateTime data2 = tarefa2.getRegistroMaisrecente();
+    return data1.compareTo( data2 );
+  }
+
+  ///     Se a tarefa não tiver tempos registrados, retorna a data/hora de criação da tarefa. Se tiver tempos registrados,
+  /// retorna a data/hora de início do último registro de tempo dela.
+  /// TODO teste de unidade
+  DateTime getRegistroMaisrecente(){
+    TempoDedicado ultimoTempo = this.getUltimoRegistroDeTempo();
+    return ultimoTempo != null ? ultimoTempo.inicio : this.dataHoraCadastro;
+  }
+
+  ///     Caso a tarefa não tenha registros de tempo retorna null. Se tiver, retorna o último registro de tempo
+  /// feito para ela.
+  /// TODO Teste de unidade
+  TempoDedicado getUltimoRegistroDeTempo(){
+    if( this.temposDedicados.length == 0 ) {
+      return null;
+    }else{
+      this.temposDedicados.sort();
+      return this.temposDedicados.last;
+    }
+  }
+
   ///     Retorna uma instância da classe Tarefa com o id passado como parâmetro, com um nome qualquer
   /// e com descrição null.
   static Tarefa gerarTarefaSomenteComId( int id ){
@@ -108,6 +160,18 @@ class Tarefa extends EntidadeDominio{
         && other.id != 0
         && this.id != 0
         && other.id == this.id);
+  }
+
+  List<TempoDedicado> get temposDedicados => this._temposDedicados;
+
+  void set temposDedicados(List<TempoDedicado> temposDedicados){
+    this._temposDedicados = temposDedicados ?? new List();
+  }
+
+  /// TODO teste de unidade
+  void addTempoDedicado( TempoDedicado tempo ){
+    assert(tempo != null, "Tentou adicionar um tempo dedicado a uma tarefa, mas passou valor null");
+    this.temposDedicados.add( tempo );
   }
 
 }

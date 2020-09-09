@@ -5,4 +5,5 @@ class Rotas{
   static String LISTAGEM_TEMPO = "/listTempo";
   static String CADASTRO_TEMPO = "/addTempo";
   static String EDICAO_TEMPO = "/editTempo";
+  static String RELATORIOS = "/reports";
 }

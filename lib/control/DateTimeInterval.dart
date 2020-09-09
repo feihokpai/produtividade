@@ -1,4 +1,6 @@
-///     DurationWithInterval is a Duration that register the begin and the end DateTime
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
+
+///     DateTimeInterval is a Duration that register the begin and the end DateTime
 /// envolved in the process.
 class DateTimeInterval{
   DateTime _beginTime;
@@ -7,6 +9,13 @@ class DateTimeInterval{
   DateTimeInterval( DateTime begin, DateTime end ){
     this._beginTime = begin;
     this._endTime = end;
+  }
+
+  /// Return the amount of days between beginDate and endDate, including both. If endDate is null is used Today's date.
+  int daysAmount(){
+    DateTime end = this.endTime ?? DateTime.now();
+    DateTime begin = this.beginTime;
+    return 1+end.difference( begin ).inDays;
   }
 
   ///     Duration of the difference between beginTime and endTime. If endTime is null, returns the difference

@@ -78,6 +78,19 @@ class TempoDedicadoEntidadeTest{
       expect( () => new TempoDedicado( this.criarTarefaValida(), inicio: amanha ), throwsException );
     });
 
+    test("Tempo dedicado: (inicio) construtor permitir inicio para data de dia maior que hoje, mas do mês anterior", (){
+      DateTime dataMesAnterior = DataHoraUtil.criarDataMesAnteriorMesmoDia( DateTime.now() );
+      DateTime dataMesAnteriorMais1Dia = dataMesAnterior.add( new Duration( days: 1 ) );
+      expect( new TempoDedicado( this.criarTarefaValida(), inicio: dataMesAnteriorMais1Dia ).inicio, dataMesAnteriorMais1Dia );
+    });
+
+    test("Tempo dedicado: (inicio) construtor permitir inicio para data de dia e mês maior que hoje, mas do ano anterior", (){
+      DateTime dataAnoAnterior = DataHoraUtil.criarDataAnoAnteriorMesmoDiaEMes( DateTime.now() );
+      DateTime dataAnoAnteriorUmMesDepois = dataAnoAnterior.add( new Duration( days: 32 ) );
+      print("agora: ${dataAnoAnteriorUmMesDepois}");
+      expect( new TempoDedicado( this.criarTarefaValida(), inicio: dataAnoAnteriorUmMesDepois ).inicio, dataAnoAnteriorUmMesDepois );
+    });
+
     test("Tempo dedicado: (inicio) setter não permite inicio nulo?", (){
       TempoDedicado td = new TempoDedicado( this.criarTarefaValida() );
       expect( () => td.inicio = null, throwsException );
@@ -87,6 +100,20 @@ class TempoDedicadoEntidadeTest{
       DateTime amanha = DataHoraUtil.criarDataAmanhaInicioDoDia();
       TempoDedicado td = new TempoDedicado( this.criarTarefaValida() );
       expect( () => td.inicio = amanha, throwsException );
+    });
+
+    test("Tempo dedicado: (inicio) setter permitir inicio para data de dia maior que hoje, mas do mês anterior", (){
+      DateTime dataMesAnterior = DataHoraUtil.criarDataMesAnteriorMesmoDia( DateTime.now() );
+      DateTime dataMesAnteriorMais1Dia = dataMesAnterior.add( new Duration( days: 1 ) );
+      TempoDedicado td = new TempoDedicado( this.criarTarefaValida() );
+      expect( td.inicio = dataMesAnteriorMais1Dia, dataMesAnteriorMais1Dia );
+    });
+
+    test("Tempo dedicado: (inicio) setter permitir inicio para data de dia e mês maior que hoje, mas do ano anterior", (){
+      DateTime dataAnoAnterior = DataHoraUtil.criarDataAnoAnteriorMesmoDiaEMes( DateTime.now() );
+      DateTime dataAnoAnteriorUmMesDepois = dataAnoAnterior.add( new Duration( days: 32 ) );
+      TempoDedicado td = new TempoDedicado( this.criarTarefaValida() );
+      expect( td.inicio = dataAnoAnteriorUmMesDepois, dataAnoAnteriorUmMesDepois );
     });
 
     test("Tempo dedicado: (fim) construtor por default seta data nula?", (){

@@ -22,19 +22,6 @@ class ChronometerFieldTest extends WidgetTestsUtilProdutividade {
 
   @override
   void runAll() {
-    super.criarTeste(
-        "In constructor, if not define a function to Update UI raise Assert Error?",
-        new FakeScreenTestChronometerField(), () {
-      expect(() => new ChronometerField("aaaa"), throwsAssertionError);
-    });
-
-    super.criarTeste(
-        "In constructor, if define a function to Update UI as NULL raise Assert Error?",
-        new FakeScreenTestChronometerField(), () {
-      expect(() => new ChronometerField("aaaa", functionUpdateUI: null),
-          throwsAssertionError);
-    });
-
     super.criarTeste("In contructor, label NULL converts in empty String?",
         new FakeScreenTestChronometerField(), () {
           expect(new ChronometerField(null, functionUpdateUI: () {}).labelCampo,
