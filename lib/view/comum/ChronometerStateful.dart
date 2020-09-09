@@ -68,17 +68,12 @@ class _ChronometerStatefulState extends State<ChronometerStateful> {
     }
   }
 
-  void Function(Timer) createFunctionToTimer( final ChronometerStateful chrono, final State<ChronometerStateful> state ){//}void Function( void Function() ) setStateFunction ){
-    return (Timer timer){
-      chrono.field.updateFieldWithFormatedDuration();
-    };
+  void iniciarTimer(){
+    TimersProdutividade.createAPeriodicTimer(widget, operation: this.updateTextField );
   }
 
-  void iniciarTimer(){
-    Duration frequency = new Duration( milliseconds: 1000 );
-    void Function(Timer) functionTimer = this.createFunctionToTimer( this.widget, this);
-    Timer timer = new Timer.periodic( frequency, functionTimer );
-    TimersProdutividade.setTimerToWidget( this.widget, timer );
+  void updateTextField(){
+    this.widget.field.updateFieldWithFormatedDuration();
   }
 
   void cancelarTimer(){

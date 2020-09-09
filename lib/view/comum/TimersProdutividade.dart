@@ -107,7 +107,7 @@ class TimersProdutividade{
     _initCallNumber( widget );
     _timers[widget] = Timer.periodic( frequency, (timer){
       operation();
-      _printLog( "Timer of ${_widgetIdentifier(widget)} executed. Time: ${_nextCallNumber(widget)}. Code ${timer.hashCode} - "
+      _printLog( "Timer of ${_widgetIdentifier(widget)} executed. count: ${_nextCallNumber(widget)}. Timer ${timer.hashCode} - "
           " operation ${operation.hashCode}" );
     } );
     _printLog( "Timer of ${_widgetIdentifier(widget)} created. code: ${_timers[widget].hashCode}. Total created: ${_timers.length}" );
