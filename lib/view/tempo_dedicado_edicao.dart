@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/Validators.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDataHora.dart';
@@ -304,8 +305,29 @@ class TempoDedicadoEdicaoComponente{
   }
 
   Future<void> _clicouEmSalvar(BuildContext contextDialogStatefull) async {
-    await this._saveChangedInformation();
-    Navigator.of( contextDialogStatefull ).pop( 1 );
+    String tituloPopup = "Falha ao tentar salvar um registro de tempo";
+    this.tryCatch( tituloPopup, () async {
+      await this._saveChangedInformation();
+      Navigator.of(contextDialogStatefull).pop(1);
+    });
+  }
+
+  Future<void> tryCatch( String tituloCasoOcorraErro, void Function() operation) async {
+    try {
+      await operation.call();
+    } on ValidationException catch(ex, stackTrace){
+      String msg = "";
+      ex.problems.forEach((problem) {
+        msg += "* "+problem.description+"\n";
+      });
+      ComunsWidgets.popupDeAlerta( this._contextOfStatefulBuilder, tituloCasoOcorraErro, msg );
+    }catch(ex, stackTrace){
+      ComunsWidgets.popupDeAlerta( this._contextOfStatefulBuilder, tituloCasoOcorraErro, "Ocorreu"
+          " um erro inesperado no aplicativo. Entre em contato com os desenvolvedores para comunicar"
+          " esse problema, informando exatamente o que estava fazendo quando o erro ocorreu." );
+      print("Erro ao tentar executar uma operação: $ex - ${stackTrace}");
+      throw ex;
+    }
   }
 
   /// If some information in popup was changed saves the values.
