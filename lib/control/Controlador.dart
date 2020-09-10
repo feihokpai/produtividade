@@ -1,6 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/DateTimeInterval.dart';
+import 'package:registro_produtividade/control/Validators.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
@@ -162,6 +163,7 @@ class Controlador{
   }
 
   void salvarTempoDedicado(TempoDedicado tempo) {
+    Validators.validateTimeToInsert( tempo );
     if( tempo.id == 0) {
       this.tempoDedicadoDao.cadastrarTempo(tempo);
     }else{

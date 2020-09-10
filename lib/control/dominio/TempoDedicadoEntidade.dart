@@ -1,5 +1,6 @@
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/DateTimeInterval.dart';
+import 'package:registro_produtividade/control/Validators.dart';
 import 'package:registro_produtividade/control/dominio/EntidadeDominio.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 
@@ -40,8 +41,12 @@ class TempoDedicado extends EntidadeDominio implements Comparable<TempoDedicado>
   DateTime get fim => this._fim;
 
   set fim(DateTime valor){
+    ValidationException exception = new ValidationException();
     if( valor != null && valor.isBefore( this.inicio ) ){
-      throw new Exception("Num registro de tempo dedicado o horário de fim deve ser posterior ao de início.");
+      exception.addProblem( "Num registro de tempo dedicado o horário de fim deve ser posterior ao de início." );
+    }
+    if( exception.problems.length > 0 ){
+      throw exception;
     }
     this._fim = valor;
   }

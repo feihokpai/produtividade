@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/Validators.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 
@@ -129,7 +130,7 @@ class TempoDedicadoEntidadeTest{
       DateTime agora = new DateTime.now();
       TempoDedicado td = new TempoDedicado( this.criarTarefaValida(), inicio: agora );
       DateTime umSegundoAntes = agora.subtract( new Duration(seconds: 1) );
-      expect( () => td.fim = umSegundoAntes, throwsException );
+      expect( () => td.fim = umSegundoAntes, throwsA( isInstanceOf<ValidationException>( ) ) );
     });
 
     test("Tempo dedicado: (duracaoEmMinutos) com fim preenchido calcula corretamente?", (){
