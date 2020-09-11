@@ -82,8 +82,16 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     if( this.recarregarDadosPersistidos ){
       this.cancelAllChronemeters();
       this.tarefasParaListar = await this.controlador.getListaDeTarefasOrdenadasPorDataCriacaoERegistroTempo();
+      await this.formatarNomesDasTarefasInserindoDuracaoDeHoje();
       this.temposAtivos = await this.controlador.getTempoDedicadoAtivos();
       recarregarDadosPersistidos = false;
+    }
+  }
+
+  Future<void> formatarNomesDasTarefasInserindoDuracaoDeHoje() async {
+    for( int i=0; i< this.tarefasParaListar.length; i++ ){
+      Tarefa tarefa = this.tarefasParaListar[i];
+      tarefa.nome = await this._nomeDaTarefaFormatado( tarefa );
     }
   }
 
@@ -204,6 +212,16 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
         ),
       ),
     );
+  }
+
+  Future<String> _nomeDaTarefaFormatado(Tarefa tarefa) async {
+    String nomeFormatado = tarefa.nome;
+    int total = await this.controlador.getTotalGastoNaTarefaEmMinutosNoDia(tarefa, DateTime.now());
+    if( total > 0 ){
+      String duracaoFormatada = DataHoraUtil.criarStringQtdHorasEMinutosAbreviados( new Duration(minutes: total) );
+      nomeFormatado += " (hoje: "+duracaoFormatada+")";
+    }
+    return nomeFormatado;
   }
 
   Widget gerarConteudoCentral(){
