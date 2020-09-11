@@ -308,7 +308,6 @@ class TempoDedicadoEdicaoComponente{
     String tituloPopup = "Falha ao tentar salvar um registro de tempo";
     this.tryCatch( tituloPopup, () async {
       await this._saveChangedInformation();
-      Navigator.of(contextDialogStatefull).pop(1);
     });
   }
 
@@ -330,17 +329,45 @@ class TempoDedicadoEdicaoComponente{
     }
   }
 
+  Future<bool> _checarPossiveisValoresPreenchidosPorEngano( TempoDedicado tempo ) async {
+    if( tempo.fim != null && !DataHoraUtil.eDataMesmoDia(tempo.inicio, tempo.fim) ){
+      int quantidadeHoras = tempo.fim.difference(tempo.inicio).inHours;
+      String descricao = "Você preencheu as datas com dias diferentes, gerando uma diferença de $quantidadeHoras"
+          " horas entre o início e o fim do registro. Tem certeza de que deseja salvar essa informação?";
+      BuildContext contextAtual = this._isStateFulBuilderMounted() ? this._contextOfStatefulBuilder : this.context;
+      int resposta = await ComunsWidgets.exibirDialogConfirmacao( contextAtual , "Datas de dias diferentes",
+          descricao);
+      return ( resposta != 1 );
+    }
+    return false;
+  }
+
+  void _setTempoDedicadoComValoresPreenchidos(){
+    if( this.algumValorAlterado ) {
+      this.tempoDedicadoAtual ??= new TempoDedicado(this.tarefaAtual);
+      this.tempoDedicadoAtual.inicio = this.campoDataHoraInicial.dataSelecionada;
+      if (this.campoDataHoraFinal != null) {
+        this.tempoDedicadoAtual.fim = this.campoDataHoraFinal.dataSelecionada;
+      }
+    }
+  }
+
+  void voltarParaPaginaAnterior(){
+    if( this._isStateFulBuilderMounted() ) {
+      Navigator.of(this._contextOfStatefulBuilder).pop(1);
+    }
+  }
+
   /// If some information in popup was changed saves the values.
   Future<void> _saveChangedInformation() async {
     if( this.algumValorAlterado ) {
-      TempoDedicado tempo = this.tempoDedicadoAtual ??
-          new TempoDedicado(this.tarefaAtual);
-      tempo.inicio = this.campoDataHoraInicial.dataSelecionada;
-      if (this.campoDataHoraFinal != null) {
-        tempo.fim = this.campoDataHoraFinal.dataSelecionada;
+      this._setTempoDedicadoComValoresPreenchidos();
+      bool houveAlgumEngano = await this._checarPossiveisValoresPreenchidosPorEngano( this.tempoDedicadoAtual );
+      if( !houveAlgumEngano ){
+        await this.controlador.salvarTempoDedicado( this.tempoDedicadoAtual );
+        this._emptySetStateFunction();
+        this.voltarParaPaginaAnterior();
       }
-      await this.controlador.salvarTempoDedicado(tempo);
-      this._emptySetStateFunction();
     }
   }
 
