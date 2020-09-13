@@ -221,7 +221,7 @@ class TempoDedicadoEdicaoComponente{
                   " se vai iniciar a atividade agora."),
             ),
             this.returnHoursFields(),
-            this._generateFinishAndDeleteButtons(contextDialogStatefull),
+            this._generateSaveFinishAndDeleteButtons(contextDialogStatefull),
           ],
         ),
       ),
@@ -410,7 +410,7 @@ class TempoDedicadoEdicaoComponente{
     return value;
   }
 
-  Widget _generateFinishAndDeleteButtons(BuildContext contextDialogStatefull){
+  Widget _generateSaveFinishAndDeleteButtons(BuildContext contextDialogStatefull){
     return Row(
       children: [
         this._generateSaveButtonOrEmpty(contextDialogStatefull),
