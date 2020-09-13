@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/DateTimeInterval.dart';
+import 'package:registro_produtividade/control/Validators.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
@@ -73,6 +74,13 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     ComunsWidgets.context = context;
     this.InicializarVariaveis();
     return this.criarHome();
+  }
+
+  bool isSomeValueChanged(){
+    String currentName = this.widget.tarefaAtual.nome;
+    String currentDescription = this.widget.tarefaAtual.descricao;
+    return ( currentName != this.campoNome.getText()
+        || currentDescription != this.campoDescricao.getText() );
   }
 
   String validarCampoNome(String valor) {
@@ -319,8 +327,10 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   void pressionouMostrarDetalhes(){
-    this.setState(() {
-      this.widget.estadoAtual = _Estado.RELATORIO_VISIVEL;
+    this._seAlgumValorFoiAlteradoPerguntaSeUsuarioQuerSalvar( () async {
+      this.setState(() {
+        this.widget.estadoAtual = _Estado.RELATORIO_VISIVEL;
+      });
     });
   }
 
@@ -340,23 +350,54 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     });
   }
 
-  Future<void> pressionouVoltar() async{
-    await ComunsWidgets.mudarParaPaginaInicial();
-    this.resetarVariaveis();
+  ///    Invoke a Popup asking if the user wants to save the changed data. Is he clicks NO, execute operation()
+  /// . If click Yes, walk to the validation step.
+  Future<void> askIfUserWantsSavingData( void Function() operation ) async{
+    int userAnswer = await ComunsWidgets.exibirDialogConfirmacao(this.context,
+        "Deseja salvar as alterações feitas?", "");
+    if( userAnswer != 1 ) {
+      operation.call();
+      return;
+    }
+    this._salvarSePassarNaValidacao( operation );
   }
 
-  void pressionouSalvar(){
+  Future<void> _seAlgumValorFoiAlteradoPerguntaSeUsuarioQuerSalvar( void Function() operation ) async{
+    if( !this.isSomeValueChanged() ){
+      await operation.call();
+      return;
+    }
+    this.askIfUserWantsSavingData( operation );
+  }
+
+  Future<void> pressionouVoltar() async{
+    this._seAlgumValorFoiAlteradoPerguntaSeUsuarioQuerSalvar( () async {
+      await this.voltarParaPaginaAnterior();
+    });
+  }
+
+  void _salvarSePassarNaValidacao(  void Function() operation ){
     try{
       if( this.globalKey.currentState.validate() ) {
         Tarefa tarefa = this.widget.tarefaAtual ?? new Tarefa("sem nome", "");
         tarefa.nome = this.campoNome.getText();
         tarefa.descricao = this.campoDescricao.getText();
         this.controlador.salvarTarefa(tarefa);
-        ComunsWidgets.mudarParaPaginaInicial();
+        operation.call();
       }
-    }catch(ex){
-      print(ex);
+    }on ValidationException catch(ex, stackTrace){
+      ComunsWidgets.popupDeAlerta(this.context, "Não foi possível salvar.", ex.generateMsgToUser() );
+    }catch(ex, stackTrace){
+      ComunsWidgets.popupDeAlerta(this.context, "Ocorreu um erro inesperado ao tentar"
+          " salvar os dados de uma tarefa.", "");
+      print("$ex - ${stackTrace}");
     }
+  }
+
+  void pressionouSalvar(){
+    this._salvarSePassarNaValidacao( (){
+      this.voltarParaPaginaAnterior();
+    });
   }
 
   Future<bool> voltarParaPaginaAnterior() {

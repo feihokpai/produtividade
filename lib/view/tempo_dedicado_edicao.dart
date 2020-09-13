@@ -315,10 +315,7 @@ class TempoDedicadoEdicaoComponente{
     try {
       await operation.call();
     } on ValidationException catch(ex, stackTrace){
-      String msg = "";
-      ex.problems.forEach((problem) {
-        msg += "* "+problem.description+"\n";
-      });
+      String msg = ex.generateMsgToUser();
       ComunsWidgets.popupDeAlerta( this._contextOfStatefulBuilder, tituloCasoOcorraErro, msg );
     }catch(ex, stackTrace){
       ComunsWidgets.popupDeAlerta( this._contextOfStatefulBuilder, tituloCasoOcorraErro, "Ocorreu"

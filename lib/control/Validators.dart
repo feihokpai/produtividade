@@ -17,6 +17,15 @@ class ValidationException implements Exception{
   void set problems(List<ValidationProblem> problems){
     this._problems = problems ?? new List();
   }
+
+  /// Generate a string with some lines having a validation problem message each.
+  String generateMsgToUser(){
+    String msg = "";
+    this.problems.forEach((problem) {
+      msg += "* "+problem.description+"\n";
+    });
+    return msg;
+  }
 }
 
 class ValidationProblem{
