@@ -77,10 +77,13 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   bool isSomeValueChanged(){
-    String currentName = this.widget.tarefaAtual.nome;
-    String currentDescription = this.widget.tarefaAtual.descricao;
-    return ( currentName != this.campoNome.getText()
-        || currentDescription != this.campoDescricao.getText() );
+    if( this.widget.estadoAtual == _Estado.EDICAO_VISIVEL ) {
+      String currentName = this.widget.tarefaAtual.nome;
+      String currentDescription = this.widget.tarefaAtual.descricao;
+      return (currentName != this.campoNome.getText()
+          || currentDescription != this.campoDescricao.getText());
+    }
+    return false;
   }
 
   String validarCampoNome(String valor) {
