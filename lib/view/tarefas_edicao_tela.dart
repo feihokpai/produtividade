@@ -162,7 +162,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
 
   Widget gerarConteudoCentral() {
     return new WillPopScope(
-      onWillPop: this.voltarParaPaginaAnterior,
+      onWillPop: this.clickedInBackButtonFromOS,
       child: new SingleChildScrollView(
         child: new Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,14 +400,18 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     });
   }
 
-  Future<bool> voltarParaPaginaAnterior() {
-    ComunsWidgets.mudarParaPaginaInicial().then( (value) {
-      this.resetarVariaveis();
+  Future<bool> clickedInBackButtonFromOS() async{
+    await this._seAlgumValorFoiAlteradoPerguntaSeUsuarioQuerSalvar(() async {
+      await this.voltarParaPaginaAnterior();
       return true;
     });
+    return false;
   }
 
-
+  Future<void> voltarParaPaginaAnterior() async{
+    await ComunsWidgets.mudarParaPaginaInicial();
+    this.resetarVariaveis();
+  }
 
 }
 
