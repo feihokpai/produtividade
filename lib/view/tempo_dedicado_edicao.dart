@@ -153,6 +153,9 @@ class TempoDedicadoEdicaoComponente{
         this.campoDataHoraFinal.dataSelecionada = minima.add( new Duration( minutes: 1 ) );
       }
     }
+    if( this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ) {
+      this.estadoAtual = _Estado.EDICAO_COM_ALTERACOES;
+    }
     this._emptySetStateFunction();
   }
 
