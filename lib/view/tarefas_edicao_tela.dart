@@ -326,8 +326,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     }
   }
 
-  void pressionouMostrarDetalhes(){
-    this._seAlgumValorFoiAlteradoPerguntaSeUsuarioQuerSalvar( () async {
+  Future<void> pressionouMostrarDetalhes() async {
+    await this._seAlgumValorFoiAlteradoPerguntaSeUsuarioQuerSalvar( () async {
       this.setState(() {
         this.widget.estadoAtual = _Estado.RELATORIO_VISIVEL;
       });
@@ -356,10 +356,18 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     int userAnswer = await ComunsWidgets.exibirDialogConfirmacao(this.context,
         "Deseja salvar as alterações feitas?", "");
     if( userAnswer != 1 ) {
+      this._resetChangesInTaskFields();
       operation.call();
       return;
     }
     this._salvarSePassarNaValidacao( operation );
+  }
+
+  void _resetChangesInTaskFields(){
+    if( this.widget.tarefaAtual != null ){
+      this.campoNome.setText( this.widget.tarefaAtual.nome );
+      this.campoDescricao.setText( this.widget.tarefaAtual.descricao );
+    }
   }
 
   Future<void> _seAlgumValorFoiAlteradoPerguntaSeUsuarioQuerSalvar( void Function() operation ) async{
