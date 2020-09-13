@@ -256,16 +256,16 @@ class TempoDedicadoEdicaoComponente{
   }
 
   Widget _campoHoraFinalOuVazio(){
-    if( this.estadoAtual == _Estado.MODO_CADASTRO || this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ){
-      return new Container( height: 0);
-    }else if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
+    if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
       this._iniciarCampoDataHoraFinal();
       return SizedBox(child: this.campoDataHoraFinal.getWidget(), width: 240, );
     }
+    return new Container( height: 0);
   }
 
   Widget _gerarBotaoEncerrarOuVazio(){
-    if( this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ) {
+    if( this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ||
+        this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES) {
       String keyString = TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_ENCERRAR;
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
@@ -424,7 +424,8 @@ class TempoDedicadoEdicaoComponente{
   }
 
   Widget _generateSaveButtonOrEmpty( BuildContext contextDialogStatefull ) {
-    if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ) {
+    if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ||
+        this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES ) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
         child: ComunsWidgets.createRaisedButton("salvar",
