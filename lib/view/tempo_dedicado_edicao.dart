@@ -16,7 +16,8 @@ import 'package:registro_produtividade/view/comum/estilos.dart';
 
 enum _Estado{
   MODO_CADASTRO, // Exibindo para cadastro de tempo.
-  MODO_EDICAO, // Exibe para edição somente a data e hora de início
+  EDICAO_SEM_ALTERACOES, // Exibe para edição somente a data e hora de início
+  EDICAO_COM_ALTERACOES, // Exibe somente a data e hora de início, porém ela foi alterada.
   MODO_EDICAO_COMPLETO, // Exibe além da data/hora de início, a data/hora de fim.
 }
 
@@ -74,7 +75,7 @@ class TempoDedicadoEdicaoComponente{
     if( this.tempoDedicadoAtual == null ){
       this.estadoAtual = _Estado.MODO_CADASTRO;
     }else if( this.tempoDedicadoAtual.fim == null){
-      this.estadoAtual = _Estado.MODO_EDICAO;
+      this.estadoAtual = _Estado.EDICAO_SEM_ALTERACOES;
     }else{
       this.estadoAtual = _Estado.MODO_EDICAO_COMPLETO;
     }
@@ -252,7 +253,7 @@ class TempoDedicadoEdicaoComponente{
   }
 
   Widget _campoHoraFinalOuVazio(){
-    if( this.estadoAtual == _Estado.MODO_CADASTRO || this.estadoAtual == _Estado.MODO_EDICAO ){
+    if( this.estadoAtual == _Estado.MODO_CADASTRO || this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ){
       return new Container( height: 0);
     }else if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
       this._iniciarCampoDataHoraFinal();
@@ -261,7 +262,7 @@ class TempoDedicadoEdicaoComponente{
   }
 
   Widget _gerarBotaoEncerrarOuVazio(){
-    if( this.estadoAtual == _Estado.MODO_EDICAO ) {
+    if( this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ) {
       String keyString = TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_ENCERRAR;
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
