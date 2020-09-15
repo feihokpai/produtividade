@@ -9,6 +9,7 @@ import 'package:registro_produtividade/control/Validators.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDataHora.dart';
+import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
 import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
@@ -39,6 +40,7 @@ class TempoDedicadoEdicaoComponente{
   CampoDataHora campoDataHoraInicial;
   ChronometerField campoCronometro;
   CampoDataHora campoDataHoraFinal;
+  CampoDeTextoWidget campoDuracao;
   ///     Indica se algum valor editável do componente foi alterado neste último uso. Caso seja true,
   /// será usado para indicar se o registro de tempo deve ser salvo ou não quando o usuário fechar o popup.
   bool algumValorAlterado = false;
@@ -187,6 +189,17 @@ class TempoDedicadoEdicaoComponente{
     );
   }
 
+  void _iniciarCampoDuracao( ){
+    this.campoDuracao = new CampoDeTextoWidget("Duração", 1 , null, editavel: false);
+    if( this.campoDataHoraFinal != null ){
+      DateTime begin = this.campoDataHoraInicial.dataSelecionada;
+      DateTime end = this.campoDataHoraFinal.dataSelecionada;
+      Duration duracao = end.difference( begin );
+      String duracaoFormatada = DataHoraUtil.converterDuracaoFormatoCronometro( duracao );
+      this.campoDuracao.setText( duracaoFormatada );
+    }
+  }
+
   void _checkOrientation(){
     Orientation orientation = MediaQuery.of(context).orientation;
     this._orientationChanged = ( this.currentOrientation != null && orientation != this.currentOrientation );
@@ -209,7 +222,7 @@ class TempoDedicadoEdicaoComponente{
   Widget _criarConteudoDialog( BuildContext contextDialogStatefull ){
     this._iniciarCampoDataHoraInicial( );
 
-    double tamanhoContainer = this.currentOrientation == Orientation.landscape ? 150 : 220;
+    double tamanhoContainer = this.currentOrientation == Orientation.landscape ? 190 : 260;
 
     return Container(
       height: tamanhoContainer,
@@ -231,12 +244,32 @@ class TempoDedicadoEdicaoComponente{
     );
   }
 
+  Widget _campoDuracaoOuVazio(){
+    if( this.estadoAtual != _Estado.MODO_EDICAO_COMPLETO ){
+      return new Container();
+    }
+    this._iniciarCampoDuracao();
+    return this.campoDuracao.getWidget();
+  }
+
   Widget returnHoursFields(){
     if( this.currentOrientation == Orientation.landscape ){
-      return new Row(
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(child: this.campoDataHoraInicial.getWidget(), width: 240, ),
-          this._campoHoraFinalOuVazio(),
+          new Row(
+            children: [
+              SizedBox(child: this.campoDataHoraInicial.getWidget(), width: 240, ),
+              this._campoHoraFinalOuVazio(),
+            ],
+          ),
+          SizedBox(
+              width: 90,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: this._campoDuracaoOuVazio(),
+              )
+          ),
         ],
       );
     }else{
@@ -249,6 +282,13 @@ class TempoDedicadoEdicaoComponente{
               child: SizedBox(child: this.campoDataHoraInicial.getWidget(), width: 240, ),
             ),
             this._campoHoraFinalOuVazio(),
+            SizedBox(
+              width: 90,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: this._campoDuracaoOuVazio(),
+              )
+            ),
           ],
         ),
       );
