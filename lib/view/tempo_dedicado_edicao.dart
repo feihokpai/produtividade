@@ -319,13 +319,13 @@ class TempoDedicadoEdicaoComponente{
     }
   }
 
-  Widget _gerarBotaoDeletarOuVazio( BuildContext contextDialogStatefull ){
+  Widget _gerarBotaoDeletarOuVazio( ){
     if( this.estadoAtual == _Estado.MODO_CADASTRO ){
       return new Container();
     }else{
       String keyStringDeletar = TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_DELETAR;
       Widget botaoDeletar = ComunsWidgets.createRaisedButton("Deletar", keyStringDeletar,
-          () => this._clicouEmDeletar( contextDialogStatefull ) );
+          () => this._clicouEmDeletar( this._contextOfStatefulBuilder ) );
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
         child: SizedBox(
@@ -469,7 +469,7 @@ class TempoDedicadoEdicaoComponente{
     );
   }
 
-  Widget _generateSaveButtonOrEmpty( BuildContext contextDialogStatefull ) {
+  Widget _generateSaveButtonOrEmpty( ) {
     if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ||
         this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES ) {
       return Padding(
