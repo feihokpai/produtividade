@@ -459,12 +459,39 @@ class TempoDedicadoEdicaoComponente{
     return value;
   }
 
+  List<Widget> generateButtonsInOrderByCurrentState(){
+    Widget buttonSave = this._generateSaveButtonOrEmpty( );
+    Widget buttonFinish = this._gerarBotaoEncerrarOuVazio();
+    Widget buttonDelete = this._gerarBotaoDeletarOuVazio( );
+    List<Widget> buttons = new List();
+    if( this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ){
+      buttons.add( buttonFinish );
+      buttons.add( buttonDelete );
+      buttons.add( buttonSave );
+    }else if( this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES){
+      buttons.add( buttonSave );
+      buttons.add( buttonFinish );
+      buttons.add( buttonDelete );
+    }else if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
+      buttons.add( buttonSave );
+      buttons.add( buttonDelete );
+      buttons.add( buttonFinish );
+    }
+    return buttons;
+  }
+
   Widget _generateSaveFinishAndDeleteButtons(BuildContext contextDialogStatefull){
-    return Row(
+    List<Widget> buttons = this.generateButtonsInOrderByCurrentState();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        this._generateSaveButtonOrEmpty(contextDialogStatefull),
-        this._gerarBotaoEncerrarOuVazio(),
-        this._gerarBotaoDeletarOuVazio( contextDialogStatefull ),
+        Row(
+          children: [
+            buttons[0],
+            buttons[1],
+          ],
+        ),
+        buttons[2],
       ],
     );
   }
