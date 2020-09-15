@@ -35,7 +35,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   bool mudouOrientacao = false;
   Controlador controlador = new Controlador();
 
-  FutureBuilderWithCache futureBuilderWithCache = new FutureBuilderWithCache<Widget>( chacheOn: true );
+  FutureBuilderWithCache futureBuilderWithCache = new FutureBuilderWithCache<Widget>( chacheOn: false );
 
   TempoDedicadoEdicaoComponente componenteEdicaoDeTempo;
 
