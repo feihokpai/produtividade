@@ -309,7 +309,10 @@ class TempoDedicadoEdicaoComponente{
       String keyString = TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_ENCERRAR;
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-        child: ComunsWidgets.createRaisedButton("Encerrar", keyString, this._clicouEmEncerrar ),
+        child: SizedBox(
+          width: 90,
+          child: ComunsWidgets.createRaisedButton("Encerrar", keyString, this._clicouEmEncerrar )
+        ),
       );
     }else{
       return new Container();
@@ -325,7 +328,10 @@ class TempoDedicadoEdicaoComponente{
           () => this._clicouEmDeletar( contextDialogStatefull ) );
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-        child: botaoDeletar,
+        child: SizedBox(
+          width: 90,
+          child: botaoDeletar
+        ),
       );
     }
   }
@@ -468,9 +474,12 @@ class TempoDedicadoEdicaoComponente{
         this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES ) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-        child: ComunsWidgets.createRaisedButton("salvar",
-            TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
-                () => this._clicouEmSalvar( contextDialogStatefull ),
+        child: SizedBox(
+          width: 90,
+          child: ComunsWidgets.createRaisedButton("salvar",
+              TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
+                  () => this._clicouEmSalvar( this._contextOfStatefulBuilder ),
+          ),
         )
       );
     }else{
