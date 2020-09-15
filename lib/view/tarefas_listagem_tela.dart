@@ -30,6 +30,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   Map<int, ChronometerStateful> cronometrosGerados = new Map();
   List<TempoDedicado> temposAtivos = new List();
   List<Tarefa> tarefasParaListar = new List();
+  Map<Tarefa, String> tempoRegistradoHoje = new Map();
   bool recarregarDadosPersistidos = true;
   Orientation orientacaoAtual = null;
   bool mudouOrientacao = false;
@@ -82,19 +83,27 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     if( this.recarregarDadosPersistidos ){
       this.cancelAllChronemeters();
       this.tarefasParaListar = await this.controlador.getListaDeTarefasOrdenadasPorDataCriacaoERegistroTempo();
-      await this.formatarNomesDasTarefasInserindoDuracaoDeHoje();
+      await this.calcularTemposRegistradosHoje();
       this.temposAtivos = await this.controlador.getTempoDedicadoAtivos();
       recarregarDadosPersistidos = false;
     }
   }
-
-  Future<void> formatarNomesDasTarefasInserindoDuracaoDeHoje() async {
+  
+  Future<void> calcularTemposRegistradosHoje() async {
+    this.tempoRegistradoHoje.clear();
     for( int i=0; i< this.tarefasParaListar.length; i++ ){
       Tarefa tarefa = this.tarefasParaListar[i];
-      tarefa.nome = await this._nomeDaTarefaFormatado( tarefa );
+      await this.calcularDuracaoDeHojeNaTarefa( tarefa );
     }
   }
 
+  Future<void> calcularDuracaoDeHojeNaTarefa( Tarefa tarefa ) async {
+    int total = await this.controlador.getTotalGastoNaTarefaEmMinutosNoDia(tarefa, DateTime.now());
+    if( total > 0 ){
+      String duracaoFormatada = DataHoraUtil.criarStringQtdHorasEMinutosAbreviados( new Duration(minutes: total) );
+      this.tempoRegistradoHoje[tarefa] = duracaoFormatada;
+    }
+  }
   void desativarCronometrosEncerrados(){
     this.tarefasParaListar.forEach((tarefa) {
       TempoDedicado tempoAtivo = this._verifyTaskIsActive( tarefa.id );
@@ -176,17 +185,17 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     return Container(
       decoration: new BoxDecoration(
         color: Estilos.corTextFieldEditavel,
-        border: new Border.all(width: 0.5, color: Estilos.corBarraSuperior/*Colors.black54*/, style: BorderStyle.solid),//, style: BorderStyle.solid ),
+        border: new Border.all(width: 0.5, color: Estilos.corBarraSuperior, style: BorderStyle.solid),//, style: BorderStyle.solid ),
         borderRadius: BorderRadius.circular( 4.0 ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+        padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
         child: new Row(
           children:  <Widget>[
             Expanded(
               flex: 10,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                 child: Row(
                   children: [
                     Expanded(
@@ -208,12 +217,30 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
               ),
             ),
             this.generateAlarmIconOrEmpty( tarefa ),
+            this.generateDurationSumOrEmpty( tarefa ),
           ],
         ),
       ),
     );
   }
 
+  Widget generateDurationSumOrEmpty( Tarefa tarefa ){
+    if( this.tempoRegistradoHoje[tarefa] == null ){
+      return new Container();
+    }
+    return Row(
+      children: [
+        Container( height: 45, child: new VerticalDivider( width: 12, thickness: 1, color: Estilos.corBarraSuperior,)),
+        SizedBox(
+            width: 45,
+            child: new Text( this.tempoRegistradoHoje[tarefa],
+              style: Estilos.textStyleDuracaoPaginaInicial,
+            ),
+        ),
+      ],
+    );
+  }
+  
   Future<String> _nomeDaTarefaFormatado(Tarefa tarefa) async {
     String nomeFormatado = tarefa.nome;
     int total = await this.controlador.getTotalGastoNaTarefaEmMinutosNoDia(tarefa, DateTime.now());
