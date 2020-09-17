@@ -5,6 +5,7 @@ class Estilos{
   static TextStyle textStyleTituloMenuLateral = new TextStyle( fontSize: 23, color: Colors.white );
   static TextStyle textStyleSubtituloMenuLateral = new TextStyle( fontSize: 16, color: Colors.white );
   static TextStyle textStyleListaPaginaInicial = new TextStyle( fontSize: 17, color: Colors.black87 );
+  static TextStyle textStyleDuracaoPaginaInicial = new TextStyle( fontSize: 15, color: Colors.black87 );
   static TextStyle textStyleTextFormField = new TextStyle( fontSize: 17, color: Colors.black87 );
   static TextStyle textStyleLabelTextFormField = new TextStyle( fontSize: 15, color: Colors.black );
   static TextStyle textStyleBotaoFormulario =  new TextStyle( fontSize: 15, color: Colors.white );

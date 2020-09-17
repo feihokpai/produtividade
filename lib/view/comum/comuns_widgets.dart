@@ -25,9 +25,31 @@ class ComunsWidgets {
     return barraSuperior;
   }
 
-  ///     Exibe um Pop-up com o título e descrição passados como parâmetro. Mostra os botões "Sim" e "Não".
-  /// Retorna 0 se o usuário clicar fora da janela, 1 se o usuário clicar em sim e 2 se clicar em não.
-  static Future<int> exibirDialogConfirmacao( BuildContext context, String titulo, String descricao ) async{
+  static void fecharPopup( BuildContext context, int codigoRetorno ){
+    Navigator.of(context).pop( codigoRetorno );
+  }
+
+  static List<Widget> definirBotoes( BuildContext context, int qtdBotoes, List<String> nomesBotoes){
+    List<Widget> botoes = new List();
+    if( nomesBotoes == null ){
+      nomesBotoes = <String>[ "Sim", "Não" ];
+    }
+    for( int i=0; i< qtdBotoes ; i++ ){
+      int codigoRetorno = i+1;
+      Widget botao = ComunsWidgets.createRaisedButton( nomesBotoes[i] , null, () => fecharPopup(context, codigoRetorno) );
+      botoes.add( botao );
+    }
+    return botoes;
+  }
+
+  ///     Exibe um Pop-up com o título e descrição passados como parâmetro. Você pode definir a quantidade
+  /// de botões que irão aparecer pelo parâmetro [qtdBotoes] e seus nomes pela lista [nomesBotoes].
+  ///     Se deseja apenas mostrar "Sim" e "Não", não atribua valores aos parâmetros [qtdBotoes] e [nomesBotoes].
+  /// Retorna 1 se apertar o primeiro botão (posição 0 na lista), 2 para o segundo (posição 1) e
+  /// assim sucessivamente.
+  static Future<int> exibirDialogConfirmacao( BuildContext context, String titulo, String descricao,
+  { int qtdBotoes=2, List<String> nomesBotoes=null }) async{
+    List<Widget> botoes = ComunsWidgets.definirBotoes( context, qtdBotoes, nomesBotoes );
     int valor =  await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -35,17 +57,17 @@ class ComunsWidgets {
           backgroundColor: Estilos.corDeFundoPrincipal,
           title: Text( titulo ),
           content: Text( descricao ),
-          actions: [
-            ComunsWidgets.createRaisedButton("SIM", ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG,
-                    () => Navigator.of(context).pop( 1 ) ),
-            ComunsWidgets.createRaisedButton("NÃO", ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG,
-                    () => Navigator.of(context).pop( 2 ) ),
-          ],
+          actions: botoes
         );;
       },
     );
     // Retorna por default valor, mas se ela for nula, retorna 0.
     return valor ?? 0;
+  }
+
+  static void popupDeAlerta( BuildContext context, String titulo, String descricao ){
+    ComunsWidgets.exibirDialogConfirmacao( context, titulo, descricao, qtdBotoes: 1,
+        nomesBotoes: <String>["OK"] );
   }
 
   static FutureBuilder<Widget> createFutureBuilderWidget(Future<Widget> widget){

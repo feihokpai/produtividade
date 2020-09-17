@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/Validators.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDataHora.dart';
+import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
 import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
@@ -15,7 +17,8 @@ import 'package:registro_produtividade/view/comum/estilos.dart';
 
 enum _Estado{
   MODO_CADASTRO, // Exibindo para cadastro de tempo.
-  MODO_EDICAO, // Exibe para edição somente a data e hora de início
+  EDICAO_SEM_ALTERACOES, // Exibe para edição somente a data e hora de início
+  EDICAO_COM_ALTERACOES, // Exibe somente a data e hora de início, porém ela foi alterada.
   MODO_EDICAO_COMPLETO, // Exibe além da data/hora de início, a data/hora de fim.
 }
 
@@ -37,6 +40,7 @@ class TempoDedicadoEdicaoComponente{
   CampoDataHora campoDataHoraInicial;
   ChronometerField campoCronometro;
   CampoDataHora campoDataHoraFinal;
+  CampoDeTextoWidget campoDuracao;
   ///     Indica se algum valor editável do componente foi alterado neste último uso. Caso seja true,
   /// será usado para indicar se o registro de tempo deve ser salvo ou não quando o usuário fechar o popup.
   bool algumValorAlterado = false;
@@ -58,6 +62,11 @@ class TempoDedicadoEdicaoComponente{
   static final String KEY_STRING_BOTAO_VOLTAR = "returnButton";
   static final String KEY_STRING_BOTAO_DELETAR = "deleteButton";
 
+  static final double LARGURA_POPUP_VERTICAL = 280;
+  static final double LARGURA_POPUP_HORIZONTAL = 500;
+  static final double LARGURA_CAMPO_DATA_HORA = LARGURA_POPUP_VERTICAL-40;
+  static final double LARGURA_BOTOES = 90;
+
   TempoDedicadoEdicaoComponente( Tarefa tarefa, BuildContext context, {TempoDedicado tempoDedicado, DateFormat formatter} )
   :assert(context != null, "Tentou criar componente de edição de Tempo, mas o contexto está nulo"),
    assert(tarefa != null, "Tentou criar componente de edição de Tempo, mas a Tarefa está nula." ){
@@ -73,7 +82,7 @@ class TempoDedicadoEdicaoComponente{
     if( this.tempoDedicadoAtual == null ){
       this.estadoAtual = _Estado.MODO_CADASTRO;
     }else if( this.tempoDedicadoAtual.fim == null){
-      this.estadoAtual = _Estado.MODO_EDICAO;
+      this.estadoAtual = _Estado.EDICAO_SEM_ALTERACOES;
     }else{
       this.estadoAtual = _Estado.MODO_EDICAO_COMPLETO;
     }
@@ -151,13 +160,30 @@ class TempoDedicadoEdicaoComponente{
         this.campoDataHoraFinal.dataSelecionada = minima.add( new Duration( minutes: 1 ) );
       }
     }
+    if( this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ) {
+      this.estadoAtual = _Estado.EDICAO_COM_ALTERACOES;
+    }
     this._emptySetStateFunction();
   }
 
+  DateTime _definirDataHoraSelecionadaCampoDataHoraFinal(){
+    if( this.tempoDedicadoAtual.fim != null){
+      return this.tempoDedicadoAtual.fim;
+    }
+    DateTime inicio = this.campoDataHoraInicial.dataSelecionada;
+    DateTime agora = DateTime.now();
+    if( DataHoraUtil.eDataMesmoDia(inicio, agora) ) {
+      return agora;
+    }else{
+      DateTime vinteMinutosDepois = inicio.add( new Duration( minutes: 20 ));
+      return vinteMinutosDepois;
+    }
+  }
+
   void _iniciarCampoDataHoraFinal( ){
-    DateTime dataSelecionada = this.tempoDedicadoAtual.fim ?? DateTime.now();
+    DateTime dataSelecionada = this._definirDataHoraSelecionadaCampoDataHoraFinal();
     this.campoDataHoraFinal ??= new CampoDataHora("Fim", this.context, dataMaxima: new DateTime.now(),
-        dataMinima: this.tempoDedicadoAtual.inicio,
+        dataMinima: this.campoDataHoraInicial.dataSelecionada,
         chave: this._criarKey( TempoDedicadoEdicaoComponente.KEY_STRING_CAMPO_HORA_FINAL ),
         dateTimeFormatter: this.formatter,
         onChange: (){
@@ -166,6 +192,17 @@ class TempoDedicadoEdicaoComponente{
         },
         dataInicialSelecionada: dataSelecionada,
     );
+  }
+
+  void _iniciarCampoDuracao( ){
+    this.campoDuracao = new CampoDeTextoWidget("Duração", 1 , null, editavel: false);
+    if( this.campoDataHoraFinal != null ){
+      DateTime begin = this.campoDataHoraInicial.dataSelecionada;
+      DateTime end = this.campoDataHoraFinal.dataSelecionada;
+      Duration duracao = end.difference( begin );
+      String duracaoFormatada = DataHoraUtil.converterDuracaoFormatoCronometro( duracao );
+      this.campoDuracao.setText( duracaoFormatada );
+    }
   }
 
   void _checkOrientation(){
@@ -187,11 +224,23 @@ class TempoDedicadoEdicaoComponente{
     }
   }
 
+  String _definirTituloDoPopup(){
+    if( this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ||
+        this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES ){
+      return "Preencha a hora inicial da atividade";
+    }else if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
+      return "Preencha as horas de início e fim da atividade";
+    }
+  }
+
   Widget _criarConteudoDialog( BuildContext contextDialogStatefull ){
     this._iniciarCampoDataHoraInicial( );
 
-    double tamanhoContainer = this.currentOrientation == Orientation.landscape ? 150 : 220;
+    double tamanhoContainer = this.currentOrientation == Orientation.landscape ? 190 : 260;
+    double larguraPopup = this.currentOrientation == Orientation.landscape ?
+      LARGURA_POPUP_HORIZONTAL : LARGURA_POPUP_VERTICAL;
 
+    String textoTituloPopup = this._definirTituloDoPopup();
     return Container(
       height: tamanhoContainer,
       child: SingleChildScrollView(
@@ -201,23 +250,45 @@ class TempoDedicadoEdicaoComponente{
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-              child: new Text("Preencha a hora em que iniciou a atividade. Deixe como está"
-                  " se vai iniciar a atividade agora."),
+              child: Container(
+                width: (larguraPopup - 20),
+                child: new Text( textoTituloPopup )
+              ),
             ),
             this.returnHoursFields(),
-            this._generateFinishAndDeleteButtons(contextDialogStatefull),
+            this._generateSaveFinishAndDeleteButtons(contextDialogStatefull),
           ],
         ),
       ),
     );
   }
 
+  Widget _campoDuracaoOuVazio(){
+    if( this.estadoAtual != _Estado.MODO_EDICAO_COMPLETO ){
+      return new Container();
+    }
+    this._iniciarCampoDuracao();
+    return this.campoDuracao.getWidget();
+  }
+
   Widget returnHoursFields(){
     if( this.currentOrientation == Orientation.landscape ){
-      return new Row(
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(child: this.campoDataHoraInicial.getWidget(), width: 240, ),
-          this._campoHoraFinalOuVazio(),
+          new Row(
+            children: [
+              SizedBox(child: this.campoDataHoraInicial.getWidget(), width: LARGURA_CAMPO_DATA_HORA, ),
+              this._campoHoraFinalOuVazio(),
+            ],
+          ),
+          SizedBox(
+              width: 90,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: this._campoDuracaoOuVazio(),
+              )
+          ),
         ],
       );
     }else{
@@ -230,6 +301,13 @@ class TempoDedicadoEdicaoComponente{
               child: SizedBox(child: this.campoDataHoraInicial.getWidget(), width: 240, ),
             ),
             this._campoHoraFinalOuVazio(),
+            SizedBox(
+              width: 90,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: this._campoDuracaoOuVazio(),
+              )
+            ),
           ],
         ),
       );
@@ -237,36 +315,42 @@ class TempoDedicadoEdicaoComponente{
   }
 
   Widget _campoHoraFinalOuVazio(){
-    if( this.estadoAtual == _Estado.MODO_CADASTRO || this.estadoAtual == _Estado.MODO_EDICAO ){
-      return new Container( height: 0);
-    }else if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
+    if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
       this._iniciarCampoDataHoraFinal();
-      return SizedBox(child: this.campoDataHoraFinal.getWidget(), width: 240, );
+      return SizedBox(child: this.campoDataHoraFinal.getWidget(), width: LARGURA_CAMPO_DATA_HORA, );
     }
+    return new Container( height: 0);
   }
 
   Widget _gerarBotaoEncerrarOuVazio(){
-    if( this.estadoAtual == _Estado.MODO_EDICAO ) {
+    if( this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ||
+        this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES) {
       String keyString = TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_ENCERRAR;
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-        child: ComunsWidgets.createRaisedButton("Encerrar", keyString, this._clicouEmEncerrar ),
+        child: SizedBox(
+          width: LARGURA_BOTOES,
+          child: ComunsWidgets.createRaisedButton("Encerrar", keyString, this._clicouEmEncerrar )
+        ),
       );
     }else{
       return new Container();
     }
   }
 
-  Widget _gerarBotaoDeletarOuVazio( BuildContext contextDialogStatefull ){
+  Widget _gerarBotaoDeletarOuVazio( ){
     if( this.estadoAtual == _Estado.MODO_CADASTRO ){
       return new Container();
     }else{
       String keyStringDeletar = TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_DELETAR;
       Widget botaoDeletar = ComunsWidgets.createRaisedButton("Deletar", keyStringDeletar,
-          () => this._clicouEmDeletar( contextDialogStatefull ) );
+          () => this._clicouEmDeletar( this._contextOfStatefulBuilder ) );
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-        child: botaoDeletar,
+        child: SizedBox(
+          width: LARGURA_BOTOES,
+          child: botaoDeletar
+        ),
       );
     }
   }
@@ -290,21 +374,66 @@ class TempoDedicadoEdicaoComponente{
   }
 
   Future<void> _clicouEmSalvar(BuildContext contextDialogStatefull) async {
-    await this._saveChangedInformation();
-    Navigator.of( contextDialogStatefull ).pop( 1 );
+    String tituloPopup = "Falha ao tentar salvar um registro de tempo";
+    this.tryCatch( tituloPopup, () async {
+      await this._saveChangedInformation();
+    });
+  }
+
+  Future<void> tryCatch( String tituloCasoOcorraErro, void Function() operation) async {
+    try {
+      await operation.call();
+    } on ValidationException catch(ex, stackTrace){
+      String msg = ex.generateMsgToUser();
+      ComunsWidgets.popupDeAlerta( this._contextOfStatefulBuilder, tituloCasoOcorraErro, msg );
+    }catch(ex, stackTrace){
+      ComunsWidgets.popupDeAlerta( this._contextOfStatefulBuilder, tituloCasoOcorraErro, "Ocorreu"
+          " um erro inesperado no aplicativo. Entre em contato com os desenvolvedores para comunicar"
+          " esse problema, informando exatamente o que estava fazendo quando o erro ocorreu." );
+      print("Erro ao tentar executar uma operação: $ex - ${stackTrace}");
+      throw ex;
+    }
+  }
+
+  Future<bool> _checarPossiveisValoresPreenchidosPorEngano( TempoDedicado tempo ) async {
+    if( tempo.fim != null && !DataHoraUtil.eDataMesmoDia(tempo.inicio, tempo.fim) ){
+      int quantidadeHoras = tempo.fim.difference(tempo.inicio).inHours;
+      String descricao = "Você preencheu as datas com dias diferentes, gerando uma diferença de $quantidadeHoras"
+          " horas entre o início e o fim do registro. Tem certeza de que deseja salvar essa informação?";
+      BuildContext contextAtual = this._isStateFulBuilderMounted() ? this._contextOfStatefulBuilder : this.context;
+      int resposta = await ComunsWidgets.exibirDialogConfirmacao( contextAtual , "Datas de dias diferentes",
+          descricao);
+      return ( resposta != 1 );
+    }
+    return false;
+  }
+
+  void _setTempoDedicadoComValoresPreenchidos(){
+    if( this.algumValorAlterado ) {
+      this.tempoDedicadoAtual ??= new TempoDedicado(this.tarefaAtual);
+      this.tempoDedicadoAtual.inicio = this.campoDataHoraInicial.dataSelecionada;
+      if (this.campoDataHoraFinal != null) {
+        this.tempoDedicadoAtual.fim = this.campoDataHoraFinal.dataSelecionada;
+      }
+    }
+  }
+
+  void voltarParaPaginaAnterior(){
+    if( this._isStateFulBuilderMounted() ) {
+      Navigator.of(this._contextOfStatefulBuilder).pop(1);
+    }
   }
 
   /// If some information in popup was changed saves the values.
   Future<void> _saveChangedInformation() async {
     if( this.algumValorAlterado ) {
-      TempoDedicado tempo = this.tempoDedicadoAtual ??
-          new TempoDedicado(this.tarefaAtual);
-      tempo.inicio = this.campoDataHoraInicial.dataSelecionada;
-      if (this.campoDataHoraFinal != null) {
-        tempo.fim = this.campoDataHoraFinal.dataSelecionada;
+      this._setTempoDedicadoComValoresPreenchidos();
+      bool houveAlgumEngano = await this._checarPossiveisValoresPreenchidosPorEngano( this.tempoDedicadoAtual );
+      if( !houveAlgumEngano ){
+        await this.controlador.salvarTempoDedicado( this.tempoDedicadoAtual );
+        this._emptySetStateFunction();
+        this.voltarParaPaginaAnterior();
       }
-      await this.controlador.salvarTempoDedicado(tempo);
-      this._emptySetStateFunction();
     }
   }
 
@@ -349,23 +478,54 @@ class TempoDedicadoEdicaoComponente{
     return value;
   }
 
-  Widget _generateFinishAndDeleteButtons(BuildContext contextDialogStatefull){
-    return Row(
+  List<Widget> generateButtonsInOrderByCurrentState(){
+    Widget buttonSave = this._generateSaveButtonOrEmpty( );
+    Widget buttonFinish = this._gerarBotaoEncerrarOuVazio();
+    Widget buttonDelete = this._gerarBotaoDeletarOuVazio( );
+    List<Widget> buttons = new List();
+    if( this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ){
+      buttons.add( buttonFinish );
+      buttons.add( buttonDelete );
+      buttons.add( buttonSave );
+    }else if( this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES){
+      buttons.add( buttonSave );
+      buttons.add( buttonFinish );
+      buttons.add( buttonDelete );
+    }else if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
+      buttons.add( buttonSave );
+      buttons.add( buttonDelete );
+      buttons.add( buttonFinish );
+    }
+    return buttons;
+  }
+
+  Widget _generateSaveFinishAndDeleteButtons(BuildContext contextDialogStatefull){
+    List<Widget> buttons = this.generateButtonsInOrderByCurrentState();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        this._generateSaveButtonOrEmpty(contextDialogStatefull),
-        this._gerarBotaoEncerrarOuVazio(),
-        this._gerarBotaoDeletarOuVazio( contextDialogStatefull ),
+        Row(
+          children: [
+            buttons[0],
+            buttons[1],
+          ],
+        ),
+        buttons[2],
       ],
     );
   }
 
-  Widget _generateSaveButtonOrEmpty( BuildContext contextDialogStatefull ) {
-    if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ) {
+  Widget _generateSaveButtonOrEmpty( ) {
+    if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ||
+        this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES ) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-        child: ComunsWidgets.createRaisedButton("salvar",
-            TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
-                () => this._clicouEmSalvar( contextDialogStatefull ),
+        child: SizedBox(
+          width: LARGURA_BOTOES,
+          child: ComunsWidgets.createRaisedButton("salvar",
+              TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
+                  () => this._clicouEmSalvar( this._contextOfStatefulBuilder ),
+          ),
         )
       );
     }else{
