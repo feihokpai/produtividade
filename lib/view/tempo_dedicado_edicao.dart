@@ -62,6 +62,11 @@ class TempoDedicadoEdicaoComponente{
   static final String KEY_STRING_BOTAO_VOLTAR = "returnButton";
   static final String KEY_STRING_BOTAO_DELETAR = "deleteButton";
 
+  static final double LARGURA_POPUP_VERTICAL = 280;
+  static final double LARGURA_POPUP_HORIZONTAL = 500;
+  static final double LARGURA_CAMPO_DATA_HORA = LARGURA_POPUP_VERTICAL-40;
+  static final double LARGURA_BOTOES = 90;
+
   TempoDedicadoEdicaoComponente( Tarefa tarefa, BuildContext context, {TempoDedicado tempoDedicado, DateFormat formatter} )
   :assert(context != null, "Tentou criar componente de edição de Tempo, mas o contexto está nulo"),
    assert(tarefa != null, "Tentou criar componente de edição de Tempo, mas a Tarefa está nula." ){
@@ -219,11 +224,23 @@ class TempoDedicadoEdicaoComponente{
     }
   }
 
+  String _definirTituloDoPopup(){
+    if( this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ||
+        this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES ){
+      return "Preencha a hora inicial da atividade";
+    }else if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
+      return "Preencha as horas de início e fim da atividade";
+    }
+  }
+
   Widget _criarConteudoDialog( BuildContext contextDialogStatefull ){
     this._iniciarCampoDataHoraInicial( );
 
     double tamanhoContainer = this.currentOrientation == Orientation.landscape ? 190 : 260;
+    double larguraPopup = this.currentOrientation == Orientation.landscape ?
+      LARGURA_POPUP_HORIZONTAL : LARGURA_POPUP_VERTICAL;
 
+    String textoTituloPopup = this._definirTituloDoPopup();
     return Container(
       height: tamanhoContainer,
       child: SingleChildScrollView(
@@ -233,8 +250,10 @@ class TempoDedicadoEdicaoComponente{
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-              child: new Text("Preencha a hora em que iniciou a atividade. Deixe como está"
-                  " se vai iniciar a atividade agora."),
+              child: Container(
+                width: (larguraPopup - 20),
+                child: new Text( textoTituloPopup )
+              ),
             ),
             this.returnHoursFields(),
             this._generateSaveFinishAndDeleteButtons(contextDialogStatefull),
@@ -259,7 +278,7 @@ class TempoDedicadoEdicaoComponente{
         children: [
           new Row(
             children: [
-              SizedBox(child: this.campoDataHoraInicial.getWidget(), width: 240, ),
+              SizedBox(child: this.campoDataHoraInicial.getWidget(), width: LARGURA_CAMPO_DATA_HORA, ),
               this._campoHoraFinalOuVazio(),
             ],
           ),
@@ -298,7 +317,7 @@ class TempoDedicadoEdicaoComponente{
   Widget _campoHoraFinalOuVazio(){
     if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
       this._iniciarCampoDataHoraFinal();
-      return SizedBox(child: this.campoDataHoraFinal.getWidget(), width: 240, );
+      return SizedBox(child: this.campoDataHoraFinal.getWidget(), width: LARGURA_CAMPO_DATA_HORA, );
     }
     return new Container( height: 0);
   }
@@ -310,7 +329,7 @@ class TempoDedicadoEdicaoComponente{
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
         child: SizedBox(
-          width: 90,
+          width: LARGURA_BOTOES,
           child: ComunsWidgets.createRaisedButton("Encerrar", keyString, this._clicouEmEncerrar )
         ),
       );
@@ -329,7 +348,7 @@ class TempoDedicadoEdicaoComponente{
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
         child: SizedBox(
-          width: 90,
+          width: LARGURA_BOTOES,
           child: botaoDeletar
         ),
       );
@@ -502,7 +521,7 @@ class TempoDedicadoEdicaoComponente{
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
         child: SizedBox(
-          width: 90,
+          width: LARGURA_BOTOES,
           child: ComunsWidgets.createRaisedButton("salvar",
               TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
                   () => this._clicouEmSalvar( this._contextOfStatefulBuilder ),

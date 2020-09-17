@@ -232,7 +232,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
       children: [
         Container( height: 45, child: new VerticalDivider( width: 12, thickness: 1, color: Estilos.corBarraSuperior,)),
         SizedBox(
-            width: 45,
+            width: 50,
             child: new Text( this.tempoRegistradoHoje[tarefa],
               style: Estilos.textStyleDuracaoPaginaInicial,
             ),
