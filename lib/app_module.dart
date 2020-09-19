@@ -5,6 +5,7 @@ import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/control/interfaces/ITarefaPersistencia.dart';
 import 'package:registro_produtividade/control/interfaces/ITempoDedicadoPersistencia.dart';
+import 'package:registro_produtividade/localization/ProdutividadeLocalization.dart';
 import 'package:registro_produtividade/model/json/IPersistenciaJSON.dart';
 import 'package:registro_produtividade/model/json/PersistenciaJSON.dart';
 import 'package:registro_produtividade/model/json/TarefaPersistenciaJson.dart';
@@ -70,11 +71,25 @@ class AppModule extends MainModule {
   Widget criarMaterialApp(StatefulWidget tela){
     return new MaterialApp(
       home: tela,
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: [
+        ProdutividadeLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: [const Locale('pt', 'BR')],
+      supportedLocales: [
+        const Locale('pt', 'BR'),
+        const Locale('en', ''), // English, no country code
+      ],
+      localeResolutionCallback: (Locale deviceLocale, Iterable<Locale> supportedLocales) {
+        for( Locale locale in supportedLocales){
+          if( deviceLocale.languageCode == locale.languageCode && deviceLocale.countryCode == locale.countryCode ){
+            return deviceLocale;
+          }
+        }
+        return supportedLocales.first;
+      },
       // set your initial route
       initialRoute: "/",
       navigatorKey: Modular.navigatorKey,
