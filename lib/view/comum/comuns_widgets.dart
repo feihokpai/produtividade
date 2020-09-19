@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/localization/ProdutividadeLocalization.dart';
 import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/comum/rotas.dart';
@@ -11,6 +12,7 @@ import 'package:registro_produtividade/view/comum/rotas.dart';
 class ComunsWidgets {
 
   static BuildContext context;
+  static Locale currentLocale;
   static bool modoTeste = false;
 
   static String KEY_STRING_TITULO_PAGINA = "titulo_pagina";
@@ -27,8 +29,15 @@ class ComunsWidgets {
     return barraSuperior;
   }
 
-  static void changeLanguage(String value){
+  static Future<void> changeLanguage(String value) async {
+    ComunsWidgets.currentLocale = new Locale( value );
+    await ProdutividadeLocalizations.delegate.load( ComunsWidgets.currentLocale );
+    await ComunsWidgets.mudarParaPaginaInicial();
     print("Mudou de lingua -> ${value}");
+  }
+
+  static String getLabel( String namelabel ){
+    return ProdutividadeLocalizations.of( ComunsWidgets.context ).getTranslatedValue( namelabel );
   }
 
   static List<Widget> _createActionsAppBar(){
