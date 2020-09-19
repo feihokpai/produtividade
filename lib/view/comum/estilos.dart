@@ -14,6 +14,7 @@ class Estilos{
   //#D5CFCD - branco escuro 2
   static Color corDeFundoPrincipal = new Color(0xffD5CFCD);
   static Color corBarraSuperior = new Color(0xff416381);
+  static Color corTextoBarraSuperior = Colors.white;
   static Color corMenuLateral = new Color(0xff416381);
   static var corRaisedButton = new Color(0xff416381);
   static var corTextFieldEditavel = new Color(0xffD9CDCA);

@@ -21,8 +21,35 @@ class ComunsWidgets {
     AppBar barraSuperior = new AppBar(
         title: new Text("Registro de Produtividade"),
         centerTitle: true,
-        backgroundColor: Estilos.corBarraSuperior);
+        backgroundColor: Estilos.corBarraSuperior,
+        actions: ComunsWidgets._createActionsAppBar(),
+    );
     return barraSuperior;
+  }
+
+  static void changeLanguage(String value){
+    print("Mudou de lingua -> ${value}");
+  }
+
+  static List<Widget> _createActionsAppBar(){
+    return <Widget>[
+      Container(
+        width: 90,
+        child: new DropdownButton<String>(
+          isExpanded: true,
+          underline: SizedBox(),
+            icon: new Icon(
+              Icons.language,
+              color: Estilos.corTextoBarraSuperior,
+            ),
+            items: <DropdownMenuItem<String>>[
+              new DropdownMenuItem<String>( value: "pt", child: new Text("Português")),
+              new DropdownMenuItem<String>( value: "en", child: new Text("English")),
+            ],
+            onChanged: ComunsWidgets.changeLanguage,
+        ),
+      ),
+    ];
   }
 
   static void fecharPopup( BuildContext context, int codigoRetorno ){
