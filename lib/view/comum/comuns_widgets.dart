@@ -5,6 +5,7 @@ import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/localization/ProdutividadeLocalization.dart';
+import 'package:registro_produtividade/view/comum/Labels.dart';
 import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/comum/rotas.dart';
@@ -54,6 +55,7 @@ class ComunsWidgets {
             items: <DropdownMenuItem<String>>[
               new DropdownMenuItem<String>( value: "pt", child: new Text("Português")),
               new DropdownMenuItem<String>( value: "en", child: new Text("English")),
+              new DropdownMenuItem<String>( value: "es", child: new Text("Español")),
             ],
             onChanged: ComunsWidgets.changeLanguage,
         ),
@@ -68,7 +70,9 @@ class ComunsWidgets {
   static List<Widget> definirBotoes( BuildContext context, int qtdBotoes, List<String> nomesBotoes){
     List<Widget> botoes = new List();
     if( nomesBotoes == null ){
-      nomesBotoes = <String>[ "Sim", "Não" ];
+      String labelYes = ComunsWidgets.getLabel( Labels.yes_button );
+      String labelNo = ComunsWidgets.getLabel( Labels.no_button );
+      nomesBotoes = <String>[ labelYes, labelNo ];
     }
     for( int i=0; i< qtdBotoes ; i++ ){
       int codigoRetorno = i+1;
@@ -147,14 +151,14 @@ class ComunsWidgets {
                     ),
                     new Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 20)),
                     Text(
-                      'Feito por: Amorim Company',
+                      '${ComunsWidgets.getLabel("feito_por")}: Amorim Company',
                       style: Estilos.textStyleSubtituloMenuLateral,
                       textAlign: TextAlign.left,
                     ),
                   ])),
-          ComunsWidgets.gerarItemMenuDrawer("Tarefas abertas", Icons.message, ComunsWidgets.mudarParaPaginaInicial),
-          ComunsWidgets.gerarItemMenuDrawer("Criação de Tarefas", Icons.add, ComunsWidgets.mudarParaPaginaEdicaoDeTarefas),
-          ComunsWidgets.gerarItemMenuDrawer("Relatórios", Icons.show_chart, ComunsWidgets.mudarParaPaginaDeRelatorios),
+          ComunsWidgets.gerarItemMenuDrawer( ComunsWidgets.getLabel("lista_tarefas"), Icons.message, ComunsWidgets.mudarParaPaginaInicial),
+          ComunsWidgets.gerarItemMenuDrawer( ComunsWidgets.getLabel("nova_tarefa"), Icons.add, ComunsWidgets.mudarParaPaginaEdicaoDeTarefas),
+          ComunsWidgets.gerarItemMenuDrawer( ComunsWidgets.getLabel("relatorios"), Icons.show_chart, ComunsWidgets.mudarParaPaginaDeRelatorios),
         ],
       ),
     );

@@ -11,6 +11,7 @@ import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dar
 import 'package:registro_produtividade/view/comum/CampoDataHora.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
+import 'package:registro_produtividade/view/comum/Labels.dart';
 import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
@@ -142,7 +143,8 @@ class TempoDedicadoEdicaoComponente{
       dataInicial = this.tempoDedicadoAtual.inicio;
     }
     String StringKey = TempoDedicadoEdicaoComponente.KEY_STRING_CAMPO_HORA_INICIAL;
-    this.campoDataHoraInicial ??= new CampoDataHora("Início", this.context, dataMinima: new DateTime(2020),
+    String label = ComunsWidgets.getLabel( Labels.start_time );
+    this.campoDataHoraInicial ??= new CampoDataHora(label, this.context, dataMinima: new DateTime(2020),
         dataMaxima: new DateTime.now(), chave: this._criarKey( StringKey ),
         dateTimeFormatter: this.formatter,
         onChange: this._mudouValorCampoDataHoraInicial,
@@ -182,7 +184,8 @@ class TempoDedicadoEdicaoComponente{
 
   void _iniciarCampoDataHoraFinal( ){
     DateTime dataSelecionada = this._definirDataHoraSelecionadaCampoDataHoraFinal();
-    this.campoDataHoraFinal ??= new CampoDataHora("Fim", this.context, dataMaxima: new DateTime.now(),
+    String label = ComunsWidgets.getLabel( Labels.end_time );
+    this.campoDataHoraFinal ??= new CampoDataHora( label, this.context, dataMaxima: new DateTime.now(),
         dataMinima: this.campoDataHoraInicial.dataSelecionada,
         chave: this._criarKey( TempoDedicadoEdicaoComponente.KEY_STRING_CAMPO_HORA_FINAL ),
         dateTimeFormatter: this.formatter,
@@ -195,7 +198,8 @@ class TempoDedicadoEdicaoComponente{
   }
 
   void _iniciarCampoDuracao( ){
-    this.campoDuracao = new CampoDeTextoWidget("Duração", 1 , null, editavel: false);
+    String label = ComunsWidgets.getLabel( Labels.duration );
+    this.campoDuracao = new CampoDeTextoWidget( label, 1 , null, editavel: false);
     if( this.campoDataHoraFinal != null ){
       DateTime begin = this.campoDataHoraInicial.dataSelecionada;
       DateTime end = this.campoDataHoraFinal.dataSelecionada;
@@ -227,9 +231,9 @@ class TempoDedicadoEdicaoComponente{
   String _definirTituloDoPopup(){
     if( this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ||
         this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES ){
-      return "Preencha a hora inicial da atividade";
+      return ComunsWidgets.getLabel( Labels.title_editing_time );
     }else if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ){
-      return "Preencha as horas de início e fim da atividade";
+      return ComunsWidgets.getLabel( Labels.title_editing_time_complete );
     }
   }
 
@@ -326,11 +330,12 @@ class TempoDedicadoEdicaoComponente{
     if( this.estadoAtual == _Estado.EDICAO_SEM_ALTERACOES ||
         this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES) {
       String keyString = TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_ENCERRAR;
+      String labelButton = ComunsWidgets.getLabel( Labels.finish_button );
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
         child: SizedBox(
           width: LARGURA_BOTOES,
-          child: ComunsWidgets.createRaisedButton("Encerrar", keyString, this._clicouEmEncerrar )
+          child: ComunsWidgets.createRaisedButton(labelButton, keyString, this._clicouEmEncerrar )
         ),
       );
     }else{
@@ -343,7 +348,8 @@ class TempoDedicadoEdicaoComponente{
       return new Container();
     }else{
       String keyStringDeletar = TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_DELETAR;
-      Widget botaoDeletar = ComunsWidgets.createRaisedButton("Deletar", keyStringDeletar,
+      String labelButton = ComunsWidgets.getLabel( Labels.delete_button );
+      Widget botaoDeletar = ComunsWidgets.createRaisedButton( labelButton, keyStringDeletar,
           () => this._clicouEmDeletar( this._contextOfStatefulBuilder ) );
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
@@ -469,7 +475,8 @@ class TempoDedicadoEdicaoComponente{
   /// save and returns the same value that entered in method.
   Future<int> _saveTimesIfChangedSomethingUserClickedOutsideAndConfirmYes( value ) async{
     if( value == null && this.algumValorAlterado ){
-      int resposta = await ComunsWidgets.exibirDialogConfirmacao( this.context, "Você deseja salvar as alterações feitas?", "");
+      String label = ComunsWidgets.getLabel( Labels.msg_forget_save );
+      int resposta = await ComunsWidgets.exibirDialogConfirmacao( this.context, label, "");
       if( resposta == 1 ) {
         await this._saveChangedInformation();
         return 1;
@@ -518,11 +525,12 @@ class TempoDedicadoEdicaoComponente{
   Widget _generateSaveButtonOrEmpty( ) {
     if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ||
         this.estadoAtual == _Estado.EDICAO_COM_ALTERACOES ) {
+      String labelButton = ComunsWidgets.getLabel( Labels.save_button );
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
         child: SizedBox(
           width: LARGURA_BOTOES,
-          child: ComunsWidgets.createRaisedButton("salvar",
+          child: ComunsWidgets.createRaisedButton(labelButton,
               TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_SALVAR,
                   () => this._clicouEmSalvar( this._contextOfStatefulBuilder ),
           ),

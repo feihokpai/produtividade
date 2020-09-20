@@ -7,6 +7,7 @@ import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dar
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
 import 'package:registro_produtividade/view/comum/ChronometerStateful.dart';
 import 'package:registro_produtividade/view/comum/FutureBuilderWithCache.dart';
+import 'package:registro_produtividade/view/comum/Labels.dart';
 import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
@@ -251,6 +252,10 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     return nomeFormatado;
   }
 
+  String label( String tipoLabel ){
+    return ComunsWidgets.getLabel( tipoLabel );
+  }
+
   Widget gerarConteudoCentral(){
 
     return WillPopScope(
@@ -261,7 +266,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: new Text( "Tarefas em andamento",
+              child: new Text( this.label( "tarefas_em_andamento" ),//"Tarefas em andamento",
                   style: Estilos.textStyleListaTituloDaPagina,
                   key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
             ),
@@ -382,7 +387,8 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   ChronometerStateful gerarNovoCronometro( TempoDedicado tempo ){
-    ChronometerStateful field = new ChronometerStateful("Duração", beginTime: tempo.inicio );
+    String label = this.label( Labels.duration );
+    ChronometerStateful field = new ChronometerStateful(label, beginTime: tempo.inicio );
     this.cronometrosGerados[tempo.tarefa.id] = field;
     return field;
   }
