@@ -1,4 +1,21 @@
 {
   "tarefa" : "task",
-  "Tarefa" : "Task"
+  "Tarefa" : "Task",
+  "tarefas_em_andamento" : "Tasks in progress",
+  "duration" : "Duration",
+  "feito_por" : "Made by",
+  "lista_tarefas" : "Task list",
+  "nova_tarefa" : "Create a new task",
+  "relatorios" : "Reports",
+  "title_editing_time": "Enter the time you started working on the task",
+  "title_editing_time_complete": "Enter the start and end times you worked on the task",
+  "start_time": "Start time",
+  "end_time": "End time",
+  "save_button": "Save",
+  "finish_button": "Finish",
+  "delete_button": "Delete",
+  "back_button": "Back",
+  "yes_button": "Yes",
+  "no_button": "No",
+  "msg_forget_save": "Do you want save the changes?"
 }

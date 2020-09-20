@@ -32,7 +32,7 @@ class _LocalizationsDelegate extends LocalizationsDelegate<ProdutividadeLocaliza
   const _LocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) => ['en', 'pt'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => ['en', 'pt', 'es'].contains(locale.languageCode);
 
   @override
   Future<ProdutividadeLocalizations> load(Locale locale) async{

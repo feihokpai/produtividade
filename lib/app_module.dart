@@ -81,6 +81,7 @@ class AppModule extends MainModule {
       supportedLocales: [
         const Locale('pt', 'BR'),
         const Locale('en', ''), // English, no country code
+        const Locale('es', ''), // Spanish, no country code
       ],
       localeResolutionCallback: (Locale deviceLocale, Iterable<Locale> supportedLocales) {
         for( Locale locale in supportedLocales){

@@ -1,0 +1,21 @@
+{
+  "tarefa" : "tarea",
+  "Tarefa" : "Tarea",
+  "tarefas_em_andamento" : "Tareas en curso",
+  "duration" : "Duración",
+  "feito_por" : "Hecho por",
+  "lista_tarefas" : "Lista de tareas",
+  "nova_tarefa" : "Crea una nueva tarea",
+  "relatorios" : "Informes",
+  "title_editing_time": "Ingrese la hora en que comenzó a trabajar en la tarea",
+  "title_editing_time_complete": "Ingrese las horas que comenzó y terminó de trabajar",
+  "start_time": "Hora de inicio",
+  "end_time": "Hora final",
+  "save_button": "Guardar",
+  "finish_button": "Terminar",
+  "delete_button": "Eliminar",
+  "back_button": "Volver",
+  "yes_button": "Sí",
+  "no_button": "No",
+  "msg_forget_save": "¿Quieres guardar los cambios realizados?"
+}

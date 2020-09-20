@@ -1,4 +1,21 @@
 {
   "tarefa" : "tarefa",
-  "Tarefa" : "Tarefa"
+  "Tarefa" : "Tarefa",
+  "tarefas_em_andamento" : "Tarefas em andamento",
+  "duration" : "Duração",
+  "feito_por" : "Feito por",
+  "lista_tarefas" : "Lista de tarefas",
+  "nova_tarefa" : "Criar nova tarefas",
+  "relatorios" : "Relatórios",
+  "title_editing_time": "Preencha a hora inicial da atividade",
+  "title_editing_time_complete": "Preencha as horas em que iniciou e terminou de trabalhar na Tarefa",
+  "start_time": "Início",
+  "end_time": "Fim",
+  "save_button": "Salvar",
+  "finish_button": "Encerrar",
+  "delete_button": "Deletar",
+  "back_button": "Voltar",
+  "yes_button": "Sim",
+  "no_button": "Não",
+  "msg_forget_save": "Você deseja salvar as alterações feitas?"
 }
