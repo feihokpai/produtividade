@@ -394,7 +394,7 @@ class TempoDedicadoEdicaoComponente{
   }
 
   Future<void> _clicouEmSalvar(BuildContext contextDialogStatefull) async {
-    String tituloPopup = "Falha ao tentar salvar um registro de tempo";
+    String tituloPopup = ComunsWidgets.getLabel( Labels.fail_save_time );
     this.tryCatch( tituloPopup, () async {
       await this._saveChangedInformation();
     });

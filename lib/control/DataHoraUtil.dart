@@ -8,6 +8,8 @@ class DataHoraUtil{
   static DateFormat formatterHoraComMilisegundos = new DateFormat("HH:mm:ss.SSS");
   static DateFormat formatterDataHoraResumidaBrasileira = new DateFormat("dd/MM/yyyy HH:mm");
   static DateFormat formatterDataSemAnoHoraBrasileira = new DateFormat("dd/MM - HH:mm:ss");
+  static DateFormat formatterDataSemAnoHoraAmericana = new DateFormat("MM/dd - hh:mm:ss a");
+  static DateFormat formatterDataHoraAmericana = new DateFormat("MM/dd/yyyy hh:mm:ss a");
   static DateFormat formatterHoraResumidaBrasileira = new DateFormat("HH:mm");
   static DateFormat formatterDataHoraBrasileira = new DateFormat("dd/MM/yyyy HH:mm:ss");
   static DateFormat formatterSqllite = new DateFormat("yyyy-MM-dd HH:mm:ss.SSS");

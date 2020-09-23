@@ -1,5 +1,8 @@
+import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/view/comum/Labels.dart';
+import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 
 class ValidationException implements Exception{
   List<ValidationProblem> _problems = new List();
@@ -47,31 +50,52 @@ class Validators{
 
   static List<ValidationProblem> _verifyIfSomeHourIsAfterTheLimit( TempoDedicado dedicatedTime ){
     List<ValidationProblem> problems = new List();
+    DateFormat formatter = ComunsWidgets.linguaDefinidaComoIngles() ?
+        DataHoraUtil.formatterDataSemAnoHoraAmericana : DataHoraUtil.formatterDataSemAnoHoraBrasileira;
     DateTime begin = dedicatedTime.inicio;
-    String formatedBegin = DataHoraUtil.formatterDataHoraBrasileira.format( begin );
-    DateTime now = DateTime.now();
-    String formatedNow = DataHoraUtil.formatterDataHoraBrasileira.format( now );
-    bool isBeginHourPosteriorNow = now.difference( begin ).inMinutes < 0;
-    if( isBeginHourPosteriorNow ){
-      problems.add( new ValidationProblem("O horário de início não pode ser posterior ao horário atual."
-          " Início: ${formatedBegin}. Agora: ${formatedNow}") );
-    }
     DateTime end = dedicatedTime.fim;
+    problems.addAll( Validators._verifyIfInitialTimeIsLaterThanCurentTime( formatter, begin ) );
     if( end != null ){
-      String formatedEnd = DataHoraUtil.formatterDataHoraBrasileira.format( end );
-      bool isEndHourPosteriorNow = now.difference( end ).inMinutes < 0;
-      if( isEndHourPosteriorNow ){
-        problems.add( new ValidationProblem("O horário de fim não pode ser posterior ao horário atual."
-            " Fim: ${formatedEnd}. Agora: ${formatedNow}") );
-      }
-      bool isEndHourPosteriorBeginHour = begin.difference( end ).inMinutes > 0;
-      if( isEndHourPosteriorBeginHour ){
-        problems.add( new ValidationProblem("O horário de fim não pode ser posterior ao horário inicial."
-            " Início: ${formatedBegin}. Fim: ${formatedEnd}") );
-      }
+      problems.addAll( Validators._verifyIfEndTimeIsLaterThanCurentTime(formatter, end) );
+      problems.addAll( Validators._verifyIfEndTimeIsLaterThanInitialTime(formatter, begin, end) );
     }
     return problems;
   }
 
+  static List<ValidationProblem> _verifyIfInitialTimeIsLaterThanCurentTime(DateFormat formatter, DateTime begin) {
+    bool isBeginHourPosteriorNow = DateTime.now().difference( begin ).inMinutes < 0;
+    if( isBeginHourPosteriorNow ){
+      String formatedNow = formatter.format( DateTime.now() );
+      String formatedBegin = formatter.format( begin );
+      return <ValidationProblem>[ Validators._createValidationProblem(Labels.begin_time_after_now, formatedBegin, formatedNow) ];
+    }
+    return new List();
+  }
+
+  static List<ValidationProblem> _verifyIfEndTimeIsLaterThanCurentTime(DateFormat formatter, DateTime end) {
+    bool isEndHourPosteriorNow = DateTime.now().difference( end ).inMinutes < 0;
+    if( isEndHourPosteriorNow ){
+      String formatedEnd = formatter.format( end );
+      String formatedNow = formatter.format( DateTime.now() );
+      return <ValidationProblem>[ Validators._createValidationProblem( Labels.end_time_after_now, formatedEnd, formatedNow) ];
+    }
+    return new List();
+  }
+
+  static List<ValidationProblem> _verifyIfEndTimeIsLaterThanInitialTime(DateFormat formatter, DateTime begin, DateTime end) {
+    bool isEndHourPosteriorBeginHour = begin.difference( end ).inMinutes > 0;
+    if( isEndHourPosteriorBeginHour ){
+      String formatedEnd = formatter.format( end );
+      String formatedBegin = formatter.format( begin );
+      return <ValidationProblem>[ Validators._createValidationProblem( Labels.end_time_after_begin, formatedBegin, formatedEnd ) ];
+    }
+    return new List();
+  }
+
+  static ValidationProblem _createValidationProblem( String labelName, String parameter1, String parameter2 ){
+    List<String> parametersLabel = <String>[parameter1,parameter2];
+    String problemDescription = ComunsWidgets.getLabel( labelName, parameters: parametersLabel );
+    return new ValidationProblem( problemDescription );
+  }
 
 }
