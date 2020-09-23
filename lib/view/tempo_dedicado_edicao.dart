@@ -65,18 +65,30 @@ class TempoDedicadoEdicaoComponente{
 
   static final double LARGURA_POPUP_VERTICAL = 280;
   static final double LARGURA_POPUP_HORIZONTAL = 500;
-  static final double LARGURA_CAMPO_DATA_HORA = LARGURA_POPUP_VERTICAL-40;
+  static final double LARGURA_CAMPO_DATA_HORA = LARGURA_POPUP_VERTICAL-10;
   static final double LARGURA_BOTOES = 90;
 
   TempoDedicadoEdicaoComponente( Tarefa tarefa, BuildContext context, {TempoDedicado tempoDedicado, DateFormat formatter} )
   :assert(context != null, "Tentou criar componente de edição de Tempo, mas o contexto está nulo"),
    assert(tarefa != null, "Tentou criar componente de edição de Tempo, mas a Tarefa está nula." ){
     this.context = context;
-    this.formatter = formatter ?? TempoDedicadoEdicaoComponente.formatterPadrao;
+    this.formatter = formatter ?? this.definirFormatterDataHoraPadrao();
     this.tarefaAtual = tarefa;
     this.tempoDedicadoAtual = tempoDedicado;
     this._definirEstadoInicial();
     this.stateFullBuilder = this.createStateFullBuilder();
+  }
+
+  DateFormat definirFormatterDataHoraPadrao(){
+    Locale locale = ComunsWidgets.currentLocale;
+    String language = locale != null ? locale.languageCode : "en";
+    if( language == 'pt' ){
+      return DataHoraUtil.formatterDataSemAnoHoraBrasileira;
+    }else if( language == 'en' ){
+      return DataHoraUtil.formatterDataSemAnoHoraAmericana;
+    }else if( language == 'es' ){
+      return DataHoraUtil.formatterDataSemAnoHoraBrasileira;
+    }
   }
 
   void _definirEstadoInicial(){
@@ -149,6 +161,7 @@ class TempoDedicadoEdicaoComponente{
         dateTimeFormatter: this.formatter,
         onChange: this._mudouValorCampoDataHoraInicial,
         dataInicialSelecionada: dataInicial,
+        locale: ComunsWidgets.currentLocale,
     );
   }
 
@@ -194,6 +207,7 @@ class TempoDedicadoEdicaoComponente{
           this._emptySetStateFunction();
         },
         dataInicialSelecionada: dataSelecionada,
+        locale: ComunsWidgets.currentLocale,
     );
   }
 
@@ -302,7 +316,7 @@ class TempoDedicadoEdicaoComponente{
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-              child: SizedBox(child: this.campoDataHoraInicial.getWidget(), width: 240, ),
+              child: SizedBox(child: this.campoDataHoraInicial.getWidget(), width: LARGURA_CAMPO_DATA_HORA, ),
             ),
             this._campoHoraFinalOuVazio(),
             SizedBox(
