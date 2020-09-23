@@ -30,15 +30,30 @@ class ComunsWidgets {
     return barraSuperior;
   }
 
-  static Future<void> changeLanguage(String value) async {
+  static bool linguaDefinidaComoIngles(){
+    if( ComunsWidgets.currentLocale == null ){
+      return false;
+    }
+    return ComunsWidgets.currentLocale.languageCode == 'en';
+  }
+
+  static Future<void> changeLanguage(String value, {bool goToInitialScreen=true}) async {
     ComunsWidgets.currentLocale = new Locale( value );
     await ProdutividadeLocalizations.delegate.load( ComunsWidgets.currentLocale );
-    await ComunsWidgets.mudarParaPaginaInicial();
+    if( goToInitialScreen ) {
+      await ComunsWidgets.mudarParaPaginaInicial();
+    }
     print("Mudou de lingua -> ${value}");
   }
 
-  static String getLabel( String namelabel ){
-    return ProdutividadeLocalizations.of( ComunsWidgets.context ).getTranslatedValue( namelabel );
+  static String getLabel( String namelabel, {List<String> parameters} ){
+    String label = ProdutividadeLocalizations.of( ComunsWidgets.context ).getTranslatedValue( namelabel );
+    if( parameters != null && parameters.isNotEmpty ){
+      for( int i=0; i< parameters.length; i++ ){
+        label = label.replaceAll( "{$i}", parameters[i] );
+      }
+    }
+    return label;
   }
 
   static List<Widget> _createActionsAppBar(){
