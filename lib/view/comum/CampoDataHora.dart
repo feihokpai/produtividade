@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
+import 'package:registro_produtividade/view/comum/estilos.dart';
 
 class CampoDataHora extends CampoDeTextoWidget{
 
@@ -17,11 +18,14 @@ class CampoDataHora extends CampoDeTextoWidget{
   static String PREFIXO_KEY_STRING_ICONE_DATE_PICKER = "datePicker_";
   static String PREFIXO_KEY_STRING_ICONE_TIME_PICKER = "timePicker_";
 
+  Locale _locale;
+  static Locale defaultLocale = new Locale("pt", "");
+
   ///Função executada quando mudar o valor preenchido no campo de texto.
   void Function() _onChange;
 
   CampoDataHora(String label, BuildContext context, {ValueKey<String> chave, DateTime dataMaxima, DateTime dataMinima,
-    DateFormat dateTimeFormatter, DateTime dataInicialSelecionada, bool showHourPicker=true,
+    DateFormat dateTimeFormatter, DateTime dataInicialSelecionada, Locale locale, bool showHourPicker=true,
     bool showDatePicker=true, void Function() onChange})
       : assert( context != null ),
         assert( dataMaxima == null || dataMinima == null
@@ -36,6 +40,8 @@ class CampoDataHora extends CampoDeTextoWidget{
     this.dataSelecionada = dataInicialSelecionada;
     _showDatePicker = showDatePicker;
     _showHourPicker = showHourPicker;
+    super.textStyleTexto = Estilos.textStyleCampoDataHora;
+    this._locale = locale ?? CampoDataHora.defaultLocale;
   }
 
   void set onChange(void Function() onChange){
@@ -68,6 +74,7 @@ class CampoDataHora extends CampoDeTextoWidget{
     DateTime dataInicial = (this.dataSelecionada ?? new DateTime.now() );
     showDatePicker(context: this.context,
         initialDate: dataInicial,
+        locale: _locale,
         firstDate: this.dataMinima,
         lastDate: this.dataMaxima ).then((selecionada) {
           if( selecionada == null ) {
@@ -110,7 +117,7 @@ class CampoDataHora extends CampoDeTextoWidget{
     return new Row(
       children: <Widget>[
         Expanded(
-            flex: 3,
+            flex: 65,
             child: super.getWidget()
         ),
         this.showDatePickerOrEmpty(),
@@ -125,7 +132,7 @@ class CampoDataHora extends CampoDeTextoWidget{
     }else{
       String keyCalendario = "${CampoDataHora.PREFIXO_KEY_STRING_ICONE_DATE_PICKER}${super.key.value}";
       return Expanded(
-        flex: 1,
+        flex: 18,
         child: new IconButton(
           key: new ValueKey( keyCalendario ),
           icon: new Icon( Icons.date_range ),
@@ -141,7 +148,7 @@ class CampoDataHora extends CampoDeTextoWidget{
       return new Container();
     }else{
       return new Expanded(
-        flex: 1,
+        flex: 17,
         child: new IconButton(
           key: new ValueKey( keyRelogio ),
           icon: new Icon( Icons.alarm ),
