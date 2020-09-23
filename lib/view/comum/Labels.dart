@@ -11,4 +11,9 @@ class Labels{
   static const String yes_button="yes_button";
   static const String no_button="no_button";
   static const String msg_forget_save="msg_forget_save";
+  static const String fail_save_time="fail_save_time";
+  static const String begin_time_after_now="begin_time_after_now";
+  static const String end_time_after_now="end_time_after_now";
+  static const String end_time_after_begin="end_time_after_begin";
+
 }

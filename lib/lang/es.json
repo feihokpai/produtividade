@@ -17,5 +17,9 @@
   "back_button": "Volver",
   "yes_button": "Sí",
   "no_button": "No",
-  "msg_forget_save": "¿Quieres guardar los cambios realizados?"
+  "msg_forget_save": "¿Quieres guardar los cambios realizados?",
+  "fail_save_time": "Intentó guardar el registro, pero falló",
+  "begin_time_after_now": "La hora de inicio no puede ser posterior a la hora actual. \n- Insertado: {0}. \n- Ahora: {1}",
+  "end_time_after_now": "La hora final no puede ser posterior a la hora actual. \n- Insertado: {0}. \n- Ahora: {1}",
+  "end_time_after_begin": "La hora final no puede ser posterior a la hora de inicio. \n- Inicio: {0}. \n- Fin: {1}"
 }

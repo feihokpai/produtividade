@@ -17,5 +17,9 @@
   "back_button": "Back",
   "yes_button": "Yes",
   "no_button": "No",
-  "msg_forget_save": "Do you want save the changes?"
+  "msg_forget_save": "Do you want save the changes?",
+  "fail_save_time": "A Fail occured when tried saving a dedicated time",
+  "begin_time_after_now": "The starting time can't be later than the current time. \n- Inserted time: {0}. \n- Now: {1}",
+  "end_time_after_now": "The end time can't be later than the current time. \n- End time: {0}. \n- Now: {1}",
+  "end_time_after_begin": "The end time can't be later than the initial time. \n- Initial: {0}. \n- End: {1}"
 }
