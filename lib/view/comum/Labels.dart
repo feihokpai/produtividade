@@ -15,5 +15,6 @@ class Labels{
   static const String begin_time_after_now="begin_time_after_now";
   static const String end_time_after_now="end_time_after_now";
   static const String end_time_after_begin="end_time_after_begin";
+  static const String times_in_different_days="times_in_different_days";
 
 }

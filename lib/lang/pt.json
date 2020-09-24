@@ -21,5 +21,6 @@
   "fail_save_time": "Falha ao tentar salvar um registro de tempo",
   "begin_time_after_now": "O horário de início não pode ser posterior ao horário atual. \n- Início: {0}. \n- Agora: {1}",
   "end_time_after_now": "O horário de término não pode ser posterior ao horário atual. \n- Término: {0}. \n- Agora: {1}",
-  "end_time_after_begin": "O horário de término não pode ser posterior ao horário inicial. \n- Início: {0}. \n- Fim: {1}"
+  "end_time_after_begin": "O horário de término não pode ser posterior ao horário inicial. \n- Início: {0}. \n- Fim: {1}",
+  "times_in_different_days": "Você preencheu as datas com dias diferentes, gerando uma diferença de {0} horas entre o início e o fim do registro. Tem certeza de que deseja salvar essa informação?"
 }

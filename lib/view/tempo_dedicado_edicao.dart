@@ -418,11 +418,9 @@ class TempoDedicadoEdicaoComponente{
   Future<bool> _checarPossiveisValoresPreenchidosPorEngano( TempoDedicado tempo ) async {
     if( tempo.fim != null && !DataHoraUtil.eDataMesmoDia(tempo.inicio, tempo.fim) ){
       int quantidadeHoras = tempo.fim.difference(tempo.inicio).inHours;
-      String descricao = "Você preencheu as datas com dias diferentes, gerando uma diferença de $quantidadeHoras"
-          " horas entre o início e o fim do registro. Tem certeza de que deseja salvar essa informação?";
+      String descricao = ComunsWidgets.getLabel( Labels.times_in_different_days, parameters: <String>[ "$quantidadeHoras" ] );
       BuildContext contextAtual = this._isStateFulBuilderMounted() ? this._contextOfStatefulBuilder : this.context;
-      int resposta = await ComunsWidgets.exibirDialogConfirmacao( contextAtual , "Datas de dias diferentes",
-          descricao);
+      int resposta = await ComunsWidgets.exibirDialogConfirmacao( contextAtual , "", descricao);
       return ( resposta != 1 );
     }
     return false;

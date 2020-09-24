@@ -21,5 +21,6 @@
   "fail_save_time": "Intentó guardar el registro, pero falló",
   "begin_time_after_now": "La hora de inicio no puede ser posterior a la hora actual. \n- Insertado: {0}. \n- Ahora: {1}",
   "end_time_after_now": "La hora final no puede ser posterior a la hora actual. \n- Insertado: {0}. \n- Ahora: {1}",
-  "end_time_after_begin": "La hora final no puede ser posterior a la hora de inicio. \n- Inicio: {0}. \n- Fin: {1}"
+  "end_time_after_begin": "La hora final no puede ser posterior a la hora de inicio. \n- Inicio: {0}. \n- Fin: {1}",
+  "times_in_different_days": "Usted insertó fechas con diferentes días, creando una diferencia de {0} horas entre el comienzo y el final del registro. ¿Está seguro de que desea guardar esta información?"
 }
