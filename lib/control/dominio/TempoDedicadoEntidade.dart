@@ -41,13 +41,6 @@ class TempoDedicado extends EntidadeDominio implements Comparable<TempoDedicado>
   DateTime get fim => this._fim;
 
   set fim(DateTime valor){
-    ValidationException exception = new ValidationException();
-    if( valor != null && valor.isBefore( this.inicio ) ){
-      exception.addProblem( "Num registro de tempo dedicado o horário de fim deve ser posterior ao de início." );
-    }
-    if( exception.problems.length > 0 ){
-      throw exception;
-    }
     this._fim = valor;
   }
 

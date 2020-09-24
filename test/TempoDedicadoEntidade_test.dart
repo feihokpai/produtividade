@@ -126,13 +126,6 @@ class TempoDedicadoEntidadeTest{
       expect( t.fim = null , null );
     });
 
-    test("Tempo dedicado: (fim) setter não permite data anterior a início?", (){
-      DateTime agora = new DateTime.now();
-      TempoDedicado td = new TempoDedicado( this.criarTarefaValida(), inicio: agora );
-      DateTime umSegundoAntes = agora.subtract( new Duration(seconds: 1) );
-      expect( () => td.fim = umSegundoAntes, throwsA( isInstanceOf<ValidationException>( ) ) );
-    });
-
     test("Tempo dedicado: (duracaoEmMinutos) com fim preenchido calcula corretamente?", (){
       DateTime agora = new DateTime.now();
       TempoDedicado td = new TempoDedicado( this.criarTarefaValida(), inicio: agora );
