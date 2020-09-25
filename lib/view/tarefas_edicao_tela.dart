@@ -8,6 +8,7 @@ import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dar
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/FutureBuilderWithCache.dart';
 import 'package:registro_produtividade/view/comum/IntervalDatesChoosingComponent.dart';
+import 'package:registro_produtividade/view/comum/Labels.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/tempo_dedicado_edicao.dart';
@@ -93,11 +94,13 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
 
   void InicializarVariaveis(){
     if( this.campoNome == null){
-      this.campoNome = new CampoDeTextoWidget("Nome da Tarefa", 1, this.validarCampoNome );
+      String labelNome = ComunsWidgets.getLabel( Labels.field_task_name );
+      this.campoNome = new CampoDeTextoWidget(labelNome, 1, this.validarCampoNome );
       this.campoNome.setKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_NOME );
     }
     if( this.campoDescricao == null ){
-      this.campoDescricao = new CampoDeTextoWidget("Descrição da tarefa", 6, null );
+      String labelDescricao = ComunsWidgets.getLabel( Labels.field_task_description );
+      this.campoDescricao = new CampoDeTextoWidget(labelDescricao, 6, null );
       this.campoDescricao.setKeyString( TarefasEdicaoTela.KEY_STRING_CAMPO_DESCRICAO );
     }
     if( this.widget.estadoAtual == _Estado.EDICAO_VISIVEL ) {
@@ -148,6 +151,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   Widget gerarBotaoDeletar(){
+    String labelDeletar = ComunsWidgets.getLabel( Labels.delete_button );
     Widget item = new Padding( padding: const EdgeInsets.all(8.0) );
     if( this.widget.tarefaAtual != null ) {
       item = new Padding(
@@ -155,7 +159,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
         child: new RaisedButton(
           key: new ValueKey(TarefasEdicaoTela.KEY_STRING_BOTAO_DELETAR),
           onPressed: this.pressionouDeletar,
-          child: new Text("Deletar", style: Estilos.textStyleBotaoFormulario),
+          child: new Text( labelDeletar, style: Estilos.textStyleBotaoFormulario),
           color: Estilos.corRaisedButton,
         )
       );
@@ -182,15 +186,18 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     //Form formulario = new Form( child: coluna, key: this.globalKey );
   }
 
-  Widget _gerarTituloDaPagina(){
-    String titulo = "";
+  String definirTituloPorEstado(){
     if( this.widget.estadoAtual == _Estado.CADASTRO){
-      titulo = "Cadastro de uma nova Tarefa";
+      return ComunsWidgets.getLabel( Labels.title_insert_task );
     }else if( this.widget.estadoAtual == _Estado.EDICAO_VISIVEL ){
-      titulo =  "Edição de uma Tarefa";
+      return ComunsWidgets.getLabel( Labels.title_edit_task );
     }else if( this.widget.estadoAtual == _Estado.RELATORIO_VISIVEL ){
-      titulo =  "Relatórios da Tarefa";
+      return ComunsWidgets.getLabel( Labels.title_report_task );
     }
+  }
+
+  Widget _gerarTituloDaPagina(){
+    String titulo = this.definirTituloPorEstado();
     return new Text( titulo,
         style: Estilos.textStyleListaTituloDaPagina,
         key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) );
@@ -205,6 +212,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   Widget _gerarBotoesEditarTarefaEVoltar(){
+    String labelVoltar = ComunsWidgets.getLabel( Labels.back_button );
     return Row(
       children: [
         SizedBox(
@@ -221,7 +229,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
           width: 120,
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0),
-            child: ComunsWidgets.createRaisedButton("Voltar", null, () async {
+            child: ComunsWidgets.createRaisedButton( labelVoltar, null, () async {
               await this.pressionouVoltar();
             }),
           )
@@ -231,6 +239,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   Widget _gerarFormularioEdicaoDaTarefa(){
+    String labelSalvar = ComunsWidgets.getLabel( Labels.save_button );
+    String labelVoltar = ComunsWidgets.getLabel( Labels.back_button );
     return new Form(
       key: this.globalKey,
       child: new Column(
@@ -252,7 +262,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
                   child: new RaisedButton(
                     key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_SALVAR ),
                     onPressed: this.pressionouSalvar,
-                    child: new Text( "Salvar", style: Estilos.textStyleBotaoFormulario ),
+                    child: new Text( labelSalvar, style: Estilos.textStyleBotaoFormulario ),
                     color: Estilos.corRaisedButton,),
                 ),
               ),
@@ -260,7 +270,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
                 child: new RaisedButton(
                   key: new ValueKey( TarefasEdicaoTela.KEY_STRING_BOTAO_VOLTAR ),
                   onPressed: this.pressionouVoltar,
-                  child: new Text( "Voltar", style: Estilos.textStyleBotaoFormulario ),
+                  child: new Text( labelVoltar, style: Estilos.textStyleBotaoFormulario ),
                   color: Estilos.corRaisedButton,),
               ),
               Expanded(child: this.gerarBotaoDeletar()),

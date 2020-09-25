@@ -16,5 +16,9 @@ class Labels{
   static const String end_time_after_now="end_time_after_now";
   static const String end_time_after_begin="end_time_after_begin";
   static const String times_in_different_days="times_in_different_days";
-
+  static const String title_insert_task="title_insert_task";
+  static const String title_edit_task="title_edit_task";
+  static const String title_report_task="title_report_task";
+  static const String field_task_name="field_task_name";
+  static const String field_task_description="field_task_description";
 }

@@ -22,5 +22,10 @@
   "begin_time_after_now": "The starting time can't be later than the current time. \n- Inserted time: {0}. \n- Now: {1}",
   "end_time_after_now": "The end time can't be later than the current time. \n- End time: {0}. \n- Now: {1}",
   "end_time_after_begin": "The end time can't be later than the initial time. \n- Initial: {0}. \n- End: {1}",
-  "times_in_different_days": "You inserted dates with different days, having a difference of {0} hours between the register's beggining and the register's end. Are you sure about saving that information?"
+  "times_in_different_days": "You inserted dates with different days, having a difference of {0} hours between the register's beggining and the register's end. Are you sure about saving that information?",
+  "title_insert_task": "Registering a new Task",
+  "title_edit_task": "Editing a Task",
+  "title_report_task": "Task's report",
+  "field_task_name": "Task's name",
+  "field_task_description": "Task's description"
 }
