@@ -27,5 +27,8 @@
   "title_edit_task": "Editar una Tarea",
   "title_report_task": "Informe da Tarea",
   "field_task_name": "Nombre de la Tarea",
-  "field_task_description": "Descripción de la Tarea"
+  "field_task_description": "Descripción de la Tarea",
+  "task_edit_empty_name": "El nombre de la tarea no puede estar vacío",
+  "task_edit_large_name": "Nombre inválido. Longitud {0}. Máximo permitido de {1} caracteres.",
+  "task_edit_name_no_starts_with_letter": "Nombre inválido. Debe comenzar con una letra."
 }

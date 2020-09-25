@@ -101,6 +101,7 @@ class Controlador{
   }
 
   Future<void> salvarTarefa( Tarefa tarefa ) async {
+    Validators.validateTaskToInsert( tarefa );
     if( tarefa.id == 0) {
       await this.tarefaDao.cadastrarTarefa(tarefa);
     }else{

@@ -27,5 +27,8 @@
   "title_edit_task": "Edição de uma Tarefa",
   "title_report_task": "Relatório da Tarefa",
   "field_task_name": "Nome da Tarefa",
-  "field_task_description": "Descrição da Tarefa"
+  "field_task_description": "Descrição da Tarefa",
+  "task_edit_empty_name": "O nome de uma tarefa não pode ser vazio",
+  "task_edit_large_name": "Nome inválido. Tamanho {0}. Máximo permitido {1} caracteres.",
+  "task_edit_name_no_starts_with_letter": "Nome inválido. Precisa começar com uma letra"
 }

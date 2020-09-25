@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
 import 'package:registro_produtividade/view/comum/Labels.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
@@ -40,6 +41,30 @@ class ValidationProblem{
 ///     Class that will validate so many informations, to avoid that the user insert invalid values
 /// and to avoid that the controller process invalid data.
 class Validators{
+  static void validateTaskToInsert( Tarefa task ){
+    List<ValidationProblem> problems = new List();
+    problems.addAll( Validators.validateTaskName( task ) );
+    if( problems.length > 0 ){
+      throw new ValidationException( problems: problems );
+    }
+  }
+
+  ///     It does the validation only the task's name. Return a empty list if no problem is found.
+  /// Return a list of ValidationProblem if there is some validation problem.
+  static List<ValidationProblem> validateTaskName(Tarefa task) {
+    String value = task.nome;
+    if( value == null || value.length == 0 ){
+      return <ValidationProblem>[ Validators._createValidationProblem( Labels.task_edit_empty_name ) ];
+    }
+    if( value.length > Tarefa.LIMITE_TAMANHO_NOME ){
+      return <ValidationProblem>[ Validators._createValidationProblem( Labels.task_edit_large_name , "${value.length}", "${Tarefa.LIMITE_TAMANHO_NOME}") ];
+    }
+    if( !value.startsWith( new RegExp(r'[A-Z]|[a-z]') ) ){
+      return <ValidationProblem>[ Validators._createValidationProblem( Labels.task_edit_name_no_starts_with_letter ) ];
+    }
+    return List();
+  }
+
   static void validateTimeToInsert( TempoDedicado dedicatedTime ){
     List<ValidationProblem> problems = new List();
     problems.addAll( _verifyIfSomeHourIsAfterTheLimit( dedicatedTime ) );
@@ -92,8 +117,14 @@ class Validators{
     return new List();
   }
 
-  static ValidationProblem _createValidationProblem( String labelName, String parameter1, String parameter2 ){
-    List<String> parametersLabel = <String>[parameter1,parameter2];
+  static ValidationProblem _createValidationProblem( [String labelName, String parameter1, String parameter2] ){
+    List<String> parametersLabel = List();
+    if( parameter1 != null ){
+      parametersLabel.add( parameter1 );
+    }
+    if( parameter2 != null ){
+      parametersLabel.add( parameter2 );
+    }
     String problemDescription = ComunsWidgets.getLabel( labelName, parameters: parametersLabel );
     return new ValidationProblem( problemDescription );
   }

@@ -30,33 +30,11 @@ void main(){
     expect( tarefa.id = 989548758 , 989548758 );
   });
 
-  test( "Tarefa: (nome) construtor Impede nome nulo ou vazio" , (){
-    expect( () => new Tarefa(null, "descricao") , throwsException );
-    expect( () => new Tarefa("", "descricao") , throwsException );
-  });
-
-  test( "Tarefa: (nome) construtor Impede nome maior que permitido" , (){
-    String nomeGrande = getStringComNumeroDeCaracteres( Tarefa.LIMITE_TAMANHO_NOME+1 );
-    expect( () => new Tarefa(nomeGrande, "aa"), throwsException );
-  });
-
   test( "Tarefa: (nome) construtor permite nomes válidos" , (){
     expect( ( new Tarefa("doido", "descricao").nome) , "doido" );
     expect( ( new Tarefa("fkshkfhd shks!!", "descricao").nome ) , "fkshkfhd shks!!" );
     String nomeTamanhoLimite = getStringComNumeroDeCaracteres( Tarefa.LIMITE_TAMANHO_NOME );
     expect( new Tarefa(nomeTamanhoLimite, "aaa").nome, nomeTamanhoLimite );
-  });
-
-  test( "Tarefa: (nome) setter Impede nome nulo ou vazio" , (){
-    Tarefa tarefa = new Tarefa("aaa", "aaa");
-    expect( () => tarefa.nome = null , throwsException );
-    expect( () => tarefa.nome = ""  , throwsException );
-  });
-
-  test( "Tarefa: (nome) Setter Impede nome maior que permitido" , (){
-    String nomeGrande = getStringComNumeroDeCaracteres( Tarefa.LIMITE_TAMANHO_NOME+1 );
-    Tarefa tarefa = new Tarefa("aa", "aa");
-    expect( () =>(tarefa.nome = nomeGrande), throwsException );
   });
 
   test( "Tarefa: (nome) Setter permite nome de tamanho permitido" , (){

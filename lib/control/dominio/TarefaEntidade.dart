@@ -55,18 +55,6 @@ class Tarefa extends EntidadeDominio{
   ///     Valida o valor passado como sendo um nome de uma tarefa. Se estiver tudo ok, retorna "", senão retorna uma
   /// string explicando os detalhes do erro.
   static String validarNome(String valor){
-    if( valor == null || valor.length == 0 ){
-      return "O nome de uma tarefa não pode ser vazio" ;
-    }
-    if( valor.length > Tarefa.LIMITE_TAMANHO_NOME ){
-      return "Nome inválido. Tamanho ${valor.length}. Máximo permitido ${Tarefa.LIMITE_TAMANHO_NOME} caracteres.";
-    }
-    if( valor.trim().length == 0 ){
-      return "Nome inválido. Não pode iniciar com espaços e precisa começar com uma letra";
-    }
-    if( !valor.startsWith( new RegExp(r'[A-Z]|[a-z]') ) ){
-      return "Nome inválido. Precisa começar com uma letra";
-    }
     return "";
   }
 

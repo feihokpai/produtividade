@@ -88,8 +88,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   String validarCampoNome(String valor) {
-    String msg = Tarefa.validarNome( valor );
-    return ( msg.length > 0 ? msg : null );
+    List<ValidationProblem> problems = Validators.validateTaskName( new Tarefa(valor, "") );
+    return (problems.length == 0) ? null : problems.first.description;
   }
 
   void InicializarVariaveis(){
@@ -373,7 +373,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
       operation.call();
       return;
     }
-    this._salvarSePassarNaValidacao( operation );
+    await this._salvarSePassarNaValidacao( operation );
   }
 
   void _resetChangesInTaskFields(){
@@ -397,13 +397,13 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     });
   }
 
-  void _salvarSePassarNaValidacao(  void Function() operation ){
+  Future<void> _salvarSePassarNaValidacao(  void Function() operation ) async {
     try{
       if( this.globalKey.currentState.validate() ) {
         Tarefa tarefa = this.widget.tarefaAtual ?? new Tarefa("sem nome", "");
         tarefa.nome = this.campoNome.getText();
         tarefa.descricao = this.campoDescricao.getText();
-        this.controlador.salvarTarefa(tarefa);
+        await this.controlador.salvarTarefa(tarefa);
         operation.call();
       }
     }on ValidationException catch(ex, stackTrace){
@@ -415,8 +415,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
     }
   }
 
-  void pressionouSalvar(){
-    this._salvarSePassarNaValidacao( (){
+  Future<void> pressionouSalvar() async {
+    await this._salvarSePassarNaValidacao( (){
       this.voltarParaPaginaAnterior();
     });
   }

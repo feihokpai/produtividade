@@ -21,4 +21,7 @@ class Labels{
   static const String title_report_task="title_report_task";
   static const String field_task_name="field_task_name";
   static const String field_task_description="field_task_description";
+  static const String task_edit_empty_name="task_edit_empty_name";
+  static const String task_edit_large_name="task_edit_large_name";
+  static const String task_edit_name_no_starts_with_letter="task_edit_name_no_starts_with_letter";
 }

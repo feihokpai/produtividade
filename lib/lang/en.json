@@ -27,5 +27,8 @@
   "title_edit_task": "Editing a Task",
   "title_report_task": "Task's report",
   "field_task_name": "Task's name",
-  "field_task_description": "Task's description"
+  "field_task_description": "Task's description",
+  "task_edit_empty_name": "The task's name can't be empty",
+  "task_edit_large_name": "Invalid name. Length {0}. Maximum Allowed {1} characters.",
+  "task_edit_name_no_starts_with_letter": "Invalid name. It needs to begin with a letter."
 }
