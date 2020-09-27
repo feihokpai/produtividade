@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/DateTimeInterval.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/view/comum/Labels.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'dart:ui';
@@ -15,7 +17,6 @@ class ListagemTempoDedicadoComponente{
   static final String KEY_STRING_ICONE_DELETAR = "deleteIcon";
   static final String KEY_STRING_ICONE_EDITAR = "editIcon";
   static final String KEY_STRING_TOTAL_TEMPO = "sumTime";
-  static final String TEXTO_SEM_REGISTROS = "Ainda não há registros encerrados";
 
   CampoDeTextoWidget campoDuracaoTotal;
   BuildContext context;
@@ -85,9 +86,12 @@ class ListagemTempoDedicadoComponente{
   }
 
   String generateLabelTotalField(){
-    String dataInicial = DataHoraUtil.formatterDataResumidaBrasileira.format( this.intervalReport.beginTime );
-    String dataFinal = DataHoraUtil.formatterDataResumidaBrasileira.format( this.intervalReport.endTime );
-    return "Tempo dedicado na tarefa entre ${dataInicial} e ${dataFinal}";
+    DateFormat formatter = ComunsWidgets.linguaDefinidaComoIngles() ? 
+        DataHoraUtil.formatterDataResumidaAmericana : DataHoraUtil.formatterDataResumidaBrasileira;
+    String dataInicial = formatter.format( this.intervalReport.beginTime );
+    String dataFinal = formatter.format( this.intervalReport.endTime );
+    String labelSummaryDataField = ComunsWidgets.getLabel( Labels.label_summary_task_data, parameters: <String>[dataInicial,dataFinal] );
+    return labelSummaryDataField;
   }
 
   void _inicializarCampoDuracaoTotal(){
@@ -97,18 +101,23 @@ class ListagemTempoDedicadoComponente{
         editavel: false, chave: keyString );
   }
 
+  String _gerarConteudoCampoResumoGeral( int duracaoEmMinutos ){
+    String duracaoTotalFormatada = DataHoraUtil.criarStringQtdHorasEMinutosAbreviados( new Duration(minutes: duracaoEmMinutos) );
+    int quantidadeDeDiasDoRelatorio = this.intervalReport.daysAmount();
+    double mediaDiariaEmMinutos = duracaoEmMinutos/quantidadeDeDiasDoRelatorio;
+    Duration duracao = new Duration( minutes: mediaDiariaEmMinutos.toInt() );
+    String duracaoMediaFormatada = DataHoraUtil.criarStringQtdHorasEMinutosAbreviados(duracao);
+    return ComunsWidgets.getLabel(
+        Labels.content_summary_task_data, parameters: <String>[duracaoTotalFormatada, duracaoMediaFormatada] );
+  }
+
   Future<void> _setarTextoCampoDuracaoTotal() async {
     this._duracaoMinutos = await this.controlador.getTotalGastoNaTarefaEmMinutos( this._tarefaAtual, interval: this.intervalReport );
-    String duracaoFormatada = "Total: ${DataHoraUtil.criarStringQtdHorasEMinutosAbreviados( new Duration(minutes: this._duracaoMinutos) )}";
-    if( this._duracaoMinutos == 0 ){
-      duracaoFormatada = ListagemTempoDedicadoComponente.TEXTO_SEM_REGISTROS;
-    }else{
-      int quantidadeDeDiasDoRelatorio = this.intervalReport.daysAmount();
-      double mediaDiariaEmMinutos = this._duracaoMinutos/quantidadeDeDiasDoRelatorio;
-      Duration duracao = new Duration( minutes: mediaDiariaEmMinutos.toInt() );
-      duracaoFormatada += " - Média diária: ${DataHoraUtil.criarStringQtdHorasEMinutosAbreviados(duracao)}";
+    String contentField = ComunsWidgets.getLabel( Labels.content_summary_task_no_registers );
+    if( this._duracaoMinutos > 0 ){
+      contentField = this._gerarConteudoCampoResumoGeral( this._duracaoMinutos );
     }
-    this.campoDuracaoTotal.setText( duracaoFormatada );
+    this.campoDuracaoTotal.setText( contentField );
   }
 
   Future<int> get duracaoMinutos async => await this._duracaoMinutos;
@@ -153,14 +162,25 @@ class ListagemTempoDedicadoComponente{
     );
   }
 
-  Future<Widget> _gerarCampoSomatorioDoDia(TempoDedicado tempo) async {
-    String dataFormatada = DataHoraUtil.formatterDataBrasileira.format( tempo.inicio );
-    ValueKey<String> key = ComunsWidgets.createKey( "TextField_day${tempo.inicio.day}" );
-    CampoDeTextoWidget fieldDia = new CampoDeTextoWidget("Tempo trabalhado no dia ${dataFormatada}",
-        1, null, editavel: false, chave: key );
-    int tempoGasto = await this.controlador.getTotalGastoNaTarefaEmMinutosNoDia(tempo.tarefa, tempo.inicio);
-    String duracaoFormatada = DataHoraUtil.criarStringQtdHorasEMinutos( new Duration( minutes: tempoGasto ) );
+  Future<void> _calcularDuracaoDoDiaESetarCampo( CampoDeTextoWidget fieldDia, Tarefa tarefa, DateTime data ) async {
+    int tempoEmMinutos = await this.controlador.getTotalGastoNaTarefaEmMinutosNoDia( tarefa, data );
+    Duration duracao = new Duration( minutes:  tempoEmMinutos );
+    String horas = duracao.inHours.toString();
+    String minutos = DataHoraUtil.restoDaDuracaoEmMinutos( duracao ).toString();
+    String duracaoFormatada = ComunsWidgets.getLabel(
+        Labels.content_summary_task_data_day, parameters: <String>[horas, minutos] );
     fieldDia.setText( duracaoFormatada );
+  }
+
+  Future<Widget> _gerarCampoSomatorioDoDia(TempoDedicado tempo) async {
+    DateFormat formatter = ComunsWidgets.linguaDefinidaComoIngles() ?
+        DataHoraUtil.formatterDataAmericana : DataHoraUtil.formatterDataBrasileira;
+    String dataFormatada = formatter.format( tempo.inicio );
+    ValueKey<String> key = ComunsWidgets.createKey( "TextField_day${tempo.inicio.day}" );
+    String labelFieldDia = ComunsWidgets.getLabel(
+        Labels.label_summary_task_data_day, parameters: <String>[dataFormatada] );
+    CampoDeTextoWidget fieldDia = new CampoDeTextoWidget( labelFieldDia, 1, null, editavel: false, chave: key );
+    this._calcularDuracaoDoDiaESetarCampo( fieldDia, tempo.tarefa, tempo.inicio );
 
     return new Padding(
       padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),

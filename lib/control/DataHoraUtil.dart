@@ -3,7 +3,9 @@ import 'package:intl/intl.dart';
 class DataHoraUtil{
 
   static DateFormat formatterDataBrasileira = new DateFormat("dd/MM/yyyy");
+  static DateFormat formatterDataAmericana = new DateFormat("MM/dd/yyyy");
   static DateFormat formatterDataResumidaBrasileira = new DateFormat("dd/MM");
+  static DateFormat formatterDataResumidaAmericana = new DateFormat("MM/dd");
   static DateFormat formatterHoraBrasileira = new DateFormat("HH:mm:ss");
   static DateFormat formatterHoraComMilisegundos = new DateFormat("HH:mm:ss.SSS");
   static DateFormat formatterDataHoraResumidaBrasileira = new DateFormat("dd/MM/yyyy HH:mm");
@@ -188,8 +190,15 @@ class DataHoraUtil{
   ///     Recebe um Duration e retorna uma string no formato "3 horas e 25 minutos".
   static String criarStringQtdHorasEMinutos( Duration duracao ){
     int horas = duracao.inHours;
-    int minutos = duracao.inMinutes - (60*horas);
+    int minutos = DataHoraUtil.restoDaDuracaoEmMinutos( duracao );
     return "${horas} horas e ${minutos} minutos";
+  }
+
+  ///     Recebe um Duration e retorna apenas a parte final em minutos. Por exemplo, ao receber uma
+  /// duração de 4h12m, retornará 12.
+  static int restoDaDuracaoEmMinutos( Duration duracao ){
+    int horas = duracao.inHours;
+    return duracao.inMinutes - (60*horas);
   }
 
   ///     Recebe um Duration e retorna uma string no formato "3h25m".
