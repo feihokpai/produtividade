@@ -30,5 +30,16 @@
   "field_task_description": "Task's description",
   "task_edit_empty_name": "The task's name can't be empty",
   "task_edit_large_name": "Invalid name. Length {0}. Maximum Allowed {1} characters.",
-  "task_edit_name_no_starts_with_letter": "Invalid name. It needs to begin with a letter."
+  "task_edit_name_no_starts_with_letter": "Invalid name. It needs to begin with a letter.",
+  "button_show_time_details": "Show detailed time registers",
+  "button_edit_task_data": "Edit task data",
+  "label_summary_task_data": "Dedicated time in the task between {0} e {1}",
+  "content_summary_task_data": "Sum: {0} - Daily average: {1}",
+  "label_summary_task_data_day": "Worked time in the day {0}",
+  "label_field_start_date": "Start date",
+  "label_field_end_date": "End date",
+  "button_select": "Select",
+  "title_report_screen": "Reports",
+  "summary_report_name": "Summary Report",
+  "label_report_interval_field": "Report's Interval"
 }

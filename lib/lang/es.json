@@ -30,5 +30,16 @@
   "field_task_description": "Descripción de la Tarea",
   "task_edit_empty_name": "El nombre de la tarea no puede estar vacío",
   "task_edit_large_name": "Nombre inválido. Longitud {0}. Máximo permitido de {1} caracteres.",
-  "task_edit_name_no_starts_with_letter": "Nombre inválido. Debe comenzar con una letra."
+  "task_edit_name_no_starts_with_letter": "Nombre inválido. Debe comenzar con una letra.",
+  "button_show_time_details": "Registros de tiempo detallados",
+  "button_edit_task_data": "Editar tarea",
+  "label_summary_task_data": "Suma y media diaria entre {0} e {1}",
+  "content_summary_task_data": "Suma: {0} - Media diaria: {1}",
+  "label_summary_task_data_day": "Tiempo trabajado en el día {0}",
+  "label_field_start_date": "Fecha de inicio",
+  "label_field_end_date": "Fecha final",
+  "button_select": "Seleccione",
+  "title_report_screen": "Informes",
+  "summary_report_name": "Visión de conjunto",
+  "label_report_interval_field": "Intervalo de informe"
 }

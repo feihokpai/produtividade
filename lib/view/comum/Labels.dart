@@ -24,4 +24,15 @@ class Labels{
   static const String task_edit_empty_name="task_edit_empty_name";
   static const String task_edit_large_name="task_edit_large_name";
   static const String task_edit_name_no_starts_with_letter="task_edit_name_no_starts_with_letter";
+  static const String button_show_time_details="button_show_time_details";
+  static const String button_edit_task_data= "button_edit_task_data";
+  static const String label_summary_task_data= "label_summary_task_data";
+  static const String content_summary_task_data= "content_summary_task_data";
+  static const String label_summary_task_data_day= "label_summary_task_data_day";
+  static const String label_field_start_date= "label_field_start_date";
+  static const String label_field_end_date= "label_field_end_date";
+  static const String button_select= "button_select";
+  static const String title_report_screen= "title_report_screen";
+  static const String summary_report_name= "summary_report_name";
+  static const String label_report_interval_field= "label_report_interval_field";
 }
