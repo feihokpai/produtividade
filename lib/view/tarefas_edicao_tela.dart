@@ -213,13 +213,14 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
 
   Widget _gerarBotoesEditarTarefaEVoltar(){
     String labelVoltar = ComunsWidgets.getLabel( Labels.back_button );
+    String labelEditarCadastro = ComunsWidgets.getLabel( Labels.button_edit_task_data );
     return Row(
       children: [
         SizedBox(
           width: 220,
           child: Padding(
             padding: const EdgeInsets.only( left: 8.0 ),
-            child: ComunsWidgets.createRaisedButton("Editar cadastro da tarefa", null, () {
+            child: ComunsWidgets.createRaisedButton( labelEditarCadastro, null, () {
               this.widget.estadoAtual = _Estado.EDICAO_VISIVEL;
               this._setStateWithEmptyFunction();
             }),
@@ -296,11 +297,11 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
 
   Future<Widget> exibirBotaoDetalharOuListaDetalhes() async {
     if( this.widget.estadoAtual == _Estado.EDICAO_VISIVEL ){
+      String labelButton = ComunsWidgets.getLabel( Labels.button_show_time_details );
       return new RaisedButton(
         key: new ValueKey(TarefasEdicaoTela.KEY_STRING_BOTAO_DETALHES_TEMPOS),
         onPressed: this.pressionouMostrarDetalhes,
-        child: new Text("Mostrar registros de tempo detalhados",
-            style: Estilos.textStyleBotaoFormulario),
+        child: new Text(labelButton, style: Estilos.textStyleBotaoFormulario),
         color: Estilos.corRaisedButton,
       );
     }else if(  this.widget.estadoAtual == _Estado.RELATORIO_VISIVEL  ){
