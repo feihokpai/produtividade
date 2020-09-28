@@ -4,6 +4,8 @@ import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/DateTimeInterval.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
+import 'package:registro_produtividade/view/comum/Labels.dart';
+import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 
 class OverviewReport{
 
@@ -25,8 +27,9 @@ class OverviewReport{
     int daysAmount = interval.daysAmount();
     double average = duracaoEmMinutos/daysAmount;
     String averageDuration = DataHoraUtil.criarStringQtdHorasEMinutosAbreviados( new Duration( minutes: average.toInt() ) );
-    String content = "Total: ${totalDuration} - Média diária: ${averageDuration}";
-    String label = "Tarefa: ${tarefa.nome}";
+    String content = ComunsWidgets.getLabel(
+        Labels.content_summary_task_data, parameters: <String>[totalDuration,averageDuration] );
+    String label = "${ComunsWidgets.getLabel( Labels.Task )}: ${tarefa.nome}";
     CampoDeTextoWidget campo = new CampoDeTextoWidget(label, 1, null, editavel: false);
     campo.setText( content );
     this._resultFields.add(

@@ -121,7 +121,7 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   Future<void> clicouBotaoEditarTempoDedicado( TempoDedicado tempo ) async {
-    int resposta = await this.edicaoDeTempo.exibirDialogConfirmacao( "Registro de Tempo Dedicado", tempo );
+    int resposta = await this.edicaoDeTempo.exibirDialogConfirmacao( "", tempo );
     if( resposta == 1 || resposta == 3 ){
       this._setStateWithEmptyFunction();
     }
@@ -355,8 +355,9 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   }
 
   void pressionouDeletar() async{
-    ComunsWidgets.exibirDialogConfirmacao( this.context , "Tem certeza que deseja deletar essa tarefa?"
-        , "Essa ação não pode ser desfeita").then( (resposta) {
+    String deleteConfirmation = ComunsWidgets.getLabel( Labels.task_delete_confirmation );
+    ComunsWidgets.exibirDialogConfirmacao( this.context , deleteConfirmation
+        , "").then( (resposta) {
       if( resposta == 1  ){
         this.controlador.deletarTarefa( this.widget.tarefaAtual );
         ComunsWidgets.mudarParaPaginaInicial();
@@ -367,8 +368,8 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
   ///    Invoke a Popup asking if the user wants to save the changed data. Is he clicks NO, execute operation()
   /// . If click Yes, walk to the validation step.
   Future<void> askIfUserWantsSavingData( void Function() operation ) async{
-    int userAnswer = await ComunsWidgets.exibirDialogConfirmacao(this.context,
-        "Deseja salvar as alterações feitas?", "");
+    String confirmationMessage = ComunsWidgets.getLabel( Labels.msg_forget_save );
+    int userAnswer = await ComunsWidgets.exibirDialogConfirmacao(this.context, confirmationMessage, "");
     if( userAnswer != 1 ) {
       this._resetChangesInTaskFields();
       operation.call();
@@ -408,10 +409,11 @@ class _TarefasEdicaoTelaState extends State<TarefasEdicaoTela> {
         operation.call();
       }
     }on ValidationException catch(ex, stackTrace){
-      ComunsWidgets.popupDeAlerta(this.context, "Não foi possível salvar.", ex.generateMsgToUser() );
+      String message = ComunsWidgets.getLabel( Labels.task_save_validation_exception );
+      ComunsWidgets.popupDeAlerta(this.context, message, ex.generateMsgToUser() );
     }catch(ex, stackTrace){
-      ComunsWidgets.popupDeAlerta(this.context, "Ocorreu um erro inesperado ao tentar"
-          " salvar os dados de uma tarefa.", "");
+      String message = ComunsWidgets.getLabel( Labels.exception_unexpected );
+      ComunsWidgets.popupDeAlerta(this.context, message, "");
       print("$ex - ${stackTrace}");
     }
   }

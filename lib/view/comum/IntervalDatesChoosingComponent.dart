@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/DateTimeInterval.dart';
 import 'package:registro_produtividade/view/comum/CampoDataHora.dart';
+import 'package:registro_produtividade/view/comum/Labels.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
@@ -36,9 +38,13 @@ class IntervalDatesChoosingComponent{
   void initializeBeginDateField( BuildContext context ){
     DateTime hoje = DateTime.now();
     DateTime minimalDate = DataHoraUtil.projectBeginDate();
-    this.beginDateField ??= new CampoDataHora("Data inicial", context, dataInicialSelecionada: this.beginDate,
-        dataMinima: minimalDate, dataMaxima: hoje, dateTimeFormatter: DataHoraUtil.formatterDataBrasileira,
+    String labelBeginDate = ComunsWidgets.getLabel( Labels.label_field_start_date );
+    DateFormat formatter = ComunsWidgets.linguaDefinidaComoIngles() ?
+        DataHoraUtil.formatterDataAmericana : DataHoraUtil.formatterDataBrasileira;
+    this.beginDateField ??= new CampoDataHora( labelBeginDate, context, dataInicialSelecionada: this.beginDate,
+        dataMinima: minimalDate, dataMaxima: hoje, dateTimeFormatter: formatter,
         showHourPicker: false,
+        locale: ComunsWidgets.currentLocale,
         onChange: (){
           this.beginDate = this.beginDateField.dataSelecionada;
           this._emptySetStateFunction();
@@ -49,9 +55,13 @@ class IntervalDatesChoosingComponent{
   void initializeEndDateField( BuildContext context ){
     DateTime hoje = DateTime.now();
     DateTime minimalDate = DataHoraUtil.projectBeginDate();
-    this.endDateField ??= new CampoDataHora("Data final", context, dataInicialSelecionada: this.endDate,
-        dataMinima: minimalDate, dataMaxima: hoje, dateTimeFormatter: DataHoraUtil.formatterDataBrasileira,
+    String labelEndDate = ComunsWidgets.getLabel( Labels.label_field_end_date );
+    DateFormat formatter = ComunsWidgets.linguaDefinidaComoIngles() ?
+        DataHoraUtil.formatterDataAmericana : DataHoraUtil.formatterDataBrasileira;
+    this.endDateField ??= new CampoDataHora( labelEndDate, context, dataInicialSelecionada: this.endDate,
+        dataMinima: minimalDate, dataMaxima: hoje, dateTimeFormatter: formatter,
         showHourPicker: false,
+        locale: ComunsWidgets.currentLocale,
         onChange: (){
           this.endDate = this.endDateField.dataSelecionada;
           this._emptySetStateFunction();
@@ -95,11 +105,12 @@ class IntervalDatesChoosingComponent{
   }
 
   Widget _generateButtons( BuildContext context ){
+    String labelButton = ComunsWidgets.getLabel( Labels.button_select );
     return new Row(
       children: [
         SizedBox(
           width: 120.0,
-          child: ComunsWidgets.createRaisedButton("Selecionar", null, () {
+          child: ComunsWidgets.createRaisedButton( labelButton, null, () {
             this.clickedSearchButton( context);
           }),
         ),

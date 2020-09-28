@@ -408,8 +408,8 @@ class TempoDedicadoEdicaoComponente{
       ComunsWidgets.popupDeAlerta( this._contextOfStatefulBuilder, tituloCasoOcorraErro, msg );
     }catch(ex, stackTrace){
       ComunsWidgets.popupDeAlerta( this._contextOfStatefulBuilder, tituloCasoOcorraErro, "Ocorreu"
-          " um erro inesperado no aplicativo. Entre em contato com os desenvolvedores para comunicar"
-          " esse problema, informando exatamente o que estava fazendo quando o erro ocorreu." );
+          " um erro inesperado. Comunique esse problema aos desenvolvedores para que possam"
+          " corrigí-lo." );
       print("Erro ao tentar executar uma operação: $ex - ${stackTrace}");
       throw ex;
     }

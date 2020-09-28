@@ -1,6 +1,6 @@
 {
-  "tarefa" : "tarea",
-  "Tarefa" : "Tarea",
+  "task" : "tarea",
+  "Task" : "Tarea",
   "tarefas_em_andamento" : "Tareas en curso",
   "duration" : "Duración",
   "feito_por" : "Hecho por",
@@ -31,6 +31,9 @@
   "task_edit_empty_name": "El nombre de la tarea no puede estar vacío",
   "task_edit_large_name": "Nombre inválido. Longitud {0}. Máximo permitido de {1} caracteres.",
   "task_edit_name_no_starts_with_letter": "Nombre inválido. Debe comenzar con una letra.",
+  "task_delete_confirmation": "¿Está seguro de que desea eliminar esta tarea? Esta acción no se puede deshacer",
+  "task_save_validation_exception": "No se pudo guardar la tarea.",
+  "task_save_generic_exception": "Se produjo un error inesperado al intentar guardar los datos de una tarea.",
   "button_show_time_details": "Registros de tiempo detallados",
   "button_edit_task_data": "Editar tarea",
   "label_summary_task_data": "Suma y media diaria entre {0} y {1}",
@@ -43,5 +46,6 @@
   "button_select": "Seleccione",
   "title_report_screen": "Informes",
   "summary_report_name": "Visión de conjunto",
-  "label_report_interval_field": "Intervalo de informe"
+  "label_report_interval_field": "Intervalo de informe",
+  "button_generate_report": "Consultar"
 }

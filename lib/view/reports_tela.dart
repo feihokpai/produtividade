@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/DateTimeInterval.dart';
 import 'package:registro_produtividade/view/OverviewReport.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
 import 'package:registro_produtividade/view/comum/FutureBuilderWithCache.dart';
 import 'package:registro_produtividade/view/comum/IntervalDatesChoosingComponent.dart';
+import 'package:registro_produtividade/view/comum/Labels.dart';
 import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
@@ -55,7 +57,7 @@ class ReportsTelaState extends State<ReportsTela> {
   }
 
   Widget generateCentralContent() {
-    String title =  "Geração de relatórios";
+    String title =  ComunsWidgets.getLabel( Labels.title_report_screen );
     return new WillPopScope(
       onWillPop: this.returnToTheMainPage,
         child: new SingleChildScrollView(
@@ -108,7 +110,8 @@ class ReportsTelaState extends State<ReportsTela> {
   }
 
   Widget createSearchButton(){
-    return ComunsWidgets.createRaisedButton("Consultar", null, () async {
+    String labelButton = ComunsWidgets.getLabel( Labels.button_generate_report );
+    return ComunsWidgets.createRaisedButton( labelButton, null, () async {
       this.pesquisaAtivada = true;
       this._setStateWithEmptyFunction();
     });
@@ -151,22 +154,26 @@ class ReportsTelaState extends State<ReportsTela> {
   }
 
   String formatedValueOfInterValReport(){
-    String begin = DataHoraUtil.formatterDataBrasileira.format( this.intervalReport.beginTime );
-    String end = DataHoraUtil.formatterDataBrasileira.format( this.intervalReport.endTime );
+    DateFormat formatter = ComunsWidgets.linguaDefinidaComoIngles() ?
+        DataHoraUtil.formatterDataAmericana : DataHoraUtil.formatterDataBrasileira;
+    String begin = formatter.format( this.intervalReport.beginTime );
+    String end = formatter.format( this.intervalReport.endTime );
     return "$begin - $end";
   }
 
   Widget createIntervalReportField(){
-    this.intervalReportField ??= new CampoDeTextoWidget("Intervalo do relatório", 1, null, editavel: false);
+    String labelField = ComunsWidgets.getLabel( Labels.label_report_interval_field );
+    this.intervalReportField ??= new CampoDeTextoWidget( labelField, 1, null, editavel: false);
     this.intervalReportField.setText( this.formatedValueOfInterValReport() );
     return this.intervalReportField.getWidget();
   }
 
   Widget createDropDownButton() {
+    String nomeRelatorioResumoGeral = ComunsWidgets.getLabel( Labels.summary_report_name );
     return new DropdownButton<int>(
         value: this.selectedReport,
         items: <DropdownMenuItem<int>>[
-          new DropdownMenuItem<int>(child: Text("Resumo geral"), value: OVERVIEW_REPORT,),
+          new DropdownMenuItem<int>(child: Text(nomeRelatorioResumoGeral), value: OVERVIEW_REPORT,),
         ],
         onChanged: ( selected ){
           this.selectedReport = selected;

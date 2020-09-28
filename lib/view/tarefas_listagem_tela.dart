@@ -302,9 +302,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     this.componenteEdicaoDeTempo = new TempoDedicadoEdicaoComponente(tarefaParaEditar, context,
         formatter: DataHoraUtil.formatterDataSemAnoHoraBrasileira);
     TempoDedicado tempo = this._verifyTaskIsActive( tarefaParaEditar.id );
-    String titulo = tempo == null ? "Cadastro" : "Edição";
-    titulo += " de tempo dedicado";
-    int resposta = await this.componenteEdicaoDeTempo.exibirDialogConfirmacao(titulo, tempo);
+    int resposta = await this.componenteEdicaoDeTempo.exibirDialogConfirmacao("", tempo);
     if( resposta == 1 || resposta == 3){
       this._recarregarDadosDaTela();
     }

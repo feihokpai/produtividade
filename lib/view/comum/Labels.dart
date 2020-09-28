@@ -1,4 +1,6 @@
 class Labels{
+  static const String task = "task";
+  static const String Task = "Task";
   static const String duration="duration";
   static const String title_editing_time="title_editing_time";
   static const String title_editing_time_complete="title_editing_time_complete";
@@ -16,6 +18,7 @@ class Labels{
   static const String end_time_after_now="end_time_after_now";
   static const String end_time_after_begin="end_time_after_begin";
   static const String times_in_different_days="times_in_different_days";
+  static const String exception_unexpected="exception_unexpected";
   static const String title_insert_task="title_insert_task";
   static const String title_edit_task="title_edit_task";
   static const String title_report_task="title_report_task";
@@ -24,6 +27,9 @@ class Labels{
   static const String task_edit_empty_name="task_edit_empty_name";
   static const String task_edit_large_name="task_edit_large_name";
   static const String task_edit_name_no_starts_with_letter="task_edit_name_no_starts_with_letter";
+  static const String task_delete_confirmation="task_delete_confirmation";
+  static const String task_save_validation_exception="task_save_validation_exception";
+  static const String task_save_generic_exception="task_save_generic_exception";
   static const String button_show_time_details="button_show_time_details";
   static const String button_edit_task_data= "button_edit_task_data";
   static const String label_summary_task_data= "label_summary_task_data";
@@ -37,4 +43,5 @@ class Labels{
   static const String title_report_screen= "title_report_screen";
   static const String summary_report_name= "summary_report_name";
   static const String label_report_interval_field= "label_report_interval_field";
+  static const String button_generate_report= "button_generate_report";
 }
