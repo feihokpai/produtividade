@@ -133,17 +133,21 @@ class ListagemTempoDedicadoComponente{
   }
 
   String _getRegistroTempoDedicadoFormatado(TempoDedicado registro){
-    String formatada = "";
-    String dataInicio = DataHoraUtil.formatterDataResumidaBrasileira.format( registro.inicio );
-    String horaInicio = DataHoraUtil.converterDateTimeParaHoraResumidaBr( registro.inicio );
-    formatada += "${dataInicio}: ${horaInicio}";
+    DateFormat formatterDate = ComunsWidgets.linguaDefinidaComoIngles() ?
+        DataHoraUtil.formatterDataResumidaAmericana : DataHoraUtil.formatterDataResumidaBrasileira;
+    DateFormat formatterHora = ComunsWidgets.linguaDefinidaComoIngles() ?
+        DataHoraUtil.formatterHoraResumidaAmericana : DataHoraUtil.formatterHoraResumidaBrasileira;
+    String dataInicio = formatterDate.format( registro.inicio );
+    String horaInicio = formatterHora.format( registro.inicio );
+    String horaFim = "";
+    String duracaoEmMinutosFormatada = "";
     if( registro.fim != null) {
-      String dataFim = DataHoraUtil.converterDateTimeParaDataBr(registro.fim);
-      String horaFim = DataHoraUtil.converterDateTimeParaHoraResumidaBr( registro.fim);
-      formatada += " a ${horaFim}";
-      formatada += " (${registro.getDuracaoEmMinutos()}m)";
+      horaFim = formatterHora.format( registro.fim);
+      duracaoEmMinutosFormatada = "${registro.getDuracaoEmMinutos()}m";
     }
-    return formatada;
+    List<String> parameters = <String>[dataInicio,horaInicio,horaFim,duracaoEmMinutosFormatada];
+    String tempoFormatado = ComunsWidgets.getLabel( Labels.content_worked_time_summary, parameters: parameters);
+    return tempoFormatado;
   }
 
   BoxDecoration gerarBoxDecorationDosItensDaLista(int indice, int qtd){

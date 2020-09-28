@@ -37,6 +37,7 @@ class Labels{
   static const String content_summary_task_no_registers= "content_summary_task_no_registers";
   static const String label_summary_task_data_day= "label_summary_task_data_day";
   static const String content_summary_task_data_day= "content_summary_task_data_day";
+  static const String content_worked_time_summary= "content_worked_time_summary";
   static const String label_field_start_date= "label_field_start_date";
   static const String label_field_end_date= "label_field_end_date";
   static const String button_select= "button_select";

@@ -13,6 +13,7 @@ class DataHoraUtil{
   static DateFormat formatterDataSemAnoHoraAmericana = new DateFormat("MM/dd - hh:mm:ss a");
   static DateFormat formatterDataHoraAmericana = new DateFormat("MM/dd/yyyy hh:mm:ss a");
   static DateFormat formatterHoraResumidaBrasileira = new DateFormat("HH:mm");
+  static DateFormat formatterHoraResumidaAmericana = new DateFormat("HH:mm a");
   static DateFormat formatterDataHoraBrasileira = new DateFormat("dd/MM/yyyy HH:mm:ss");
   static DateFormat formatterSqllite = new DateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 

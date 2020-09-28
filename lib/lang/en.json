@@ -41,6 +41,7 @@
   "content_summary_task_data": "Sum: {0} - Daily average: {1}",
   "label_summary_task_data_day": "Worked time in the day {0}",
   "content_summary_task_data_day": "{0} hours and {1} minutes",
+  "content_worked_time_summary": "{0}: {1} to {2} ({3})",
   "label_field_start_date": "Start date",
   "label_field_end_date": "End date",
   "button_select": "Select",

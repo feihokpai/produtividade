@@ -41,6 +41,7 @@
   "content_summary_task_data": "Suma: {0} - Media diaria: {1}",
   "label_summary_task_data_day": "Tiempo trabajado en el día {0}",
   "content_summary_task_data_day": "{0} horas y {1} minutos",
+  "content_worked_time_summary": "{0}: {1} a {2} ({3})",
   "label_field_start_date": "Fecha de inicio",
   "label_field_end_date": "Fecha final",
   "button_select": "Seleccione",

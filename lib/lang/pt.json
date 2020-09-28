@@ -42,6 +42,7 @@
   "content_summary_task_no_registers": "Não há registros de tempo encerrados",
   "label_summary_task_data_day": "Tempo trabalhado no dia {0}",
   "content_summary_task_data_day": "{0} horas e {1} minutos",
+  "content_worked_time_summary": "{0}: {1} a {2} ({3})",
   "label_field_start_date": "Data inicial",
   "label_field_end_date": "Data final",
   "button_select": "Selecionar",
