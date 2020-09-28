@@ -1,7 +1,7 @@
 {
   "task" : "task",
   "Task" : "Task",
-  "tarefas_em_andamento" : "Tasks in progress",
+  "open_tasks" : "Tasks in progress",
   "duration" : "Duration",
   "feito_por" : "Made by",
   "lista_tarefas" : "Task list",
@@ -48,5 +48,6 @@
   "title_report_screen": "Reports",
   "summary_report_name": "Summary Report",
   "label_report_interval_field": "Report's Interval",
-  "button_generate_report": "Generate"
+  "button_generate_report": "Generate",
+  "exit_app": "Do you want exit the App?"
 }

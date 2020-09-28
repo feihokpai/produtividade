@@ -348,7 +348,7 @@ class TempoDedicadoEdicaoComponente{
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
         child: SizedBox(
-          width: LARGURA_BOTOES,
+          width: LARGURA_BOTOES+10,
           child: ComunsWidgets.createRaisedButton(labelButton, keyString, this._clicouEmEncerrar )
         ),
       );
@@ -407,9 +407,8 @@ class TempoDedicadoEdicaoComponente{
       String msg = ex.generateMsgToUser();
       ComunsWidgets.popupDeAlerta( this._contextOfStatefulBuilder, tituloCasoOcorraErro, msg );
     }catch(ex, stackTrace){
-      ComunsWidgets.popupDeAlerta( this._contextOfStatefulBuilder, tituloCasoOcorraErro, "Ocorreu"
-          " um erro inesperado. Comunique esse problema aos desenvolvedores para que possam"
-          " corrigí-lo." );
+      String mensagemPadrao = ComunsWidgets.getLabel( Labels.exception_unexpected );
+      ComunsWidgets.popupDeAlerta( this._contextOfStatefulBuilder, tituloCasoOcorraErro, mensagemPadrao );
       print("Erro ao tentar executar uma operação: $ex - ${stackTrace}");
       throw ex;
     }
@@ -547,19 +546,6 @@ class TempoDedicadoEdicaoComponente{
                   () => this._clicouEmSalvar( this._contextOfStatefulBuilder ),
           ),
         )
-      );
-    }else{
-      return Container();
-    }
-  }
-
-  Widget _generateBackButtonOrEmpty( BuildContext contextDialogStatefull ) {
-    if( this.estadoAtual == _Estado.MODO_EDICAO_COMPLETO ) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-        child: ComunsWidgets.createRaisedButton("Sair sem salvar",
-            TempoDedicadoEdicaoComponente.KEY_STRING_BOTAO_VOLTAR,
-                () => this._clicouEmVoltar(contextDialogStatefull)),
       );
     }else{
       return Container();

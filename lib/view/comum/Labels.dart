@@ -1,6 +1,7 @@
 class Labels{
   static const String task = "task";
   static const String Task = "Task";
+  static const String open_tasks = "open_tasks";
   static const String duration="duration";
   static const String title_editing_time="title_editing_time";
   static const String title_editing_time_complete="title_editing_time_complete";
@@ -45,4 +46,5 @@ class Labels{
   static const String summary_report_name= "summary_report_name";
   static const String label_report_interval_field= "label_report_interval_field";
   static const String button_generate_report= "button_generate_report";
+  static const String exit_app= "exit_app";
 }

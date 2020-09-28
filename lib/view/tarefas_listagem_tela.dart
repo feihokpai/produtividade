@@ -4,17 +4,14 @@ import 'package:registro_produtividade/control/Controlador.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
-import 'package:registro_produtividade/view/comum/ChronometerField.dart';
 import 'package:registro_produtividade/view/comum/ChronometerStateful.dart';
 import 'package:registro_produtividade/view/comum/FutureBuilderWithCache.dart';
 import 'package:registro_produtividade/view/comum/Labels.dart';
-import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:registro_produtividade/view/tempo_dedicado_edicao.dart';
-import 'package:registro_produtividade/view/tempo_dedicado_listagem.dart';
 
 class ListaDeTarefasTela extends StatefulWidget {
 
@@ -242,16 +239,6 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
     );
   }
   
-  Future<String> _nomeDaTarefaFormatado(Tarefa tarefa) async {
-    String nomeFormatado = tarefa.nome;
-    int total = await this.controlador.getTotalGastoNaTarefaEmMinutosNoDia(tarefa, DateTime.now());
-    if( total > 0 ){
-      String duracaoFormatada = DataHoraUtil.criarStringQtdHorasEMinutosAbreviados( new Duration(minutes: total) );
-      nomeFormatado += " (hoje: "+duracaoFormatada+")";
-    }
-    return nomeFormatado;
-  }
-
   String label( String tipoLabel ){
     return ComunsWidgets.getLabel( tipoLabel );
   }
@@ -266,7 +253,7 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: new Text( this.label( "tarefas_em_andamento" ),//"Tarefas em andamento",
+              child: new Text( this.label( Labels.open_tasks ),//"Tarefas em andamento",
                   style: Estilos.textStyleListaTituloDaPagina,
                   key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
             ),
@@ -314,8 +301,8 @@ class _ListaDeTarefasTelaState extends State<ListaDeTarefasTela> {
   }
 
   Future<bool> pedirConfirmacaoAntesDeFechar(){
-    ComunsWidgets.exibirDialogConfirmacao(this.context,
-        "Você deseja sair do aplicativo?", "").then((resposta) {
+    String mensagemDeConfirmacao = ComunsWidgets.getLabel( Labels.exit_app );
+    ComunsWidgets.exibirDialogConfirmacao(this.context, mensagemDeConfirmacao, "").then((resposta) {
        if( resposta == 1 ){
          SystemNavigator.pop();
          return true;

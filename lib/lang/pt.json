@@ -1,7 +1,7 @@
 {
   "task" : "tarefa",
   "Task" : "Tarefa",
-  "tarefas_em_andamento" : "Tarefas em andamento",
+  "open_tasks" : "Tarefas em andamento",
   "duration" : "Duração",
   "feito_por" : "Feito por",
   "lista_tarefas" : "Lista de tarefas",
@@ -49,5 +49,6 @@
   "title_report_screen": "Relatórios",
   "summary_report_name": "Resumo geral",
   "label_report_interval_field": "Intervalo do relatório",
-  "button_generate_report": "Consultar"
+  "button_generate_report": "Consultar",
+  "exit_app": "Você deseja sair do aplicativo?"
 }
