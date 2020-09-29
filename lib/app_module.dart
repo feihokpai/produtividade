@@ -85,8 +85,8 @@ class AppModule extends MainModule {
       ],
       localeResolutionCallback: (Locale deviceLocale, Iterable<Locale> supportedLocales) {
         for( Locale locale in supportedLocales){
-          if( deviceLocale.languageCode == locale.languageCode && deviceLocale.countryCode == locale.countryCode ){
-            return deviceLocale;
+          if( deviceLocale.languageCode == locale.languageCode ){
+              return deviceLocale;
           }
         }
         return supportedLocales.first;
