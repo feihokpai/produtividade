@@ -7,5 +7,6 @@ abstract class ITempoDedicadoPersistencia{
   Future<void> deletarTempo(TempoDedicado tempo);
   Future<List<TempoDedicado>> getAllTempoDedicado();
   Future<List<TempoDedicado>> getTempoDedicado(Tarefa tarefa);
+  /// Returna a lista de tempos de uma tarefa, ordenados do mais recente pro mais antigo.
   Future<List<TempoDedicado>> getTempoDedicadoOrderByInicio(Tarefa tarefa);
 }

@@ -5,6 +5,7 @@ abstract class ITarefaPersistencia{
   Future<void> cadastrarTarefa(Tarefa tarefa);
   Future<void> editarTarefa(Tarefa tarefa);
   Future<void> deletarTarefa(Tarefa tarefa);
+  Future<Tarefa> getTarefa( int id );
   Future<List<Tarefa>> getAllTarefa();
   Future<List<Tarefa>> getTarefasPorId( List<int> ids );
 }

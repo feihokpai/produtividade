@@ -108,6 +108,16 @@ abstract class GenericoPersistenciaJson{
     return this._converterListEntidadesParaListSubclasse<T>( listaFiltrada );
   }
 
+  Future<T> getEntidade<T>(int id) async {
+    await this.transfereDaListaJsonParaListaDeEntidades();
+    Iterable iterator = this.entidades.where((entidade) => entidade.id == id);
+    if( iterator.isNotEmpty ){
+      return iterator.first as T;
+    }else{
+      return null;
+    }
+  }
+
   Future<void> cadastrarEntidade(EntidadeDominio entidade) async {
     entidade.id = this.getProximoIdDisponivel();
     this.listaJson.add( this.jsonConverter.toMap( entidade ) );

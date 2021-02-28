@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
 class CampoDeTextoWidget{
@@ -6,7 +7,7 @@ class CampoDeTextoWidget{
   TextEditingController campoController = new TextEditingController();
   String _labelCampo;
   TextStyle _textStyleLabel = Estilos.textStyleLabelTextFormField;
-  TextStyle _textStyleTexto = Estilos.textStyleListaPaginaInicial;
+  TextStyle _textStyleTexto = Estilos.textStyleTextFormField;
   TextFormField _widget;
   ValueKey<String> _key;
   /// Quantidade de linhas do campo de texto.
@@ -15,14 +16,21 @@ class CampoDeTextoWidget{
   int _linhasErro = 2;
   bool editavel = true;
 
+  double _enabledBorderWidth = 1.0;
+
   String Function(String) funcaoValidacao;
 
   CampoDeTextoWidget( String label, int qtdLinhas, String Function(String) validacao, {ValueKey<String> chave, bool editavel=true} ){
     this.linhas = qtdLinhas;
     this.labelCampo = label;
     this.funcaoValidacao = validacao;
-    this._key = chave ?? new ValueKey<String>( this.toString() );
+    this._key = chave ?? this._generateKey();
     this.editavel = editavel;
+  }
+
+  ValueKey<String> _generateKey(){
+    String horario = DataHoraUtil.formatterHoraComMilisegundos.format( DateTime.now() );
+    return new ValueKey<String>("textField_${horario}");
   }
 
   void setKeyString(String valor){
@@ -71,7 +79,7 @@ class CampoDeTextoWidget{
   String get labelCampo => ( _labelCampo ?? "" );
   void set labelCampo(String valor) => this._labelCampo = valor;
 
-  TextFormField get widget{
+  TextFormField _createWidget(){
     if( this._widget == null ){
       this._widget = new TextFormField(
         key: this._key,
@@ -82,7 +90,14 @@ class CampoDeTextoWidget{
             labelText: labelCampo,
             labelStyle: this.textStyleLabel,
             errorMaxLines: this.linhasErro,
-            border: new OutlineInputBorder()
+            filled: true,
+            fillColor: (this.editavel ? Estilos.corTextFieldEditavel : Estilos.corTextFieldNaoEditavel ),
+            enabledBorder: new OutlineInputBorder(
+              borderSide: BorderSide(width: this.enabledBorderWidth, color: Estilos.corBarraSuperior),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(width: (this.editavel ? 3.0 : 1.0), color: Estilos.corBarraSuperior),
+            ),
         ),
         style: this.textStyleTexto,
         controller: this.campoController,
@@ -94,7 +109,13 @@ class CampoDeTextoWidget{
   }
 
   Widget getWidget(){
-    return this.widget;
+    return this._createWidget();
+  }
+
+  double get enabledBorderWidth => this._enabledBorderWidth;
+
+  void set enabledBorderWidth(double enabledBorderWidth){
+    this._enabledBorderWidth = enabledBorderWidth;
   }
 
 }

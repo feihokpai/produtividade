@@ -20,6 +20,10 @@ class TarefaPersistenciaJson extends GenericoPersistenciaJson implements ITarefa
     return TarefaPersistenciaJson._instancia;
   }
 
+  Future<Tarefa> getTarefa( int id ){
+    return super.getEntidade<Tarefa>( id );
+  }
+
   @override
   Future<void> cadastrarTarefa(Tarefa tarefa) async {
     assert( tarefa != null,  "tentou cadastrar uma tarefa nula" );

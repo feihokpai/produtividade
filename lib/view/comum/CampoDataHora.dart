@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/view/comum/CampoDeTextoWidget.dart';
+import 'package:registro_produtividade/view/comum/estilos.dart';
 
 class CampoDataHora extends CampoDeTextoWidget{
 
@@ -11,15 +12,21 @@ class CampoDataHora extends CampoDeTextoWidget{
   DateTime _dataSelecionada;
   DateFormat formatter;
   static DateFormat formatterPadrao = DataHoraUtil.formatterDataHoraResumidaBrasileira;
+  bool _showDatePicker = true;
+  bool _showHourPicker = true;
 
   static String PREFIXO_KEY_STRING_ICONE_DATE_PICKER = "datePicker_";
   static String PREFIXO_KEY_STRING_ICONE_TIME_PICKER = "timePicker_";
+
+  Locale _locale;
+  static Locale defaultLocale = new Locale("pt", "");
 
   ///Função executada quando mudar o valor preenchido no campo de texto.
   void Function() _onChange;
 
   CampoDataHora(String label, BuildContext context, {ValueKey<String> chave, DateTime dataMaxima, DateTime dataMinima,
-      DateFormat dateTimeFormatter, DateTime dataInicialSelecionada, void Function() onChange})
+    DateFormat dateTimeFormatter, DateTime dataInicialSelecionada, Locale locale, bool showHourPicker=true,
+    bool showDatePicker=true, void Function() onChange})
       : assert( context != null ),
         assert( dataMaxima == null || dataMinima == null
             || !(DataHoraUtil.eDataDeDiaAnterior( dataMaxima , dataMinima) )
@@ -31,6 +38,10 @@ class CampoDataHora extends CampoDeTextoWidget{
     this.onChange = onChange;
     this.formatter = dateTimeFormatter ?? CampoDataHora.formatterPadrao;
     this.dataSelecionada = dataInicialSelecionada;
+    _showDatePicker = showDatePicker;
+    _showHourPicker = showHourPicker;
+    super.textStyleTexto = Estilos.textStyleCampoDataHora;
+    this._locale = locale ?? CampoDataHora.defaultLocale;
   }
 
   void set onChange(void Function() onChange){
@@ -63,6 +74,7 @@ class CampoDataHora extends CampoDeTextoWidget{
     DateTime dataInicial = (this.dataSelecionada ?? new DateTime.now() );
     showDatePicker(context: this.context,
         initialDate: dataInicial,
+        locale: _locale,
         firstDate: this.dataMinima,
         lastDate: this.dataMaxima ).then((selecionada) {
           if( selecionada == null ) {
@@ -102,32 +114,47 @@ class CampoDataHora extends CampoDeTextoWidget{
 
   @override
   Widget getWidget(){
-    ValueKey chave = super.key as ValueKey;
-    String keyCalendario = "${CampoDataHora.PREFIXO_KEY_STRING_ICONE_DATE_PICKER}${chave.value}";
-    String keyRelogio = "${CampoDataHora.PREFIXO_KEY_STRING_ICONE_TIME_PICKER}${chave.value}";
     return new Row(
       children: <Widget>[
         Expanded(
-            flex: 3,
+            flex: 65,
             child: super.getWidget()
         ),
-        Expanded(
-          flex: 1,
-          child: new IconButton(
-            key: new ValueKey( keyCalendario ),
-            icon: new Icon( Icons.date_range ),
-            onPressed: this.exibirCalendario,
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: new IconButton(
-            key: new ValueKey( keyRelogio ),
-            icon: new Icon( Icons.alarm ),
-            onPressed: this.exibirRelogio,
-          ),
-        )
+        this.showDatePickerOrEmpty(),
+        this.showTimePickerOrEmpty(),
       ],
     );
+  }
+
+  Widget showDatePickerOrEmpty(){
+    if( !this._showDatePicker ){
+      return new Container();
+    }else{
+      String keyCalendario = "${CampoDataHora.PREFIXO_KEY_STRING_ICONE_DATE_PICKER}${super.key.value}";
+      return Expanded(
+        flex: 18,
+        child: new IconButton(
+          key: new ValueKey( keyCalendario ),
+          icon: new Icon( Icons.date_range ),
+          onPressed: this.exibirCalendario,
+        ),
+      );
+    }
+  }
+
+  Widget showTimePickerOrEmpty(){
+    String keyRelogio = "${CampoDataHora.PREFIXO_KEY_STRING_ICONE_TIME_PICKER}${super.key.value}";
+    if( !this._showHourPicker ){
+      return new Container();
+    }else{
+      return new Expanded(
+        flex: 17,
+        child: new IconButton(
+          key: new ValueKey( keyRelogio ),
+          icon: new Icon( Icons.alarm ),
+          onPressed: this.exibirRelogio,
+        ),
+      );
+    }
   }
 }

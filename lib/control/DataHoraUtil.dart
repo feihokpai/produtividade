@@ -3,9 +3,17 @@ import 'package:intl/intl.dart';
 class DataHoraUtil{
 
   static DateFormat formatterDataBrasileira = new DateFormat("dd/MM/yyyy");
+  static DateFormat formatterDataAmericana = new DateFormat("MM/dd/yyyy");
+  static DateFormat formatterDataResumidaBrasileira = new DateFormat("dd/MM");
+  static DateFormat formatterDataResumidaAmericana = new DateFormat("MM/dd");
   static DateFormat formatterHoraBrasileira = new DateFormat("HH:mm:ss");
+  static DateFormat formatterHoraComMilisegundos = new DateFormat("HH:mm:ss.SSS");
   static DateFormat formatterDataHoraResumidaBrasileira = new DateFormat("dd/MM/yyyy HH:mm");
+  static DateFormat formatterDataSemAnoHoraBrasileira = new DateFormat("dd/MM - HH:mm:ss");
+  static DateFormat formatterDataSemAnoHoraAmericana = new DateFormat("MM/dd - hh:mm:ss a");
+  static DateFormat formatterDataHoraAmericana = new DateFormat("MM/dd/yyyy hh:mm:ss a");
   static DateFormat formatterHoraResumidaBrasileira = new DateFormat("HH:mm");
+  static DateFormat formatterHoraResumidaAmericana = new DateFormat("HH:mm a");
   static DateFormat formatterDataHoraBrasileira = new DateFormat("dd/MM/yyyy HH:mm:ss");
   static DateFormat formatterSqllite = new DateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
@@ -101,6 +109,26 @@ class DataHoraUtil{
     return DataHoraUtil.criarDataHoraMesmoDiaAs2359( agora );
   }
 
+  /// Cria um new DateTime com a mesma data e hora da que foi passada por parãmetro.
+  static DateTime criarDataHoraIgual( DateTime data ){
+    return new DateTime(data.year, data.month, data.day, data.hour, data.minute, data.second,
+        data.millisecond, data.microsecond );
+  }
+
+  /// Cria uma data do mês anterior com o mesmo dia do mês que hoje, com horário 00:00:00.
+  static DateTime criarDataMesAnteriorMesmoDia(DateTime data){
+    if( data.month != DateTime.january ) {
+      return DateTime(data.year, data.month-1, data.day);
+    }else{
+      return DateTime(data.year-1, DateTime.december, data.day);
+    }
+  }
+
+  /// Cria uma data do anos anterior com o mesmo dia e mês que hoje, com horário 00:00:00.
+  static DateTime criarDataAnoAnteriorMesmoDiaEMes(DateTime data){
+    return DateTime(data.year-1, data.month, data.day);
+  }
+
   ///     Verifica se data1 é uma data de um dia anterior a data2. Ou seja, se data1 for 01/01/2020 23:59
   /// e data2 for 02/01/2020 00:00, retorna true, porque significa que é uma data de um dia anterior,
   /// mesmo que a diferença entre elas seja de 1 minuto. Por outro lado, se data1 for 01/01/2020 00:00
@@ -163,8 +191,22 @@ class DataHoraUtil{
   ///     Recebe um Duration e retorna uma string no formato "3 horas e 25 minutos".
   static String criarStringQtdHorasEMinutos( Duration duracao ){
     int horas = duracao.inHours;
-    int minutos = duracao.inMinutes - (60*horas);
+    int minutos = DataHoraUtil.restoDaDuracaoEmMinutos( duracao );
     return "${horas} horas e ${minutos} minutos";
+  }
+
+  ///     Recebe um Duration e retorna apenas a parte final em minutos. Por exemplo, ao receber uma
+  /// duração de 4h12m, retornará 12.
+  static int restoDaDuracaoEmMinutos( Duration duracao ){
+    int horas = duracao.inHours;
+    return duracao.inMinutes - (60*horas);
+  }
+
+  ///     Recebe um Duration e retorna uma string no formato "3h25m".
+  static String criarStringQtdHorasEMinutosAbreviados( Duration duracao ){
+    int horas = duracao.inHours;
+    int minutos = duracao.inMinutes - (60*horas);
+    return "${horas}h${minutos}m";
   }
 
   ///     Recebe um Duration e retorna uma string no formato "00:00:00".
@@ -176,5 +218,26 @@ class DataHoraUtil{
     int segundos = duracao.inSeconds - (60*minutos) - (3600*horas);
     String segundoString = (segundos >= 10) ? "$segundos" : "0$segundos";
     return "${horaString}:${minutoString}:${segundoString}";
+  }
+
+  /// It Returns a string with current hour in format "HH:mm:ss.SSS", that is, from hours to miliseconds
+  static String timestampMili(){
+    return DataHoraUtil.formatterHoraComMilisegundos.format( DateTime.now() );
+  }
+  
+  /// The beginning date of Produtividade Project.
+  static DateTime projectBeginDate(){
+    return new DateTime( 2020, DateTime.july, 20 );
+  }
+
+  /// It Receives a DateTime complete (ex: 2020-08-28 06:14:01.765435) and returns other with the
+  /// same date but with hour reseted (ex: 2020-08-28 00:00:00.000000)
+  static DateTime resetHourMantainDate(DateTime date){
+    return new DateTime( date.year, date.month, date.day );
+  }
+
+  static bool isToday( DateTime date ){
+    DateTime today = DateTime.now();
+    return DataHoraUtil.eDataMesmoDia(date, today);
   }
 }

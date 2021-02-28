@@ -1,12 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
 import 'package:registro_produtividade/view/comum/FakeScreenTestChronometerField.dart';
-
-import 'package:fake_async/fake_async.dart';
 
 import 'WidgetTestsUtil.dart';
 import 'WidgetTestsUtilProdutividade.dart';
@@ -22,19 +19,6 @@ class ChronometerFieldTest extends WidgetTestsUtilProdutividade {
 
   @override
   void runAll() {
-    super.criarTeste(
-        "In constructor, if not define a function to Update UI raise Assert Error?",
-        new FakeScreenTestChronometerField(), () {
-      expect(() => new ChronometerField("aaaa"), throwsAssertionError);
-    });
-
-    super.criarTeste(
-        "In constructor, if define a function to Update UI as NULL raise Assert Error?",
-        new FakeScreenTestChronometerField(), () {
-      expect(() => new ChronometerField("aaaa", functionUpdateUI: null),
-          throwsAssertionError);
-    });
-
     super.criarTeste("In contructor, label NULL converts in empty String?",
         new FakeScreenTestChronometerField(), () {
           expect(new ChronometerField(null, functionUpdateUI: () {}).labelCampo,

@@ -1,13 +1,19 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:registro_produtividade/control/DataHoraUtil.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 import 'package:registro_produtividade/control/dominio/TempoDedicadoEntidade.dart';
+import 'package:registro_produtividade/localization/ProdutividadeLocalization.dart';
+import 'package:registro_produtividade/view/comum/Labels.dart';
+import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 import 'package:registro_produtividade/view/comum/rotas.dart';
 
 class ComunsWidgets {
 
   static BuildContext context;
+  static Locale currentLocale;
   static bool modoTeste = false;
 
   static String KEY_STRING_TITULO_PAGINA = "titulo_pagina";
@@ -18,36 +24,105 @@ class ComunsWidgets {
     AppBar barraSuperior = new AppBar(
         title: new Text("Registro de Produtividade"),
         centerTitle: true,
-        backgroundColor: Estilos.corBarraSuperior);
+        backgroundColor: Estilos.corBarraSuperior,
+        actions: ComunsWidgets._createActionsAppBar(),
+    );
     return barraSuperior;
   }
 
-  ///     Exibe um Pop-up com o título e descrição passados como parâmetro. Mostra os botões "Sim" e "Não".
-  /// Retorna 0 se o usuário clicar fora da janela, 1 se o usuário clicar em sim e 2 se clicar em não.
-  static Future<int> exibirDialogConfirmacao( BuildContext context, String titulo, String descricao ) async{
+  static bool linguaDefinidaComoIngles(){
+    if( ComunsWidgets.currentLocale == null ){
+      return false;
+    }
+    return ComunsWidgets.currentLocale.languageCode == 'en';
+  }
+
+  static Future<void> changeLanguage(String value, {bool goToInitialScreen=true}) async {
+    ComunsWidgets.currentLocale = new Locale( value );
+    await ProdutividadeLocalizations.delegate.load( ComunsWidgets.currentLocale );
+    if( goToInitialScreen ) {
+      await ComunsWidgets.mudarParaPaginaInicial();
+    }
+    print("Mudou de lingua -> ${value}");
+  }
+
+  static String getLabel( String namelabel, {List<String> parameters} ){
+    String label = ProdutividadeLocalizations.of( ComunsWidgets.context ).getTranslatedValue( namelabel );
+    if( parameters != null && parameters.isNotEmpty ){
+      for( int i=0; i< parameters.length; i++ ){
+        label = label.replaceAll( "{$i}", parameters[i] );
+      }
+    }
+    return label;
+  }
+
+  static List<Widget> _createActionsAppBar(){
+    return <Widget>[
+      Container(
+        width: 90,
+        child: new DropdownButton<String>(
+          isExpanded: true,
+          underline: SizedBox(),
+            icon: new Icon(
+              Icons.language,
+              color: Estilos.corTextoBarraSuperior,
+            ),
+            items: <DropdownMenuItem<String>>[
+              new DropdownMenuItem<String>( value: "pt", child: new Text("Português")),
+              new DropdownMenuItem<String>( value: "en", child: new Text("English")),
+              new DropdownMenuItem<String>( value: "es", child: new Text("Español")),
+            ],
+            onChanged: ComunsWidgets.changeLanguage,
+        ),
+      ),
+    ];
+  }
+
+  static void fecharPopup( BuildContext context, int codigoRetorno ){
+    Navigator.of(context).pop( codigoRetorno );
+  }
+
+  static List<Widget> definirBotoes( BuildContext context, int qtdBotoes, List<String> nomesBotoes){
+    List<Widget> botoes = new List();
+    if( nomesBotoes == null ){
+      String labelYes = ComunsWidgets.getLabel( Labels.yes_button );
+      String labelNo = ComunsWidgets.getLabel( Labels.no_button );
+      nomesBotoes = <String>[ labelYes, labelNo ];
+    }
+    for( int i=0; i< qtdBotoes ; i++ ){
+      int codigoRetorno = i+1;
+      Widget botao = ComunsWidgets.createRaisedButton( nomesBotoes[i] , null, () => fecharPopup(context, codigoRetorno) );
+      botoes.add( botao );
+    }
+    return botoes;
+  }
+
+  ///     Exibe um Pop-up com o título e descrição passados como parâmetro. Você pode definir a quantidade
+  /// de botões que irão aparecer pelo parâmetro [qtdBotoes] e seus nomes pela lista [nomesBotoes].
+  ///     Se deseja apenas mostrar "Sim" e "Não", não atribua valores aos parâmetros [qtdBotoes] e [nomesBotoes].
+  /// Retorna 1 se apertar o primeiro botão (posição 0 na lista), 2 para o segundo (posição 1) e
+  /// assim sucessivamente.
+  static Future<int> exibirDialogConfirmacao( BuildContext context, String titulo, String descricao,
+  { int qtdBotoes=2, List<String> nomesBotoes=null }) async{
+    List<Widget> botoes = ComunsWidgets.definirBotoes( context, qtdBotoes, nomesBotoes );
     int valor =  await showDialog(
       context: context,
       builder: (BuildContext context) {
         return new AlertDialog(
+          backgroundColor: Estilos.corDeFundoPrincipal,
           title: Text( titulo ),
           content: Text( descricao ),
-          actions: [
-            new  FlatButton(
-              key: new ValueKey( ComunsWidgets.KEY_STRING_BOTAO_SIM_DIALOG ),
-              child: Text("SIM"),
-              onPressed: () => Navigator.of(context).pop( 1 ) ,
-            ),
-            new  FlatButton(
-              key: new ValueKey( ComunsWidgets.KEY_STRING_BOTAO_NAO_DIALOG ),
-              child: Text("NÃO"),
-              onPressed: () => Navigator.of(context).pop( 2 ),
-            )
-          ],
+          actions: botoes
         );;
       },
     );
     // Retorna por default valor, mas se ela for nula, retorna 0.
     return valor ?? 0;
+  }
+
+  static void popupDeAlerta( BuildContext context, String titulo, String descricao ){
+    ComunsWidgets.exibirDialogConfirmacao( context, titulo, descricao, qtdBotoes: 1,
+        nomesBotoes: <String>["OK"] );
   }
 
   static FutureBuilder<Widget> createFutureBuilderWidget(Future<Widget> widget){
@@ -81,7 +156,7 @@ class ComunsWidgets {
       child: new ListView(
         children: <Widget>[
           DrawerHeader(
-              decoration: BoxDecoration(color: Estilos.corBarraSuperior),
+              decoration: BoxDecoration(color: Estilos.corMenuLateral),
               child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -91,13 +166,14 @@ class ComunsWidgets {
                     ),
                     new Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 20)),
                     Text(
-                      'Feito por: Amorim Company',
+                      '${ComunsWidgets.getLabel("feito_por")}: Amorim Company',
                       style: Estilos.textStyleSubtituloMenuLateral,
                       textAlign: TextAlign.left,
                     ),
                   ])),
-          ComunsWidgets.gerarItemMenuDrawer("Tarefas abertas", Icons.message, ComunsWidgets.mudarParaPaginaInicial),
-          ComunsWidgets.gerarItemMenuDrawer("Criação de Tarefas", Icons.add, ComunsWidgets.mudarParaPaginaEdicaoDeTarefas),
+          ComunsWidgets.gerarItemMenuDrawer( ComunsWidgets.getLabel("lista_tarefas"), Icons.message, ComunsWidgets.mudarParaPaginaInicial),
+          ComunsWidgets.gerarItemMenuDrawer( ComunsWidgets.getLabel("nova_tarefa"), Icons.add, ComunsWidgets.mudarParaPaginaEdicaoDeTarefas),
+          ComunsWidgets.gerarItemMenuDrawer( ComunsWidgets.getLabel("relatorios"), Icons.show_chart, ComunsWidgets.mudarParaPaginaDeRelatorios),
         ],
       ),
     );
@@ -108,12 +184,21 @@ class ComunsWidgets {
   }
 
   static RaisedButton createRaisedButton(String label, String keyString, void Function() onpressed){
-    keyString ??= ( label+(DateTime.now().millisecond.toString()) );
+    keyString ??= "RaisedButton_"+( UniqueKey().toString() )+DataHoraUtil.timestampMili();
     return new RaisedButton(
       key: ComunsWidgets.createKey( keyString ),
       child: new Text( label, style: Estilos.textStyleBotaoFormulario),
       color: Estilos.corRaisedButton,
       onPressed: onpressed,
+    );
+  }
+  
+  static IconButton createIconButton( IconData iconData, String keyString, void Function() onPressedFunction ){
+    keyString ??= "IconButton_${DataHoraUtil.timestampMili()}";
+    return new IconButton(
+      key: new ValueKey<String>( keyString ),
+      icon: new Icon( iconData ),
+      onPressed: onPressedFunction,
     );
   }
 
@@ -123,12 +208,18 @@ class ComunsWidgets {
   }
 
   static Future<dynamic> mudarParaPaginaInicial() async{
+    ComunsWidgets.operationsBeforeChangeScreen();
     Navigator.pushNamed(context, Rotas.LISTAGEM_TAREFA ).then((value) {
       return value;
     });
   }
 
+  static void operationsBeforeChangeScreen(){
+    TimersProdutividade.cancelAllTimers();
+  }
+
   static Future<void> mudarParaPaginaEdicaoDeTarefas( {Tarefa tarefa}) {
+    ComunsWidgets.operationsBeforeChangeScreen();
     if( tarefa == null ) {
       Navigator.pushNamed(context, Rotas.CADASTRO_TAREFA );
     }else{
@@ -147,5 +238,10 @@ class ComunsWidgets {
     Navigator.pushNamed(context, Rotas.CADASTRO_TEMPO, arguments: argumentos).then((value) {
       return value;
     });
+  }
+
+  static Future<dynamic> mudarParaPaginaDeRelatorios() async{
+    dynamic value = Navigator.pushNamed( context, Rotas.RELATORIOS );
+    return value;
   }
 }

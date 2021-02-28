@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:registro_produtividade/view/comum/ChronometerField.dart';
+import 'package:registro_produtividade/view/comum/ChronometerStateful.dart';
+import 'package:registro_produtividade/view/comum/TimersProdutividade.dart';
 import 'package:registro_produtividade/view/comum/comuns_widgets.dart';
 import 'package:registro_produtividade/view/comum/estilos.dart';
 
@@ -16,12 +20,15 @@ class FakeScreenTestChronometerField extends StatefulWidget {
 
 class _FakeScreenTestChronometerFieldState extends State<FakeScreenTestChronometerField> {
 
-  ChronometerField chronometerField;
-  ChronometerField chronometerField2;
+  ChronometerStateful chronometerField;
+  ChronometerStateful chronometerField2;
   ChronometerField chronometerField3;
+
+  Timer _timer;
 
   @override
   Widget build(BuildContext context) {
+    TimersProdutividade.printLogs = true;
     ComunsWidgets.context = context;
     this.initializeFields();
     return this.createHome();
@@ -31,15 +38,13 @@ class _FakeScreenTestChronometerFieldState extends State<FakeScreenTestChronomet
   }
 
   void initializeFields() {
-    this.chronometerField ??= new ChronometerField( "Duration",
+    this.chronometerField ??= new ChronometerStateful( "Duration",
       key: new ValueKey<String>( FakeScreenTestChronometerField.KEY_STRING_FIELD_CHRONOMETER ),
-      functionUpdateUI : () => this.setState( this.emptyFunction )
     );
-    this.widget.chronometerFieldReference = this.chronometerField;
+    this.widget.chronometerFieldReference = this.chronometerField.field;
 
-    this.chronometerField2 ??= new ChronometerField( "Duration",
-      key: new ValueKey<String>( FakeScreenTestChronometerField.KEY_STRING_FIELD_CHRONOMETER+"2" ),
-      functionUpdateUI : () => this.setState( this.emptyFunction )
+    this.chronometerField2 ??= new ChronometerStateful( "Duration",
+        key: new ValueKey<String>( FakeScreenTestChronometerField.KEY_STRING_FIELD_CHRONOMETER+"2" ),
     );
 
     this.chronometerField3 ??= new ChronometerField( "Duration",
@@ -67,13 +72,13 @@ class _FakeScreenTestChronometerFieldState extends State<FakeScreenTestChronomet
                 style: Estilos.textStyleListaTituloDaPagina,
                 key: new ValueKey( ComunsWidgets.KEY_STRING_TITULO_PAGINA ) ),
           ),
-          this.chronometerField.getWidget(),
+          this.chronometerField,
           new RaisedButton(
               key: new ValueKey<String>( FakeScreenTestChronometerField.KEY_STRING_BUTTON_START_STOP ),
               onPressed: ()=> this.clickedStartStop( this.chronometerField ),
               child: new Text("Start/Stop", style: Estilos.textStyleBotaoFormulario),
           ),
-          this.chronometerField2.getWidget(),
+          this.chronometerField2,
           new RaisedButton(
             onPressed: () => this.clickedStartStop( this.chronometerField2 ),
             child: new Text("Start/Stop", style: Estilos.textStyleBotaoFormulario),
@@ -85,18 +90,21 @@ class _FakeScreenTestChronometerFieldState extends State<FakeScreenTestChronomet
 
   @override
   void dispose() {
-    this.chronometerField.cancelTimerIfActivated();
-    this.chronometerField2.cancelTimerIfActivated();
-    this.chronometerField3.cancelTimerIfActivated();
+    TimersProdutividade.cancelAndRemoveTimer( this.widget );
     super.dispose();
   }
 
-  void clickedStartStop( ChronometerField field ) async{
-    bool actived = field.isActive();
+  void _setStateWithEmptyFunction(){
+    this.setState( () {} );
+  }
+
+  void clickedStartStop( ChronometerStateful chrono ) async{
+    bool actived = chrono.isActive();
     if( !actived ){
-      await field.start();
+      chrono.start();
     }else{
-      await field.pause();
+      chrono.pause();
     }
   }
+
 }

@@ -1,4 +1,6 @@
 import 'package:registro_produtividade/control/DataHoraUtil.dart';
+import 'package:registro_produtividade/control/DateTimeInterval.dart';
+import 'package:registro_produtividade/control/Validators.dart';
 import 'package:registro_produtividade/control/dominio/EntidadeDominio.dart';
 import 'package:registro_produtividade/control/dominio/TarefaEntidade.dart';
 
@@ -30,8 +32,8 @@ class TempoDedicado extends EntidadeDominio implements Comparable<TempoDedicado>
       throw new Exception("Não é permitida uma Data/hora de início de registro nula");
     }
     DateTime agora =  new DateTime.now();
-    if( valor.day > agora.day ){
-      throw new Exception("Não pode criar um registro de tempo dedicado com uma data posterior a de hoje.");
+    if( DataHoraUtil.eDataDeDiaAnterior(agora, valor) ){
+      throw new Exception("Não pode criar um registro de tempo dedicado com uma data posterior a de hoje. Valor: ${valor}");
     }
     this._inicio = valor;
   }
@@ -39,9 +41,6 @@ class TempoDedicado extends EntidadeDominio implements Comparable<TempoDedicado>
   DateTime get fim => this._fim;
 
   set fim(DateTime valor){
-    if( valor != null && valor.isBefore( this.inicio ) ){
-      throw new Exception("Num registro de tempo dedicado o horário de fim deve ser posterior ao de início.");
-    }
     this._fim = valor;
   }
 
@@ -69,6 +68,16 @@ class TempoDedicado extends EntidadeDominio implements Comparable<TempoDedicado>
         return ( DataHoraUtil.eHorarioAnteriorAteSegundos(this.inicio, other.inicio) ) ? -1 : 1;
       }
     }
+  }
+
+  /// TODO Teste de unidade
+  /// Returns true if the begin of the Dedicated Time is between the [interval] past as parameter
+  bool isBetween(DateTimeInterval interval) {
+    return (
+        ( this.inicio.isAfter( interval.beginTime )  || DataHoraUtil.eDataMesmoDia(this.inicio, interval.beginTime) )
+        && ( this.inicio.isBefore( interval.endTime ) || DataHoraUtil.eDataMesmoDia(this.inicio, interval.endTime) )
+    );
+
   }
 
 }
